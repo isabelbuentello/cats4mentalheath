@@ -1,0 +1,26 @@
+.navbar ul{
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+.navbar ul li {
+  float: right;
+}
+
+.navbar ul li a{
+  display: block;
+  color: white;
+  text-align: center;
+  padding: 14px 20px;
+  text-decoration: none;
+}
+
+.navbar ul li:hover {
+  background-color: #e7c0e0;
+}
+
+.navbar .donate a{
+  color: rgb(255, 123, 215);
+}
