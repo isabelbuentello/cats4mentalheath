@@ -13,6 +13,26 @@
     margin-top: -50px;
 }
 
+@media (max-width: 768px) {
+    .img-container {
+        flex-direction: column;
+        padding: 10px;
+    }
+    .ig, .ds {
+        width: 200px;  
+        height: 200px;
+    }
+    
+    .greeting {
+        font-size: 35px;
+        padding: 30px 20px;
+    }
+    
+    .volun {
+        padding: 40px 20px;
+    }
+}
+
 .ig, .ds{
     width: 300px;
     height: 300px;
