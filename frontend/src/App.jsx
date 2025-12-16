@@ -3,6 +3,7 @@ import Home from './pages/homepage'
 import JoinPage from './pages/joinpage'
 import LoginPage from './pages/login'
 import DonatePage from './pages/donatepage'
+import VolunteerPage from './pages/volunteer'
 
 function App() {
   return (
@@ -12,6 +13,7 @@ function App() {
         <Route path="/donate" element={<DonatePage />} />
         <Route path="/join" element={<JoinPage />} />
         <Route path="/login" element={<LoginPage />} />
+        <Route path="/volunteer" element={<VolunteerPage />} />
       </Routes>
     </BrowserRouter>
   )
