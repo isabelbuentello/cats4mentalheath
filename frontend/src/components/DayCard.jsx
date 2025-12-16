@@ -4,6 +4,12 @@ function DayCard({ day, dayName, slots, onSlotClick }) {
   // Separate available and taken slots
   const availableSlots = slots.filter(slot => !slot.volunteer);
   const takenSlots = slots.filter(slot => slot.volunteer);
+  
+  // Further separate by AM/PM
+  const availableAM = availableSlots.filter(slot => !slot.isPM);
+  const availablePM = availableSlots.filter(slot => slot.isPM);
+  const takenAM = takenSlots.filter(slot => !slot.isPM);
+  const takenPM = takenSlots.filter(slot => slot.isPM);
 
   return (
     <div className="bg-white/30 rounded-xl p-5 pt-12 min-h-[450px] font-sans">
@@ -15,8 +21,19 @@ function DayCard({ day, dayName, slots, onSlotClick }) {
       </h3>
       
       <div className="">
-        {/* Available slots first */}
-        {availableSlots.map((slot) => (
+
+        {/* Available AM slots */}
+        {availableAM.map((slot) => (
+          <FeedingSlot
+            key={slot.id}
+            slot={slot}
+            onClick={() => onSlotClick(day, slot)}
+            isAvailable={true}
+          />
+        ))}
+
+        {/* Available PM slots first */}
+        {availablePM.map((slot) => (
           <FeedingSlot
             key={slot.id}
             slot={slot}
@@ -25,8 +42,8 @@ function DayCard({ day, dayName, slots, onSlotClick }) {
           />
         ))}
         
-        {/* Taken slots at the bottom, grayed out */}
-        {takenSlots.map((slot) => (
+        {/* Taken AM slots */}
+        {takenAM.map((slot) => (
           <FeedingSlot
             key={slot.id}
             slot={slot}
@@ -34,6 +51,17 @@ function DayCard({ day, dayName, slots, onSlotClick }) {
             isAvailable={false}
           />
         ))}
+
+        {/* Taken PM slots */}
+        {takenPM.map((slot) => (
+          <FeedingSlot
+            key={slot.id}
+            slot={slot}
+            onClick={() => onSlotClick(day, slot)}
+            isAvailable={false}
+          />
+        ))}
+        
       </div>
     </div>
   );

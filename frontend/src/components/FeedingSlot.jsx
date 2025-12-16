@@ -9,8 +9,8 @@ function FeedingSlot({ slot, onClick, isAvailable }) {
           : slot.isPink 
             ? 'bg-pink-100 hover:bg-pink-200' 
             : slot.isPM
-              ? 'bg-blue-100 hover:bg-blue-200'  // PM slots - blue
-              : 'bg-green-100 hover:bg-green-200'  // AM slots - green
+              ? 'bg-[#e4e9f5] hover:bg-[#b5c7f0]'  // PM slots - pastel blue
+              : 'bg-[#fcebf6] hover:bg-[#f7cde9]'  // AM slots - pastel pink
       }`}
     >
       <p className={`text-base font-bold mb-3 ${
@@ -19,8 +19,8 @@ function FeedingSlot({ slot, onClick, isAvailable }) {
           : slot.isPink 
             ? 'text-pink-600' 
             : slot.isPM
-              ? 'text-blue-700'  // PM text color
-              : 'text-green-700'  // AM text color
+              ? 'text-blue-300'  // PM text color
+              : 'text-pink-300'  // AM text color
       }`}>
         {slot.time}
       </p>
