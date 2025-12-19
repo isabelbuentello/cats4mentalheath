@@ -4,6 +4,10 @@ import JoinPage from './pages/joinpage'
 import LoginPage from './pages/login'
 import DonatePage from './pages/donatepage'
 import VolunteerPage from './pages/volunteer'
+import FeedingInstructionsPage from './pages/feedinginstructs' 
+import YouPage from './pages/you'
+import MapPage from './pages/map' 
+import OurCats from './pages/ourcats' 
 
 function App() {
   return (
@@ -14,6 +18,10 @@ function App() {
         <Route path="/join" element={<JoinPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/volunteer" element={<VolunteerPage />} />
+        <Route path="/feeding-instructions" element={<FeedingInstructionsPage />} />
+        <Route path="/you-page" element={<YouPage />} />
+        <Route path="/map-page" element={<MapPage />} />
+        <Route path="/ourcats" element={<OurCats />} />
       </Routes>
     </BrowserRouter>
   )

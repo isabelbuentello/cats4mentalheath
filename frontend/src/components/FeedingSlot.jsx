@@ -2,8 +2,8 @@ function FeedingSlot({ slot, onClick, isAvailable }) {
   return (
     <div 
       onClick={onClick}
-      style={{ marginBottom: '32px' }} 
-      className={`rounded-lg p-4 mb-6 cursor-pointer transition-colors font-sans text-center ${
+      style={{ marginBottom: '32px', padding: '8px' }} 
+      className={`rounded-lg cursor-pointer transition-colors font-sans text-center ${
         !isAvailable
           ? 'bg-gray-300 opacity-60' 
           : slot.isPink 
@@ -24,12 +24,10 @@ function FeedingSlot({ slot, onClick, isAvailable }) {
       }`}>
         {slot.time}
       </p>
-      {slot.volunteer ? (
+      {slot.volunteer && (
         <p className="text-sm flex items-center justify-center gap-2 mt-2">
           🐱 <span className="font-semibold">{slot.volunteer}</span>
         </p>
-      ) : (
-        <p className="text-sm text-gray-500 italic font-normal mt-2">Available</p>
       )}
     </div>
   );

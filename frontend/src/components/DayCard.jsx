@@ -12,8 +12,8 @@ function DayCard({ day, dayName, slots, onSlotClick }) {
   const takenPM = takenSlots.filter(slot => slot.isPM);
 
   return (
-    <div className="bg-white/30 rounded-xl p-5 pt-12 min-h-[450px] font-sans">
-      <h3 className="text-2xl font-bold mb-6 capitalize text-center">
+    <div className="bg-white/30 rounded-xl min-h-[450px] font-sans" style={{ padding: '28px 18px 2px 18px' }}>
+      <h3 className="text-2xl font-bold capitalize text-center" style={{ marginBottom: '32px' }}>
         {dayName}
         <span className="text-base block text-gray-700 mt-2 font-normal">
           {day.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}

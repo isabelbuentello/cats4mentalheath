@@ -1,79 +1,62 @@
-// import { Link } from 'react-router-dom'
-// import '../styles/navbar.css'
-
-// function NavBar(){
-
-// return (
-// <nav className= 'navbar'>
-//         <ul>
-//         <li><Link to="/">about</Link></li>
-//         <li className='donate'><Link to="/donate">donate</Link></li>
-//         <li><Link to="/join">join</Link></li>
-//         <li><Link to="/login">member login</Link></li>
-//         </ul>
-//       </nav>
-// )
-// }
-
-// export default NavBar;
-
 import { Link } from 'react-router-dom'
 import { useState } from 'react'
 
-function NavBar() {
-  const [isOpen, setIsOpen] = useState(false);
+function NavBar({ startCollapsed = false }) {
+  const [isOpen, setIsOpen] = useState(!startCollapsed);
 
   return (
     <nav className="w-full bg-[#dfbfdf] py-6 px-8">
-      {/* Mobile menu button */}
-      <div className="md:hidden flex justify-end">
+      {/* Menu button - visible on all screens when startCollapsed is true */}
+      <div className={`flex justify-end ${startCollapsed ? '' : 'md:hidden'}`}>
         <button 
           onClick={() => setIsOpen(!isOpen)}
-          className="text-white text-3xl focus:outline-none hover:bg-[#e7c0e0] px-4 py-2 rounded-lg transition-colors"
+          className="bg-[#ffc0cb] text-white text-3xl focus:outline-none hover:bg-[#f7dcf7] px-4 py-2 rounded-lg transition-colors"
         >
           {isOpen ? '✕' : '☰'}
         </button>
       </div>
 
-      {/* Desktop menu - hidden on mobile */}
-      <ul className="hidden md:flex justify-end items-center list-none m-0 p-0 gap-8 pr-8">
-        <li>
-          <Link 
-            to="/" 
-            className="block text-white text-center text-2xl font-medium px-6 py-3 no-underline hover:bg-[#e7c0e0] rounded-lg transition-colors"
-          >
-            about
-          </Link>
-        </li>
-        <li>
-          <Link 
-            to="/donate" 
-            className="block text-white text-center text-2xl font-medium px-6 py-3 no-underline hover:bg-[#e7c0e0] rounded-lg transition-colors"
-          >
-            donate
-          </Link>
-        </li>
-        <li>
-          <Link 
-            to="/join" 
-            className="block text-white text-center text-2xl font-medium px-6 py-3 no-underline hover:bg-[#e7c0e0] rounded-lg transition-colors"
-          >
-            join
-          </Link>
-        </li>
-        <li>
-          <Link 
-            to="/login" 
-            className="block text-white text-center text-2xl font-medium px-6 py-3 no-underline hover:bg-[#e7c0e0] rounded-lg transition-colors"
-          >
-            member login
-          </Link>
-        </li>
-      </ul>
+      {/* Desktop menu - only shown when NOT startCollapsed */}
+      {!startCollapsed && (
+        <ul className="hidden md:flex justify-end items-center list-none m-0 p-0 gap-8 pr-8">
+          <li>
+            <Link 
+              to="/" 
+              className="block text-white text-center text-2xl font-medium px-6 py-3 no-underline hover:bg-[#e7c0e0] rounded-lg transition-colors"
+            >
+              about
+            </Link>
+          </li>
+          <li>
+            <Link 
+              to="/donate" 
+              className="block text-white text-center text-2xl font-medium px-6 py-3 no-underline hover:bg-[#e7c0e0] rounded-lg transition-colors"
+            >
+              donate
+            </Link>
+          </li>
+          <li>
+            <Link 
+              to="/join" 
+              className="block text-white text-center text-2xl font-medium px-6 py-3 no-underline hover:bg-[#e7c0e0] rounded-lg transition-colors"
+            >
+              join
+            </Link>
+          </li>
+          <li>
+            <Link 
+              to="/login" 
+              className="block text-white text-center text-2xl font-medium px-6 py-3 no-underline hover:bg-[#e7c0e0] rounded-lg transition-colors"
+            >
+              member login
+            </Link>
+          </li>
+        </ul>
+      )}
 
-      {/* Mobile menu - shown when isOpen is true */}
+      {/* Collapsible menu - shown when isOpen is true */}
       {isOpen && (
-        <ul className="md:hidden flex flex-col items-end list-none m-0 p-0 bg-[#dfbfdf] mt-4 space-y-2">
+        <ul className={`flex flex-col items-end list-none m-0 p-0 bg-[#dfbfdf] mt-4 space-y-2 ${startCollapsed ? '' : 'md:hidden'}`}>
           <li className="w-full">
             <Link 
               to="/" 

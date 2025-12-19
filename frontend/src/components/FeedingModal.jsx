@@ -5,59 +5,68 @@ function FeedingModal({ isOpen, onClose, selectedDay, selectedSlot, onSignUp, on
 
   return (
     <div 
-      className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
+      className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-6"
       onClick={onClose}
     >
       <div 
-        className="bg-white rounded-2xl p-6 sm:p-8 max-w-md w-full"
+        className="bg-white rounded-3xl p-8 max-w-sm w-full shadow-xl text-center flex flex-col items-center"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex justify-between items-start mb-4">
-          <h2 className="text-2xl font-bold">
-            {selectedSlot?.time}
-          </h2>
+        {/* Header Section */}
+        <div className="w-full flex justify-end -mb-4">
           <button 
             onClick={onClose}
-            className="text-3xl hover:text-gray-600"
+            className="text-2xl text-gray-400 hover:text-gray-600 transition-colors"
           >
             ×
           </button>
         </div>
         
-        <p className="text-gray-600 mb-2">
-          {selectedDay?.toLocaleDateString('en-US', { 
-            weekday: 'long', 
-            month: 'long', 
-            day: 'numeric' 
-          })}
-        </p>
+        <div className="mb-6">
+          <h2 className="text-3xl font-bold text-gray-800 mb-2">
+            {selectedSlot?.time}
+          </h2>
+          <p className="text-[#a084a0] font-medium uppercase tracking-wide text-sm">
+            {selectedDay?.toLocaleDateString('en-US', { 
+              weekday: 'long', 
+              month: 'long', 
+              day: 'numeric' 
+            })}
+          </p>
+        </div>
 
-        <p className="text-sm text-gray-500 mb-4">
-          Location: {selectedSlot?.location}
-        </p>
-        
-        {selectedSlot?.volunteer ? (
-          <div className="bg-green-100 p-4 rounded-lg mb-4">
-            <p className="text-sm text-gray-600">Signed up:</p>
-            <p className="text-lg font-semibold">{selectedSlot.volunteer}</p>
+        {/* Info Section */}
+        <div className="w-full space-y-3 mb-8">
+          <div className="bg-[#f8f0f8] py-3 px-4 rounded-xl border border-[#dfbfdf]/30">
+            <p className="text-sm text-gray-500 mb-1">Location</p>
+            <p className="text-gray-800 font-semibold">{selectedSlot?.location}</p>
           </div>
-        ) : (
-          <div className="bg-yellow-100 p-4 rounded-lg mb-4">
-            <p className="text-sm text-gray-600">This slot is available!</p>
-          </div>
-        )}
+          
+          {selectedSlot?.volunteer ? (
+            <div className="bg-[#cadaed]/30 py-4 px-4 rounded-xl border border-[#cadaed]">
+              <p className="text-xs text-[#6a8da8] uppercase font-bold tracking-tighter mb-1">Currently Signed Up</p>
+              <p className="text-lg font-bold text-[#5a7d98]">{selectedSlot.volunteer}</p>
+            </div>
+          ) : (
+            <div className="bg-[#d4edca]/40 py-4 px-4">
+              <p className="text-[#6b8e5b] font-bold">Slot is available!</p>
+            </div>
+          )}
+        </div>
         
+        {/* User Status/Alerts */}
         {!currentUser && (
-          <div className="bg-red-100 p-4 rounded-lg mb-4">
-            <p className="text-sm text-red-600">Please log in to sign up for slots!</p>
+          <div className="mb-6 px-4 py-2 bg-pink-50 rounded-lg">
+            <p className="text-xs text-pink-600 font-medium italic">Please log in to sign up for slots</p>
           </div>
         )}
         
-        <div className="space-y-3">
+        {/* Action Buttons */}
+        <div className="w-full space-y-3">
           {currentUser && !selectedSlot?.volunteer && (
             <button
               onClick={() => onSignUp(selectedDay, selectedSlot)}
-              className="w-full bg-[#9fc8a7] hover:bg-[#8db896] text-white font-semibold py-3 rounded-lg transition-colors"
+              className="w-full bg-[#d1abc3] hover:bg-[#ffb3c1] text-white font-bold py-4 rounded-xl shadow-md transition-all active:scale-[0.98]"
             >
               Sign Up for This Slot
             </button>
@@ -66,7 +75,7 @@ function FeedingModal({ isOpen, onClose, selectedDay, selectedSlot, onSignUp, on
           {currentUser && isUserSignedUp && (
             <button
               onClick={() => onCancel(selectedDay, selectedSlot)}
-              className="w-full bg-red-500 hover:bg-red-600 text-white font-semibold py-3 rounded-lg transition-colors"
+              className="w-full bg-[#ede0ca] hover:bg-[#f3ead8] text-[#8a7a5f] font-bold py-4 rounded-xl transition-all active:scale-[0.98]"
             >
               Cancel My Sign-Up
             </button>
@@ -74,9 +83,9 @@ function FeedingModal({ isOpen, onClose, selectedDay, selectedSlot, onSignUp, on
           
           <button
             onClick={onClose}
-            className="w-full bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-3 rounded-lg transition-colors"
+            className="w-full text-gray-400 hover:text-gray-600 font-semibold py-2 transition-colors text-sm"
           >
-            Close
+            Go Back
           </button>
         </div>
       </div>

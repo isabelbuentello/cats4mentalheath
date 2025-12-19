@@ -24,15 +24,13 @@ function WeeklyCalendar() {
   const [scheduleData, setScheduleData] = useState({});
   const [loading, setLoading] = useState(true);
 
-  // Fixed feeding zones - these never change
-  // Fixed feeding zones - these never change
 const FEEDING_ZONES = [
-  { id: 'am_law', time: 'am law', location: 'Law Building', isPM: false },
-  { id: 'pm_law', time: 'pm law', location: 'Law Building', isPM: true },
-  { id: 'am_equal_op', time: 'am equal op', location: 'Equal Opportunity', isPM: false },
-  { id: 'pm_equal_op', time: 'pm equal op', location: 'Equal Opportunity', isPM: true },
-  { id: 'am_zone_d', time: 'am zone d', location: 'Zone D', isPM: false },
-  { id: 'pm_zone_d', time: 'pm zone d', location: 'Zone D', isPM: true },
+  { id: 'am_law', time: 'am law', location: 'Law Buildings', isPM: false },
+  { id: 'pm_law', time: 'pm law', location: 'Law Buildings', isPM: true },
+  { id: 'am_equal_op', time: 'am equal op', location: 'Equal Opportunity Building', isPM: false },
+  { id: 'pm_equal_op', time: 'pm equal op', location: 'Equal Opportunity Building', isPM: true },
+  { id: 'am_zone_d', time: 'am zone d', location: 'Zone D Lot', isPM: false },
+  { id: 'pm_zone_d', time: 'pm zone d', location: 'Zone D Lot', isPM: true },
 ];
 
   // Get week start (Sunday)
@@ -289,44 +287,73 @@ const FEEDING_ZONES = [
   if (loading) {
     return (
       <div className="text-center py-20">
-        <p className="text-2xl text-white">Loading schedule...</p>
+        <p className="text-2xl text-white">loading schedule...</p>
       </div>
     );
   }
 
   return (
   <div className="pb-12 px-4 sm:px-6 md:px-8">
-    {/* Week Header with Arrows */}
-    <div className="flex justify-center items-center gap-6 sm:gap-12 py-12 px-4">
-      <button 
-        onClick={previousWeek}
-        className="text-4xl sm:text-5xl font-bold hover:text-white transition-colors px-4"
-      >
-        ←
-      </button>
-      
-      <div className="text-center">
-        <h2 className="text-3xl sm:text-5xl md:text-6xl font-bold text-white leading-tight whitespace-pre-line">
-          {formatWeekRange()}
-        </h2>
-        <p className="text-xl sm:text-2xl mt-4 text-white">sign up to feed!!!</p>
+    
+{/* Week Header with Arrows */}
+<div className="flex justify-center items-center gap-6 sm:gap-12 py-12 px-4">
+  <button 
+    onClick={previousWeek}
+    style={{
+      width: '64px',
+      height: '64px',
+      borderRadius: '50%',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      backgroundColor: '#c5d7e8',
+      color: 'white',
+      fontSize: '2.5rem',
+      fontWeight: 'bold',
+      cursor: 'pointer',
+      transition: 'color 0.3s'
+    }}
+    onMouseEnter={(e) => e.target.style.color = '#ffc0cb'}
+    onMouseLeave={(e) => e.target.style.color = 'white'}
+  >
+    ←
+  </button>
+  
+  <div className="text-center">
+    <h2 className="text-3xl sm:text-5xl md:text-6xl font-bold text-white leading-tight whitespace-pre-line">
+      {formatWeekRange()}
+    </h2>
+    <p className="text-xl sm:text-2xl mt-4 text-white">sign up to feed!!!</p>
 
-        {/* Spacer div */}
-      <div className="h-3 sm:h-4 md:h-10 lg:h-14"></div>
+    {/* Spacer div */}
+    <div className="h-3 sm:h-4 md:h-10 lg:h-14"></div>
+  </div>
 
-      </div>
+  <button 
+    onClick={nextWeek}
+    style={{
+      width: '64px',
+      height: '64px',
+      borderRadius: '50%',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      backgroundColor: '#c5d7e8',
+      color: 'white',
+      fontSize: '2.5rem',
+      fontWeight: 'bold',
+      cursor: 'pointer',
+      transition: 'color 0.3s'
+    }}
+    onMouseEnter={(e) => e.target.style.color = '#ffc0cb'}
+    onMouseLeave={(e) => e.target.style.color = 'white'}
+  >
+    →
+  </button>
+</div>
 
-      
-      <button 
-        onClick={nextWeek}
-        className="text-4xl sm:text-5xl font-bold hover:text-white transition-colors px-4"
-      >
-        →
-      </button>
-    </div>
-
-    {/* Calendar Grid - Desktop */}
-<div className="hidden md:grid md:grid-cols-7 gap-6 px-4 sm:px-8 md:px-12 lg:px-16 pb-12">
+{/* Calendar Grid - Desktop */}
+<div className="hidden md:grid md:grid-cols-7 gap-6 pb-12" style={{ paddingLeft: '32px', paddingRight: '32px' }}>
   {weekDays.map((day, index) => (
     <DayCard
       key={index}
@@ -339,7 +366,7 @@ const FEEDING_ZONES = [
 </div>
 
 {/* Calendar Grid - Mobile - 2 columns */}
-<div className="md:hidden px-8 sm:px-12 pb-12 grid grid-cols-2 gap-4">
+<div className="md:hidden pb-12 grid grid-cols-2 gap-4" style={{ paddingLeft: '24px', paddingRight: '24px' }}>
   {weekDays.map((day, index) => (
     <DayCard
       key={index}
