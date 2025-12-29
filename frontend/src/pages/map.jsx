@@ -1,5 +1,6 @@
 import NavBar from '../components/NavBar.jsx'
 import { Link } from 'react-router-dom';
+import CatMapWithMarkers from '../components/CatMap.jsx';
 
 function MapPage() {
   return (
@@ -70,6 +71,7 @@ function MapPage() {
         <h1 className= 'greeting'> the mpa map mpa mpam </h1>
         <p className= 'volun'> blh ahsjdbhjvbhjwejbchsd <br /> 
         yes yes yes yses eysgjhbsjhcb </p>
+        <CatMapWithMarkers />
     </div>
   )
 }
