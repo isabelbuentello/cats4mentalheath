@@ -10,25 +10,25 @@ function CatMapWithMarkers() {
       id: 1,
       name: 'Equal Opportunity Building',
       position: { lat: 29.718734, lng: -95.344658 },
-      cats: ['Whiskers', 'Mittens']
+      cats: ['Mo', 'Mr. Claude']
     },
     {
       id: 2,
       name: 'Zone D Parking Lot',
       position: { lat: 29.715792, lng: -95.341824 },
-      cats: ['Shadow', 'Luna']
+      cats: ['Druid', 'Artificer', 'Friday the 13th', 'Mage']
     },
     {
       id: 3,
       name: 'Law Center across The Nook',
       position: { lat: 29.723095, lng: -95.337672 },
-      cats: ['Tiger', 'Patches']
+      cats: ['Margot, Enid']
     },
     {
       id: 4,
       name: 'Law Center near Lofts',
       position: { lat: 29.722842, lng: -95.339067 },
-      cats: ['Bella', 'Max']
+      cats: ['Ruth, Natasha']
     }
   ];
 

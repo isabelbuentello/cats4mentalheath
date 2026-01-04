@@ -1,37 +1,46 @@
-import { useState, useEffect } from 'react';
-import { db, auth } from '../firebase/config.js';
-import { collection, doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
-import DayCard from './DayCard.jsx';
-import FeedingModal from './FeedingModal.jsx';
+import { useState, useEffect } from "react";
+import { db, auth } from "../firebase/config.js";
+import { collection, doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
+import DayCard from "./DayCard.jsx";
+import FeedingModal from "./FeedingModal.jsx";
 
 function WeeklyCalendar() {
   const [currentWeekStart, setCurrentWeekStart] = useState(() => {
-  // Get current date in 2025
-  const now = new Date();
-  const currentDate2025 = new Date(2025, now.getMonth(), now.getDate());
-  
-  // Calculate the Sunday of the current week
-  const day = currentDate2025.getDay();
-  const diff = currentDate2025.getDate() - day;
-  const sunday = new Date(currentDate2025);
-  sunday.setDate(diff);
-  
-  return sunday;
-});
+    // Get current date
+    const now = new Date();
+
+    // Calculate the Sunday of the current week
+    const day = now.getDay();
+    const diff = now.getDate() - day;
+    const sunday = new Date(now);
+    sunday.setDate(diff);
+
+    return sunday;
+  });
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedDay, setSelectedDay] = useState(null);
   const [selectedSlot, setSelectedSlot] = useState(null);
   const [scheduleData, setScheduleData] = useState({});
   const [loading, setLoading] = useState(true);
 
-const FEEDING_ZONES = [
-  { id: 'am_law', time: 'am law', location: 'Law Buildings', isPM: false },
-  { id: 'pm_law', time: 'pm law', location: 'Law Buildings', isPM: true },
-  { id: 'am_equal_op', time: 'am equal op', location: 'Equal Opportunity Building', isPM: false },
-  { id: 'pm_equal_op', time: 'pm equal op', location: 'Equal Opportunity Building', isPM: true },
-  { id: 'am_zone_d', time: 'am zone d', location: 'Zone D Lot', isPM: false },
-  { id: 'pm_zone_d', time: 'pm zone d', location: 'Zone D Lot', isPM: true },
-];
+  const FEEDING_ZONES = [
+    { id: "am_law", time: "am law", location: "Law Buildings", isPM: false },
+    { id: "pm_law", time: "pm law", location: "Law Buildings", isPM: true },
+    {
+      id: "am_equal_op",
+      time: "am equal op",
+      location: "Equal Opportunity Building",
+      isPM: false,
+    },
+    {
+      id: "pm_equal_op",
+      time: "pm equal op",
+      location: "Equal Opportunity Building",
+      isPM: true,
+    },
+    { id: "am_zone_d", time: "am zone d", location: "Zone D Lot", isPM: false },
+    { id: "pm_zone_d", time: "pm zone d", location: "Zone D Lot", isPM: true },
+  ];
 
   // Get week start (Sunday)
   const getWeekStart = (date) => {
@@ -67,35 +76,38 @@ const FEEDING_ZONES = [
   };
 
   const weekDays = getWeekDays();
-  const dayNames = ['sun', 'mon', 'tues', 'wed', 'thurs', 'fri', 'sat'];
+  const dayNames = ["sun", "mon", "tues", "wed", "thurs", "fri", "sat"];
 
   // Format week range
   const formatWeekRange = () => {
-  const start = weekDays[0];
-  const end = weekDays[6];
-  const year = start.getFullYear();
-  return `Week of\n${start.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - ${end.getDate()}, ${year}`;
-};
+    const start = weekDays[0];
+    const end = weekDays[6];
+    const year = start.getFullYear();
+    return `Week of\n${start.toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+    })} - ${end.getDate()}, ${year}`;
+  };
 
   // Get week ID for Firestore
   const getWeekId = (date) => {
     const weekStart = getWeekStart(date);
-    return weekStart.toISOString().split('T')[0]; // "2024-11-23" format
+    return weekStart.toISOString().split("T")[0]; // "2024-11-23" format
   };
 
   // Get day ID for Firestore
   const getDayId = (date) => {
-    return date.toISOString().split('T')[0]; // "2024-11-26" format
+    return date.toISOString().split("T")[0]; // "2024-11-26" format
   };
 
   // Initialize empty slots for a day
   const initializeEmptySlots = () => {
     const slots = {};
-    FEEDING_ZONES.forEach(zone => {
-      slots[zone.id] = { 
-        volunteer: null, 
-        email: null, 
-        signedUpAt: null 
+    FEEDING_ZONES.forEach((zone) => {
+      slots[zone.id] = {
+        volunteer: null,
+        email: null,
+        signedUpAt: null,
       };
     });
     return slots;
@@ -110,11 +122,11 @@ const FEEDING_ZONES = [
 
       for (const day of weekDays) {
         const dayId = getDayId(day);
-        const dayDocRef = doc(db, 'feeding-schedule', weekId, 'days', dayId);
-        
+        const dayDocRef = doc(db, "feeding-schedule", weekId, "days", dayId);
+
         try {
           const dayDoc = await getDoc(dayDocRef);
-          
+
           if (dayDoc.exists()) {
             const data = dayDoc.data();
             newScheduleData[dayId] = data.slots || data; // Handle both formats
@@ -122,17 +134,17 @@ const FEEDING_ZONES = [
             // Initialize with empty slots if document doesn't exist
             const emptySlots = initializeEmptySlots();
             newScheduleData[dayId] = emptySlots;
-            
+
             // Create the document in Firebase with slots field
-            await setDoc(dayDocRef, { 
+            await setDoc(dayDocRef, {
               slots: emptySlots,
-              createdAt: new Date().toISOString()
+              createdAt: new Date().toISOString(),
             });
-            
+
             console.log(`Created empty schedule for ${dayId}`);
           }
         } catch (error) {
-          console.error('Error fetching day schedule:', error);
+          console.error("Error fetching day schedule:", error);
           newScheduleData[dayId] = initializeEmptySlots();
         }
       }
@@ -148,8 +160,8 @@ const FEEDING_ZONES = [
   const getSlots = (day) => {
     const dayId = getDayId(day);
     const daySlots = scheduleData[dayId] || {};
-    
-    return FEEDING_ZONES.map(zone => ({
+
+    return FEEDING_ZONES.map((zone) => ({
       ...zone,
       volunteer: daySlots[zone.id]?.volunteer || null,
       email: daySlots[zone.id]?.email || null,
@@ -166,23 +178,23 @@ const FEEDING_ZONES = [
   // Handle sign up
   const handleSignUp = async (day, slot) => {
     const user = auth.currentUser;
-    
+
     if (!user) {
-      alert('Please log in to sign up for feeding slots!');
+      alert("Please log in to sign up for feeding slots!");
       return;
     }
 
     const weekId = getWeekId(currentWeekStart);
     const dayId = getDayId(day);
-    const dayDocRef = doc(db, 'feeding-schedule', weekId, 'days', dayId);
+    const dayDocRef = doc(db, "feeding-schedule", weekId, "days", dayId);
 
     try {
-      console.log('Signing up for:', { weekId, dayId, slotId: slot.id });
-      
+      console.log("Signing up for:", { weekId, dayId, slotId: slot.id });
+
       // Get current data
       const currentDoc = await getDoc(dayDocRef);
       let currentSlots = {};
-      
+
       if (currentDoc.exists()) {
         const data = currentDoc.data();
         currentSlots = data.slots || data;
@@ -192,40 +204,44 @@ const FEEDING_ZONES = [
       const updatedSlots = {
         ...currentSlots,
         [slot.id]: {
-          volunteer: user.displayName || user.email.split('@')[0],
+          volunteer: user.displayName || user.email.split("@")[0],
           email: user.email,
           signedUpAt: new Date().toISOString(),
-        }
+        },
       };
 
       // Use setDoc with merge to ensure document exists
-      await setDoc(dayDocRef, { 
-        slots: updatedSlots,
-        updatedAt: new Date().toISOString()
-      }, { merge: true });
+      await setDoc(
+        dayDocRef,
+        {
+          slots: updatedSlots,
+          updatedAt: new Date().toISOString(),
+        },
+        { merge: true }
+      );
 
-      console.log('Successfully updated Firebase');
+      console.log("Successfully updated Firebase");
 
       // Update local state
-      setScheduleData(prev => ({
+      setScheduleData((prev) => ({
         ...prev,
-        [dayId]: updatedSlots
+        [dayId]: updatedSlots,
       }));
 
-      alert('Successfully signed up!');
+      alert("Successfully signed up!");
       setIsModalOpen(false);
     } catch (error) {
-      console.error('Error signing up:', error);
+      console.error("Error signing up:", error);
       alert(`Failed to sign up: ${error.message}`);
     }
   };
 
-  // Handle cancellation 
+  // Handle cancellation
   const handleCancelSignUp = async (day, slot) => {
     const user = auth.currentUser;
-    
+
     if (!user) {
-      alert('Please log in!');
+      alert("Please log in!");
       return;
     }
 
@@ -234,20 +250,24 @@ const FEEDING_ZONES = [
 
     // Check if this user signed up for this slot
     if (slotData?.email !== user.email) {
-      alert('You can only cancel your own sign-ups!');
+      alert("You can only cancel your own sign-ups!");
       return;
     }
 
     const weekId = getWeekId(currentWeekStart);
-    const dayDocRef = doc(db, 'feeding-schedule', weekId, 'days', dayId);
+    const dayDocRef = doc(db, "feeding-schedule", weekId, "days", dayId);
 
     try {
-      console.log('Cancelling sign-up for:', { weekId, dayId, slotId: slot.id });
+      console.log("Cancelling sign-up for:", {
+        weekId,
+        dayId,
+        slotId: slot.id,
+      });
 
       // Get current data
       const currentDoc = await getDoc(dayDocRef);
       let currentSlots = {};
-      
+
       if (currentDoc.exists()) {
         const data = currentDoc.data();
         currentSlots = data.slots || data;
@@ -260,26 +280,30 @@ const FEEDING_ZONES = [
           volunteer: null,
           email: null,
           signedUpAt: null,
-        }
+        },
       };
 
-      await setDoc(dayDocRef, { 
-        slots: updatedSlots,
-        updatedAt: new Date().toISOString()
-      }, { merge: true });
+      await setDoc(
+        dayDocRef,
+        {
+          slots: updatedSlots,
+          updatedAt: new Date().toISOString(),
+        },
+        { merge: true }
+      );
 
-      console.log('Successfully cancelled in Firebase');
+      console.log("Successfully cancelled in Firebase");
 
       // Update local state
-      setScheduleData(prev => ({
+      setScheduleData((prev) => ({
         ...prev,
-        [dayId]: updatedSlots
+        [dayId]: updatedSlots,
       }));
 
-      alert('Sign-up cancelled!');
+      alert("Sign-up cancelled!");
       setIsModalOpen(false);
     } catch (error) {
-      console.error('Error cancelling:', error);
+      console.error("Error cancelling:", error);
       alert(`Failed to cancel: ${error.message}`);
     }
   };
@@ -293,103 +317,110 @@ const FEEDING_ZONES = [
   }
 
   return (
-  <div className="pb-12 px-4 sm:px-6 md:px-8">
-    
-{/* Week Header with Arrows */}
-<div className="flex justify-center items-center gap-6 sm:gap-12 py-12 px-4">
-  <button 
-    onClick={previousWeek}
-    style={{
-      width: '64px',
-      height: '64px',
-      borderRadius: '50%',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      backgroundColor: '#c5d7e8',
-      color: 'white',
-      fontSize: '2.5rem',
-      fontWeight: 'bold',
-      cursor: 'pointer',
-      transition: 'color 0.3s'
-    }}
-    onMouseEnter={(e) => e.target.style.color = '#ffc0cb'}
-    onMouseLeave={(e) => e.target.style.color = 'white'}
-  >
-    ←
-  </button>
-  
-  <div className="text-center">
-    <h2 className="text-3xl sm:text-5xl md:text-6xl font-bold text-white leading-tight whitespace-pre-line">
-      {formatWeekRange()}
-    </h2>
-    <p className="text-xl sm:text-2xl mt-4 text-white">sign up to feed!!!</p>
+    <div className="pb-12 px-4 sm:px-6 md:px-8">
+      {/* Week Header with Arrows */}
+      <div className="flex justify-center items-center gap-6 sm:gap-12 py-12 px-4">
+        <button
+          onClick={previousWeek}
+          style={{
+            width: "64px",
+            height: "64px",
+            borderRadius: "50%",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            backgroundColor: "#c5d7e8",
+            color: "white",
+            fontSize: "2.5rem",
+            fontWeight: "bold",
+            cursor: "pointer",
+            transition: "color 0.3s",
+          }}
+          onMouseEnter={(e) => (e.target.style.color = "#ffc0cb")}
+          onMouseLeave={(e) => (e.target.style.color = "white")}
+        >
+          ←
+        </button>
 
-    {/* Spacer div */}
-    <div className="h-3 sm:h-4 md:h-10 lg:h-14"></div>
-  </div>
+        <div className="text-center">
+          <h2 className="text-3xl sm:text-5xl md:text-6xl font-bold text-white leading-tight whitespace-pre-line">
+            {formatWeekRange()}
+          </h2>
+          <p className="text-xl sm:text-2xl mt-4 text-white">
+            sign up to feed!!!
+          </p>
 
-  <button 
-    onClick={nextWeek}
-    style={{
-      width: '64px',
-      height: '64px',
-      borderRadius: '50%',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      backgroundColor: '#c5d7e8',
-      color: 'white',
-      fontSize: '2.5rem',
-      fontWeight: 'bold',
-      cursor: 'pointer',
-      transition: 'color 0.3s'
-    }}
-    onMouseEnter={(e) => e.target.style.color = '#ffc0cb'}
-    onMouseLeave={(e) => e.target.style.color = 'white'}
-  >
-    →
-  </button>
-</div>
+          {/* Spacer div */}
+          <div className="h-3 sm:h-4 md:h-10 lg:h-14"></div>
+        </div>
 
-{/* Calendar Grid - Desktop */}
-<div className="hidden md:grid md:grid-cols-7 gap-6 pb-12" style={{ paddingLeft: '32px', paddingRight: '32px' }}>
-  {weekDays.map((day, index) => (
-    <DayCard
-      key={index}
-      day={day}
-      dayName={dayNames[day.getDay()]}
-      slots={getSlots(day)}
-      onSlotClick={handleSlotClick}
-    />
-  ))}
-</div>
+        <button
+          onClick={nextWeek}
+          style={{
+            width: "64px",
+            height: "64px",
+            borderRadius: "50%",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            backgroundColor: "#c5d7e8",
+            color: "white",
+            fontSize: "2.5rem",
+            fontWeight: "bold",
+            cursor: "pointer",
+            transition: "color 0.3s",
+          }}
+          onMouseEnter={(e) => (e.target.style.color = "#ffc0cb")}
+          onMouseLeave={(e) => (e.target.style.color = "white")}
+        >
+          →
+        </button>
+      </div>
 
-{/* Calendar Grid - Mobile - 2 columns */}
-<div className="md:hidden pb-12 grid grid-cols-2 gap-4" style={{ paddingLeft: '24px', paddingRight: '24px' }}>
-  {weekDays.map((day, index) => (
-    <DayCard
-      key={index}
-      day={day}
-      dayName={dayNames[day.getDay()]}
-      slots={getSlots(day)}
-      onSlotClick={handleSlotClick}
-    />
-  ))}
-</div>
+      {/* Calendar Grid - Desktop */}
+      <div
+        className="hidden md:grid md:grid-cols-7 gap-6 pb-12"
+        style={{ paddingLeft: "32px", paddingRight: "32px" }}
+      >
+        {weekDays.map((day, index) => (
+          <DayCard
+            key={index}
+            day={day}
+            dayName={dayNames[day.getDay()]}
+            slots={getSlots(day)}
+            onSlotClick={handleSlotClick}
+          />
+        ))}
+      </div>
 
-    {/* Modal */}
-    <FeedingModal
-      isOpen={isModalOpen}
-      onClose={() => setIsModalOpen(false)}
-      selectedDay={selectedDay}
-      selectedSlot={selectedSlot}
-      onSignUp={handleSignUp}
-      onCancel={handleCancelSignUp}
-      currentUser={auth.currentUser}
-    />
-  </div>
-);
+      {/* Calendar Grid - Mobile - 2 columns */}
+      <div
+        className="md:hidden pb-12 grid grid-cols-2 gap-4"
+        style={{ paddingLeft: "24px", paddingRight: "24px" }}
+      >
+        {weekDays.map((day, index) => (
+          <DayCard
+            key={index}
+            day={day}
+            dayName={dayNames[day.getDay()]}
+            slots={getSlots(day)}
+            onSlotClick={handleSlotClick}
+          />
+        ))}
+      </div>
+
+      {/* Modal */}
+      <FeedingModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        selectedDay={selectedDay}
+        selectedSlot={selectedSlot}
+        onSignUp={handleSignUp}
+        onCancel={handleCancelSignUp}
+        currentUser={auth.currentUser}
+      />
+    </div>
+  );
 }
 
 export default WeeklyCalendar;
