@@ -107,6 +107,7 @@ function WeeklyCalendar() {
       slots[zone.id] = {
         volunteer: null,
         email: null,
+        photoURL: null, 
         signedUpAt: null,
       };
     });
@@ -165,9 +166,9 @@ function WeeklyCalendar() {
       ...zone,
       volunteer: daySlots[zone.id]?.volunteer || null,
       email: daySlots[zone.id]?.email || null,
+      photoURL: daySlots[zone.id]?.photoURL || null,  
     }));
   };
-
   // Handle slot click
   const handleSlotClick = (day, slot) => {
     setSelectedDay(day);
@@ -206,6 +207,7 @@ function WeeklyCalendar() {
         [slot.id]: {
           volunteer: user.displayName || user.email.split("@")[0],
           email: user.email,
+          photoURL: user.photoURL || null,  // ← ADD THIS LINE
           signedUpAt: new Date().toISOString(),
         },
       };
@@ -279,6 +281,7 @@ function WeeklyCalendar() {
         [slot.id]: {
           volunteer: null,
           email: null,
+          photoURL: null, 
           signedUpAt: null,
         },
       };

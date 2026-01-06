@@ -1,3 +1,6 @@
+import React from 'react';
+import darkBrownCat from '../assets/darkbrowncat.png';
+
 function FeedingSlot({ slot, onClick, isAvailable }) {
   return (
     <div 
@@ -25,9 +28,16 @@ function FeedingSlot({ slot, onClick, isAvailable }) {
         {slot.time}
       </p>
       {slot.volunteer && (
-        <p className="text-sm flex items-center justify-center gap-2 mt-2">
-          🐱 <span className="font-semibold">{slot.volunteer}</span>
-        </p>
+        <div className="flex items-center justify-center gap-2 mt-2">
+          {/* User Avatar */}
+          <img 
+            src={slot.photoURL || darkBrownCat} 
+            alt={slot.volunteer}
+            className="w-6 h-6 rounded-full object-cover"
+          />
+          {/* Display Name */}
+          <span className="text-sm font-semibold">{slot.volunteer}</span>
+        </div>
       )}
     </div>
   );
