@@ -8,6 +8,7 @@ import FeedingInstructionsPage from './pages/feedinginstructs'
 import YouPage from './pages/you'
 import MapPage from './pages/map' 
 import OurCats from './pages/ourcats' 
+import AdminPage from './pages/admin'
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
         <Route path="/you-page" element={<YouPage />} />
         <Route path="/map-page" element={<MapPage />} />
         <Route path="/ourcats" element={<OurCats />} />
+        <Route path="/admin" element={<AdminPage />} />
       </Routes>
     </BrowserRouter>
   )

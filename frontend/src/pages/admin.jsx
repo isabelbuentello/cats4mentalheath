@@ -1,15 +1,14 @@
 import NavBar from '../components/NavBar.jsx';
 import { Link } from 'react-router-dom';
-import VolunteerActivityGraph from '../components/VolunteerActivityGraph.jsx';
-import UserProfile from '../components/UserProfile.jsx';
-import Leaderboard from '../components/Leaderboard.jsx';
-import UserHoursBadge from '../components/UserHoursBadge.jsx';
 import { useState, useEffect } from 'react';
 import { doc, getDoc } from 'firebase/firestore';
 import { db, auth } from '../firebase/config.js';
+import AdminPanel from '../components/AdminPanel.jsx';
+import VolunteerHoursTracker from '../components/VolunteerHoursTracker.jsx';
 
-function YouPage() {
+function AdminPage() {
   const [isAdmin, setIsAdmin] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const checkAdmin = async () => {
@@ -19,9 +18,40 @@ function YouPage() {
           setIsAdmin(userDoc.data().isAdmin || false);
         }
       }
+      setLoading(false);
     };
     checkAdmin();
   }, []);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-[#dfbfdf] flex items-center justify-center">
+        <p className="text-2xl text-white font-bold">Loading...</p>
+      </div>
+    );
+  }
+
+  if (!auth.currentUser || !isAdmin) {
+    return (
+      <div className="min-h-screen bg-[#dfbfdf]">
+        <NavBar startCollapsed={true} />
+        <div className="flex items-center justify-center min-h-[60vh]">
+          <div className="bg-white rounded-xl shadow-lg p-8 max-w-md text-center">
+            <div className="text-6xl mb-4">🔒</div>
+            <h2 className="text-3xl font-bold mb-4">Admin Access Required</h2>
+            <p className="text-gray-700 mb-6">
+              This page is only accessible to administrators.
+            </p>
+            <Link to="/you-page">
+              <button className="bg-purple-500 hover:bg-purple-600 text-white font-bold py-3 px-6 rounded-lg transition-colors">
+                Back to Profile
+              </button>
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[#dfbfdf]">
@@ -57,13 +87,11 @@ function YouPage() {
             you
           </button>
         </Link>
-        {isAdmin && (
-          <Link to="/admin">
-            <button className="text-2xl text-white font-bold bg-[#b8a0d4] hover:bg-[#ffb3c1] px-6 py-3 rounded-lg transition-colors">
-              admin
-            </button>
-          </Link>
-        )}
+        <Link to="/admin">
+          <button className="text-2xl text-white font-bold bg-[#b8a0d4] hover:bg-[#ffb3c1] px-6 py-3 rounded-lg transition-colors">
+            👑 admin
+          </button>
+        </Link>
       </div>
 
       {/* Mobile Navigation */}
@@ -88,57 +116,27 @@ function YouPage() {
             you
           </button>
         </Link>
-        {isAdmin ? (
-          <>
-            <Link to="/feeding-instructions">
-              <button className="bg-[#d4edca] hover:bg-[#ffb3c1] p-4 text-white font-bold rounded-lg transition-colors w-full">
-                feeding instructions
-              </button>
-            </Link>
-            <Link to="/admin">
-              <button className="bg-[#b8a0d4] hover:bg-[#ffb3c1] p-4 text-white font-bold rounded-lg transition-colors w-full">
-                admin
-              </button>
-            </Link>
-          </>
-        ) : (
-          <Link to="/feeding-instructions" className="col-span-2">
-            <button className="bg-[#d4edca] hover:bg-[#ffb3c1] p-4 text-white font-bold rounded-lg transition-colors w-full">
-              feeding instructions
-            </button>
-          </Link>
-        )}
+        <Link to="/feeding-instructions">
+          <button className="bg-[#d4edca] hover:bg-[#ffb3c1] p-4 text-white font-bold rounded-lg transition-colors w-full">
+            feeding instructions
+          </button>
+        </Link>
+        <Link to="/admin">
+          <button className="bg-[#b8a0d4] hover:bg-[#ffb3c1] p-4 text-white font-bold rounded-lg transition-colors w-full">
+            👑 admin
+          </button>
+        </Link>
       </div>
 
-      <h1 className='greeting'>your profile</h1>
+      <h1 className='greeting'>admin dashboard</h1>
 
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-6 py-8">
-        {/* Desktop Layout - 3 columns */}
-        <div className="hidden lg:grid lg:grid-cols-3 gap-8">
-          {/* Left Column - Activity Graph (spans 2 columns) */}
-          <div className="lg:col-span-2 space-y-8">
-            <VolunteerActivityGraph />
-            <Leaderboard />
-          </div>
-
-          {/* Right Column - User Profile */}
-          <div className="lg:col-span-1 space-y-8">
-            <UserProfile />
-            <UserHoursBadge />
-          </div>
-        </div>
-
-        {/* Mobile/Tablet Layout - Stacked */}
-        <div className="lg:hidden space-y-6">
-          <UserProfile />
-          <UserHoursBadge />
-          <VolunteerActivityGraph />
-          <Leaderboard />
-        </div>
+      <div className="max-w-7xl mx-auto px-6 py-8 space-y-8">
+        <AdminPanel />
+        <VolunteerHoursTracker />
       </div>
     </div>
   );
 }
 
-export default YouPage;
+export default AdminPage;

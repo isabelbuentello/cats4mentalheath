@@ -22,6 +22,8 @@ function WeeklyCalendar() {
   const [selectedSlot, setSelectedSlot] = useState(null);
   const [scheduleData, setScheduleData] = useState({});
   const [loading, setLoading] = useState(true);
+  const [isApproved, setIsApproved] = useState(null);
+  const [checkingApproval, setCheckingApproval] = useState(true);
 
   const FEEDING_ZONES = [
     { id: "am_law", time: "am law", location: "Law Buildings", isPM: false },
@@ -156,6 +158,33 @@ function WeeklyCalendar() {
 
     fetchSchedule();
   }, [currentWeekStart]);
+  
+  useEffect(() => {
+    const checkApprovalStatus = async () => {
+      const user = auth.currentUser;
+      if (!user) {
+        setIsApproved(false);
+        setCheckingApproval(false);
+        return;
+      }
+
+      try {
+        const userDoc = await getDoc(doc(db, 'users', user.uid));
+        if (userDoc.exists()) {
+          setIsApproved(userDoc.data().isApproved || false);
+        } else {
+          setIsApproved(false);
+        }
+      } catch (error) {
+        console.error('Error checking approval:', error);
+        setIsApproved(false);
+      } finally {
+        setCheckingApproval(false);
+      }
+    };
+
+    checkApprovalStatus();
+  }, []);
 
   // Get slots for a specific day
   const getSlots = (day) => {
@@ -171,10 +200,53 @@ function WeeklyCalendar() {
   };
   // Handle slot click
   const handleSlotClick = (day, slot) => {
+    if (!isApproved) {
+      alert('⚠️ Only approved volunteers can sign up for feeding slots.\n\nComplete our training to get approved!');
+      return;
+    }
+    
     setSelectedDay(day);
     setSelectedSlot(slot);
     setIsModalOpen(true);
   };
+
+  const logVolunteerShift = async (user, day, slot) => {
+  try {
+    // Create unique shift ID
+    const shiftId = `${getDayId(day)}_${slot.id}`;
+    
+    // Determine hours based on shift type (0.5 hours = 30 minutes)
+    const hours = 0.5;
+    
+    // Create shift log
+    const shiftLogRef = doc(
+      db,
+      'volunteer-logs',
+      user.uid,
+      'shifts',
+      shiftId
+    );
+    
+    await setDoc(shiftLogRef, {
+      date: getDayId(day),
+      location: slot.location,
+      timeSlot: slot.id,
+      timeLabel: slot.time,
+      signedUpAt: new Date(),
+      status: 'pending',
+      verifiedBy: null,
+      verifiedAt: null,
+      hours: hours,
+      userEmail: user.email,
+      userName: user.displayName || user.email.split('@')[0],
+      photoURL: user.photoURL || null
+    });
+    
+    console.log('✓ Shift logged successfully');
+  } catch (error) {
+    console.error('Error logging shift:', error);
+  }
+};
 
   // Handle sign up
   const handleSignUp = async (day, slot) => {
@@ -223,6 +295,7 @@ function WeeklyCalendar() {
       );
 
       console.log("Successfully updated Firebase");
+      await logVolunteerShift(user, day, slot);
 
       // Update local state
       setScheduleData((prev) => ({
@@ -310,6 +383,7 @@ function WeeklyCalendar() {
       alert(`Failed to cancel: ${error.message}`);
     }
   };
+
 
   if (loading) {
     return (

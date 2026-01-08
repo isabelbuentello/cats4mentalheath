@@ -3,7 +3,8 @@ import {
   createUserWithEmailAndPassword,
   signOut
 } from "firebase/auth";
-import { auth } from "./config.js"; // Import the auth service from your config file
+import { doc, setDoc, getDoc } from "firebase/firestore";
+import { auth, db } from "./config.js";
 
 /**
  * Signs a user in with email and password.
@@ -14,10 +15,24 @@ import { auth } from "./config.js"; // Import the auth service from your config 
 export const logIn = async (email, password) => {
   try {
     const userCredential = await signInWithEmailAndPassword(auth, email, password);
-    // Sign-in successful
+    
+    // Check if user document exists, create if it doesn't
+    const userDoc = await getDoc(doc(db, 'users', userCredential.user.uid));
+    if (!userDoc.exists()) {
+      await setDoc(doc(db, 'users', userCredential.user.uid), {
+        email: userCredential.user.email,
+        displayName: userCredential.user.displayName || null,
+        photoURL: userCredential.user.photoURL || null,
+        isApproved: false,
+        isAdmin: false,
+        appliedAt: new Date(),
+        approvedAt: null,
+        approvedBy: null
+      });
+    }
+    
     return { user: userCredential.user, error: null };
   } catch (error) {
-    // Handle errors
     return { user: null, error: error.message };
   }
 };
@@ -31,14 +46,24 @@ export const logIn = async (email, password) => {
 export const signUp = async (email, password) => {
   try {
     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-    // Sign-up successful
+    
+    // Create user document in Firestore
+    await setDoc(doc(db, 'users', userCredential.user.uid), {
+      email: userCredential.user.email,
+      displayName: userCredential.user.displayName || null,
+      photoURL: userCredential.user.photoURL || null,
+      isApproved: false,  // New users need approval
+      isAdmin: false,
+      appliedAt: new Date(),
+      approvedAt: null,
+      approvedBy: null
+    });
+    
     return { user: userCredential.user, error: null };
   } catch (error) {
-    // Handle errors
     return { user: null, error: error.message };
   }
 };
-
 
 export const logOut = () => {
   return signOut(auth);
