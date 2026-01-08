@@ -195,19 +195,19 @@ function VolunteerHoursTracker() {
     <div className="bg-white rounded-xl shadow-lg p-6" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-3xl font-bold">📊 Volunteer Hours Management</h2>
+        <h2 className="text-3xl font-bold"> Volunteer Hours Management</h2>
         <div className="flex gap-2">
           <button
             onClick={exportToCSV}
             className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg transition-colors text-sm"
           >
-            📊 Export Summary
+            Export Summary
           </button>
           <button
             onClick={exportDetailedCSV}
             className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg transition-colors text-sm"
           >
-            📋 Export Details
+            Export Details
           </button>
         </div>
       </div>

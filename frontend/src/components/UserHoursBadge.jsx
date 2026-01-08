@@ -120,7 +120,7 @@ function UserHoursBadge() {
       {hours.total === 0 && (
         <div className="mt-6 text-center py-4 bg-gray-50 rounded-lg">
           <p className="text-gray-600">
-            Sign up for feeding shifts to start earning volunteer hours! 🐱
+            Sign up for feeding shifts to start earning volunteer hours! 
           </p>
         </div>
       )}
@@ -128,7 +128,7 @@ function UserHoursBadge() {
       {hours.total > 0 && (
         <div className="mt-6 text-center py-3 bg-green-50 rounded-lg">
           <p className="text-green-700 font-semibold">
-            Great work! Keep up the amazing volunteering! 🌟
+            Great work! Keep up the amazing volunteering! 
           </p>
         </div>
       )}

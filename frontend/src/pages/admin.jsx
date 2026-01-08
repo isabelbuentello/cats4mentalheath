@@ -89,7 +89,7 @@ function AdminPage() {
         </Link>
         <Link to="/admin">
           <button className="text-2xl text-white font-bold bg-[#b8a0d4] hover:bg-[#ffb3c1] px-6 py-3 rounded-lg transition-colors">
-            👑 admin
+            admin
           </button>
         </Link>
       </div>
@@ -123,7 +123,7 @@ function AdminPage() {
         </Link>
         <Link to="/admin">
           <button className="bg-[#b8a0d4] hover:bg-[#ffb3c1] p-4 text-white font-bold rounded-lg transition-colors w-full">
-            👑 admin
+            admin
           </button>
         </Link>
       </div>
