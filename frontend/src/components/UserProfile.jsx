@@ -4,15 +4,15 @@ import { collection, collectionGroup, getDocs, writeBatch, doc } from 'firebase/
 import { db } from '../firebase/config.js';
 
 // Import cat images
-import darkBrownCat from '../assets/darkbrowncat.png';
-import blackCat from '../assets/blackcat.png';
-import calicoCat from '../assets/calicocat.png';
-import creamCat from '../assets/creamcat.png';
-import grayCat from '../assets/graycat.png';
-import lightBrownCat from '../assets/lightbrowncat.png';
-import orangeCat from '../assets/orangecat.png';
-import tuxedoCat from '../assets/tuxedocat.png';
-import whiteCat from '../assets/whitecat.png';
+import darkbrowncat from '../assets/darkbrowncat.png';
+import blackcat from '../assets/blackcat.png';
+import calicocat from '../assets/calicocat.png';
+import creamcat from '../assets/creamcat.png';
+import graycat from '../assets/graycat.png';
+import lightbrowncat from '../assets/lightbrowncat.png';
+import orangecat from '../assets/orangecat.png';
+import tuxedocat from '../assets/tuxedocat.png';
+import whitecat from '../assets/whitecat.png';
 
 function UserProfile() {
   const auth = getAuth();
@@ -25,15 +25,15 @@ function UserProfile() {
 
   // Available cat avatars
   const catAvatars = [
-    { id: 'darkbrown', src: darkBrownCat, name: 'Dark Brown Cat' },
-    { id: 'black', src: blackCat, name: 'Black Cat' },
-    { id: 'calico', src: calicoCat, name: 'Calico Cat' },
-    { id: 'cream', src: creamCat, name: 'Cream Cat' },
-    { id: 'gray', src: grayCat, name: 'Gray Cat' },
-    { id: 'lightbrown', src: lightBrownCat, name: 'Light Brown Cat' },
-    { id: 'orange', src: orangeCat, name: 'Orange Cat' },
-    { id: 'tuxedo', src: tuxedoCat, name: 'Tuxedo Cat' },
-    { id: 'white', src: whiteCat, name: 'White Cat' },
+    { id: 'darkbrown', src: darkbrowncat, name: 'Dark Brown Cat' },
+    { id: 'black', src: blackcat, name: 'Black Cat' },
+    { id: 'calico', src: calicocat, name: 'Calico Cat' },
+    { id: 'cream', src: creamcat, name: 'Cream Cat' },
+    { id: 'gray', src: graycat, name: 'Gray Cat' },
+    { id: 'lightbrown', src: lightbrowncat, name: 'Light Brown Cat' },
+    { id: 'orange', src: orangecat, name: 'Orange Cat' },
+    { id: 'tuxedo', src: tuxedocat, name: 'Tuxedo Cat' },
+    { id: 'white', src: whitecat, name: 'White Cat' },
   ];
 
   // Update all feeding slots with new profile info
