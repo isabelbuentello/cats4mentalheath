@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { db, auth } from "../firebase/config.js";
-import { collection, doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
+import { collection, doc, getDoc, setDoc, updateDoc, deleteDoc } from "firebase/firestore";
 import DayCard from "./DayCard.jsx";
 import FeedingModal from "./FeedingModal.jsx";
 
@@ -248,6 +248,18 @@ function WeeklyCalendar() {
   }
 };
 
+const deleteVolunteerShift = async (user, day, slot) => {
+  try {
+    const shiftId = `${getDayId(day)}_${slot.id}`;
+    const shiftLogRef = doc(db, 'volunteer-logs', user.uid, 'shifts', shiftId);
+    
+    await deleteDoc(shiftLogRef);
+    console.log('✓ Shift log deleted successfully');
+  } catch (error) {
+    console.error('Error deleting shift log:', error);
+  }
+};
+
   // Handle sign up
   const handleSignUp = async (day, slot) => {
     const user = auth.currentUser;
@@ -369,6 +381,7 @@ function WeeklyCalendar() {
       );
 
       console.log("Successfully cancelled in Firebase");
+      await deleteVolunteerShift(user, day, slot);
 
       // Update local state
       setScheduleData((prev) => ({

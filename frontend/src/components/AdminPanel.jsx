@@ -215,7 +215,7 @@ function AdminPanel() {
                         onClick={() => handleToggleAdmin(user.uid, user.isAdmin)}
                         className="bg-purple-500 hover:bg-purple-600 text-white font-bold py-1 px-3 rounded text-sm transition-colors"
                       >
-                        {user.isAdmin ? '👤 Remove Admin' : '👑 Make Admin'}
+                        {user.isAdmin ? ' Remove Admin' : ' Make Admin'}
                       </button>
                       <button
                         onClick={() => handleReject(user.uid)}
