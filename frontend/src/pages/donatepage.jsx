@@ -18,7 +18,7 @@ function DonatePage() {
         <div className="max-w-3xl w-full bg-white/20 backdrop-blur-sm rounded-3xl p-6 sm:p-8 md:p-12">
           <p className="text-white text-center text-base sm:text-lg md:text-xl mb-8">
             Your donations help us feed and care for the stray cats on our campus. 
-            Every contribution makes a difference! 🐱💕
+            Every contribution makes a difference! 
           </p>
           
           {/* Add your donation button or form here */}

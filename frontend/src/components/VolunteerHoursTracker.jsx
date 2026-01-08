@@ -1,7 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import { collectionGroup, getDocs, doc, updateDoc, getDoc } from 'firebase/firestore';
+import { collectionGroup, getDocs, doc, updateDoc, getDoc , onSnapshot} from 'firebase/firestore';
 import { db, auth } from '../firebase/config.js';
+
 import darkBrownCat from '../assets/darkbrowncat.png';
+import blackCat from '../assets/blackcat.png';
+import calicoCat from '../assets/calicocat.png';
+import creamCat from '../assets/creamcat.png';
+import grayCat from '../assets/graycat.png';
+import lightBrownCat from '../assets/lightbrowncat.png';
+import orangeCat from '../assets/orangecat.png';
+import tuxedoCat from '../assets/tuxedocat.png';
+import whiteCat from '../assets/whitecat.png';
+
+
 
 function VolunteerHoursTracker() {
   const [users, setUsers] = useState([]);
@@ -11,89 +22,118 @@ function VolunteerHoursTracker() {
   const [viewMode, setViewMode] = useState('users'); // 'users' or 'shifts'
   const currentUser = auth.currentUser;
 
+
+  const getCatImageFromPath = (photoURL) => {
+        if (!photoURL) return darkBrownCat; // default
+            const catMap = {
+                'darkbrowncat': darkBrownCat,
+                'blackcat': blackCat,
+                'calicocat': calicoCat,
+                'creamcat': creamCat,
+                'graycat': grayCat,
+                'lightbrowncat': lightBrownCat,
+                'orangecat': orangeCat,
+                'tuxedocat': tuxedoCat,
+                'whitecat': whiteCat
+            };
+
+        const match = photoURL.match(/\/assets\/(\w+)/);
+        if (match && match[1]) {
+            const catName = match[1].toLowerCase();
+            return catMap[catName] || darkBrownCat;
+        }
+        
+        return darkBrownCat;
+    };
+  
+
   useEffect(() => {
-    const checkAdminAndFetch = async () => {
-      if (!currentUser) {
+  const setupListener = async () => {
+    if (!currentUser) {
+      setLoading(false);
+      return;
+    }
+
+    try {
+      // Check if user is admin
+      const userDoc = await getDoc(doc(db, 'users', currentUser.uid));
+      if (!userDoc.exists() || !userDoc.data().isAdmin) {
         setLoading(false);
         return;
       }
-
-      try {
-        const userDoc = await getDoc(doc(db, 'users', currentUser.uid));
-        if (userDoc.exists() && userDoc.data().isAdmin) {
-          setIsAdmin(true);
-          await fetchAllVolunteers();
-        }
-      } catch (error) {
-        console.error('Error:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    checkAdminAndFetch();
-  }, [currentUser]);
-
-  const fetchAllVolunteers = async () => {
-    try {
-      // Get all shifts from all users
-      const shiftsQuery = collectionGroup(db, 'shifts');
-      const shiftsSnapshot = await getDocs(shiftsQuery);
       
-      // Group shifts by user
-      const userShiftsMap = {};
+      setIsAdmin(true);
 
-      shiftsSnapshot.forEach(doc => {
-        const shift = doc.data();
-        const shiftData = {
-          id: doc.id,
-          path: doc.ref.path,
-          ...shift,
-          date: new Date(shift.date),
-          signedUpAt: shift.signedUpAt?.toDate()
-        };
+      // Set up real-time listener on shifts collection
+      const shiftsQuery = collectionGroup(db, 'shifts');
+      
+      const unsubscribe = onSnapshot(shiftsQuery, (snapshot) => {
+        const userShiftsMap = {};
 
-        if (!userShiftsMap[shift.userEmail]) {
-          userShiftsMap[shift.userEmail] = {
-            email: shift.userEmail,
-            name: shift.userName,
-            photoURL: shift.photoURL || null,
-            shifts: [],
-            totalShifts: 0,
-            verifiedShifts: 0,
-            pendingShifts: 0,
-            noShowShifts: 0,
-            verifiedHours: 0,
-            totalPossibleHours: 0
+        snapshot.forEach(doc => {
+          const shift = doc.data();
+          const shiftData = {
+            id: doc.id,
+            path: doc.ref.path,
+            ...shift,
+            date: new Date(shift.date),
+            signedUpAt: shift.signedUpAt?.toDate()
           };
-        }
 
-        userShiftsMap[shift.userEmail].shifts.push(shiftData);
-        userShiftsMap[shift.userEmail].totalShifts++;
-        userShiftsMap[shift.userEmail].totalPossibleHours += shift.hours || 0;
+          if (!userShiftsMap[shift.userEmail]) {
+            userShiftsMap[shift.userEmail] = {
+              email: shift.userEmail,
+              name: shift.userName,
+              photoURL: shift.photoURL || null,
+              shifts: [],
+              totalShifts: 0,
+              verifiedShifts: 0,
+              pendingShifts: 0,
+              noShowShifts: 0,
+              verifiedHours: 0,
+              totalPossibleHours: 0
+            };
+          }
 
-        if (shift.status === 'verified') {
-          userShiftsMap[shift.userEmail].verifiedShifts++;
-          userShiftsMap[shift.userEmail].verifiedHours += shift.hours || 0;
-        } else if (shift.status === 'pending') {
-          userShiftsMap[shift.userEmail].pendingShifts++;
-        } else if (shift.status === 'no-show') {
-          userShiftsMap[shift.userEmail].noShowShifts++;
-        }
+          userShiftsMap[shift.userEmail].shifts.push(shiftData);
+          userShiftsMap[shift.userEmail].totalShifts++;
+          userShiftsMap[shift.userEmail].totalPossibleHours += shift.hours || 0;
+
+          if (shift.status === 'verified') {
+            userShiftsMap[shift.userEmail].verifiedShifts++;
+            userShiftsMap[shift.userEmail].verifiedHours += shift.hours || 0;
+          } else if (shift.status === 'pending') {
+            userShiftsMap[shift.userEmail].pendingShifts++;
+          } else if (shift.status === 'no-show') {
+            userShiftsMap[shift.userEmail].noShowShifts++;
+          }
+        });
+
+        const usersList = Object.values(userShiftsMap);
+        usersList.forEach(user => {
+          user.shifts.sort((a, b) => b.date - a.date);
+        });
+        usersList.sort((a, b) => b.totalShifts - a.totalShifts);
+
+        setUsers(usersList);
+        setLoading(false);
+      }, (error) => {
+        console.error('Error listening to shifts:', error);
+        setLoading(false);
       });
 
-      // Convert to array and sort by total shifts
-      const usersList = Object.values(userShiftsMap);
-      usersList.forEach(user => {
-        user.shifts.sort((a, b) => b.date - a.date);
-      });
-      usersList.sort((a, b) => b.totalShifts - a.totalShifts);
-
-      setUsers(usersList);
+      return unsubscribe;
     } catch (error) {
-      console.error('Error fetching volunteers:', error);
+      console.error('Error setting up listener:', error);
+      setLoading(false);
     }
   };
+
+  const cleanup = setupListener();
+  return () => {
+    cleanup.then(unsubscribe => unsubscribe && unsubscribe());
+  };
+}, [currentUser]);
 
   const handleVerify = async (shift, newStatus) => {
     if (!isAdmin) return;
@@ -250,10 +290,10 @@ function VolunteerHoursTracker() {
                 <div className="flex items-center justify-between">
                   {/* Left: User Info */}
                   <div className="flex items-center gap-3">
-                    <img 
-                      src={user.photoURL || darkBrownCat}
-                      alt={user.name}
-                      className="w-12 h-12 rounded-full object-contain bg-gray-100 border-2 border-gray-300"
+                   <img 
+                    src={getCatImageFromPath(user.photoURL)}
+                    alt={user.name}
+                    className="w-12 h-12 rounded-full object-contain bg-gray-100 border-2 border-gray-300"
                     />
                     <div>
                       <p className="font-bold text-lg">{user.name}</p>

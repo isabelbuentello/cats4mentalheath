@@ -87,39 +87,37 @@ function UserProfile() {
   };
 
   const handleSave = async () => {
-    if (!user) return;
+  if (!user) return;
 
-    setSaving(true);
-    try {
-      // Update Firebase Auth profile
-      await updateProfile(user, {
-        displayName: displayName.trim() || null,
-        photoURL: selectedAvatar
-      });
+  setSaving(true);
+  try {
+    // Update Firebase Auth profile
+    await updateProfile(user, {
+      displayName: displayName.trim() || null,
+      photoURL: selectedAvatar
+    });
 
-      // Update all feeding slots in Firestore
-      const updatedCount = await updateAllFeedingSlots(
-        displayName.trim() || null,
-        selectedAvatar
-      );
+    // Update all feeding slots in Firestore
+    const updatedCount = await updateAllFeedingSlots(
+      displayName.trim() || null,
+      selectedAvatar
+    );
 
-      if (updatedCount > 0) {
-        alert(`Profile updated successfully! 🎉\nUpdated ${updatedCount} feeding slot${updatedCount !== 1 ? 's' : ''}.`);
-      } else {
-        alert('Profile updated successfully! 🎉');
-      }
-      
-      setIsEditing(false);
-      
-      // Reload the page to show updated info everywhere
-      window.location.reload();
-    } catch (error) {
-      console.error('Error updating profile:', error);
-      alert('Failed to update profile. Please try again.');
-    } finally {
-      setSaving(false);
+    if (updatedCount > 0) {
+      alert(`Profile updated successfully! 🎉\nUpdated ${updatedCount} feeding slot${updatedCount !== 1 ? 's' : ''}.`);
+    } else {
+      alert('Profile updated successfully! 🎉');
     }
-  };
+    
+    setIsEditing(false);
+    
+  } catch (error) {
+    console.error('Error updating profile:', error);
+    alert('Failed to update profile. Please try again.');
+  } finally {
+    setSaving(false);
+  }
+};
 
   const handleCancel = () => {
     setDisplayName(user?.displayName || '');

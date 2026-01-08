@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { collectionGroup, getDocs } from 'firebase/firestore';
+import { collectionGroup, getDocs, onSnapshot } from 'firebase/firestore';
 import { db, auth } from '../firebase/config.js';
 
 function VolunteerActivityGraph() {
@@ -72,72 +72,76 @@ function VolunteerActivityGraph() {
   }, []);
 
   useEffect(() => {
-    const fetchActivityData = async () => {
-      const currentUser = auth.currentUser;
+    const currentUser = auth.currentUser;
       
-      if (!currentUser) {
-        setLoading(false);
-        return;
-      }
+    if (!currentUser) {
+      setLoading(false);
+      return;
+    }
 
-      try {
-        const activity = {};
-        let total = 0;
-        const userFeedings = {};
+    // 1. Set up the Real-time Listener
+    const daysQuery = collectionGroup(db, 'days');
 
-        // Use collectionGroup to get ALL 'days' documents
-        const daysQuery = collectionGroup(db, 'days');
-        const daysSnapshot = await getDocs(daysQuery);
+    // This runs immediately AND whenever the database changes
+    const unsubscribe = onSnapshot(daysQuery, (snapshot) => {
+      const activity = {};
+      let total = 0;
+      const userFeedings = {};
 
-        daysSnapshot.forEach((dayDoc) => {
-          const dayData = dayDoc.data();
-          const slots = dayData.slots || {};
-          const dayId = dayDoc.id;
+      snapshot.forEach((dayDoc) => {
+        const dayData = dayDoc.data();
+        const slots = dayData.slots || {};
+        const dayId = dayDoc.id;
 
-          // Count slots signed up by this user
-          let dayCount = 0;
-          Object.values(slots).forEach(slot => {
-            if (slot && slot.email === currentUser.email) {
-              dayCount++;
-              total++;
+        // Count slots signed up by this user
+        let dayCount = 0;
+        Object.values(slots).forEach(slot => {
+          // IMPORTANT CHECK:
+          // When a slot is cancelled, its email becomes null.
+          // This ensures we stop counting it immediately.
+          if (slot && slot.email === currentUser.email) {
+            dayCount++;
+            total++;
+          }
+          
+          // Track all users' feeding counts for ranking
+          if (slot && slot.email) {
+            if (!userFeedings[slot.email]) {
+              userFeedings[slot.email] = 0;
             }
-            
-            // Track all users' feeding counts for ranking
-            if (slot && slot.email) {
-              if (!userFeedings[slot.email]) {
-                userFeedings[slot.email] = 0;
-              }
-              userFeedings[slot.email]++;
-            }
-          });
-
-          if (dayCount > 0) {
-            activity[dayId] = dayCount;
+            userFeedings[slot.email]++;
           }
         });
 
-        // Calculate user's rank
-        const sortedUsers = Object.entries(userFeedings)
-          .sort(([, a], [, b]) => b - a);
-        
-        const currentUserIndex = sortedUsers.findIndex(([email]) => email === currentUser.email);
-        
-        if (currentUserIndex !== -1) {
-          setUserRank(currentUserIndex + 1);
-          setTotalUsers(sortedUsers.length);
+        if (dayCount > 0) {
+          activity[dayId] = dayCount;
         }
+      });
 
-        setActivityData(activity);
-        setTotalFeedings(total);
-        setLoading(false);
-      } catch (error) {
-        console.error('Error fetching activity data:', error);
-        setLoading(false);
+      // Calculate user's rank
+      const sortedUsers = Object.entries(userFeedings)
+        .sort(([, a], [, b]) => b - a);
+      
+      const currentUserIndex = sortedUsers.findIndex(([email]) => email === currentUser.email);
+      
+      if (currentUserIndex !== -1) {
+        setUserRank(currentUserIndex + 1);
+        setTotalUsers(sortedUsers.length);
       }
-    };
 
-    fetchActivityData();
-  }, []);
+      setActivityData(activity);
+      setTotalFeedings(total);
+      setLoading(false);
+    }, (error) => {
+      console.error('Error listening to activity data:', error);
+      setLoading(false);
+    });
+
+    // 2. Cleanup function
+    // This stops the listener when the component unmounts
+    return () => unsubscribe();
+
+  }, []); // Run on mount
 
   // Navigate semesters
   const goToPreviousSemester = () => {
