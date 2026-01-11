@@ -2,12 +2,56 @@ import React, { useState, useEffect } from 'react';
 import { collection, getDocs, doc, updateDoc, getDoc } from 'firebase/firestore';
 import { db, auth } from '../firebase/config.js';
 import darkBrownCat from '../assets/darkbrowncat.png';
+import blackCat from '../assets/blackcat.png';
+import calicoCat from '../assets/calicocat.png';
+import creamCat from '../assets/creamcat.png';
+import grayCat from '../assets/graycat.png';
+import lightBrownCat from '../assets/lightbrowncat.png';
+import orangeCat from '../assets/orangecat.png';
+import tuxedoCat from '../assets/tuxedocat.png';
+import whiteCat from '../assets/whitecat.png';
 
 function AdminPanel() {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [showPending, setShowPending] = useState(true);
+  const [showApproved, setShowApproved] = useState(true);
   const currentUser = auth.currentUser;
+
+  // Helper to convert stored path to actual image
+  const getCatImageFromPath = (photoURL) => {
+    if (!photoURL) return darkBrownCat;
+    
+    const catMap = {
+      'darkbrowncat': darkBrownCat,
+      'darkbrown': darkBrownCat,
+      'blackcat': blackCat,
+      'black': blackCat,
+      'calicocat': calicoCat,
+      'calico': calicoCat,
+      'creamcat': creamCat,
+      'cream': creamCat,
+      'graycat': grayCat,
+      'gray': grayCat,
+      'lightbrowncat': lightBrownCat,
+      'lightbrown': lightBrownCat,
+      'orangecat': orangeCat,
+      'orange': orangeCat,
+      'tuxedocat': tuxedoCat,
+      'tuxedo': tuxedoCat,
+      'whitecat': whiteCat,
+      'white': whiteCat
+    };
+
+    const match = photoURL.match(/\/assets\/(\w+)/);
+    if (match && match[1]) {
+      const catName = match[1].toLowerCase();
+      return catMap[catName] || darkBrownCat;
+    }
+    
+    return darkBrownCat;
+  };
 
   useEffect(() => {
     const checkAdmin = async () => {
@@ -70,41 +114,18 @@ function AdminPanel() {
     }
   };
 
-  const handleReject = async (userId) => {
-    if (!confirm('Are you sure you want to revoke approval for this user?')) {
-      return;
-    }
-
+  const handleRoleChange = async (userId, newRole) => {
+    const isAdmin = newRole === 'admin';
+    
     try {
       await updateDoc(doc(db, 'users', userId), {
-        isApproved: false,
-        approvedAt: null,
-        approvedBy: null
+        isAdmin: isAdmin
       });
       
-      alert('User approval revoked. ❌');
       await fetchUsers();
     } catch (error) {
-      console.error('Error rejecting user:', error);
-      alert('Failed to revoke approval.');
-    }
-  };
-
-  const handleToggleAdmin = async (userId, currentAdminStatus) => {
-    if (!confirm(`Are you sure you want to ${currentAdminStatus ? 'remove' : 'grant'} admin privileges?`)) {
-      return;
-    }
-
-    try {
-      await updateDoc(doc(db, 'users', userId), {
-        isAdmin: !currentAdminStatus
-      });
-      
-      alert(`Admin status updated! ${!currentAdminStatus ? '👑' : '👤'}`);
-      await fetchUsers();
-    } catch (error) {
-      console.error('Error updating admin status:', error);
-      alert('Failed to update admin status.');
+      console.error('Error updating role:', error);
+      alert('Failed to update role.');
     }
   };
 
@@ -136,103 +157,103 @@ function AdminPanel() {
   const approvedUsers = users.filter(u => u.isApproved);
 
   return (
-    <div className="bg-white rounded-xl shadow-lg p-6" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>
-      <h2 className="text-3xl font-bold mb-6"> Admin Panel</h2>
+    <div className="bg-white rounded-xl shadow-lg p-4 md:p-6" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>
+      <h2 className="text-2xl md:text-3xl font-bold mb-4 md:mb-6">Admin Panel</h2>
 
       {/* Pending Approvals */}
       <div className="mb-8">
-        <h3 className="text-2xl font-bold mb-4 text-orange-600">
-          Pending Approvals ({pendingUsers.length})
-        </h3>
+        <button
+          onClick={() => setShowPending(!showPending)}
+          className="w-full flex items-center justify-between text-xl md:text-2xl font-bold mb-4 text-orange-600 hover:text-orange-700 transition-colors"
+        >
+          <span>Pending Approvals ({pendingUsers.length})</span>
+          <span className="text-2xl">{showPending ? '▼' : '▶'}</span>
+        </button>
         
-        {pendingUsers.length === 0 ? (
+        {showPending && (
+          <>
+            {pendingUsers.length === 0 ? (
           <p className="text-gray-600 italic">No pending approvals</p>
         ) : (
           <div className="space-y-3">
             {pendingUsers.map(user => (
-              <div key={user.uid} className="border-2 border-orange-300 bg-orange-50 rounded-lg p-4">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
+              <div key={user.uid} className="border-2 border-orange-300 bg-orange-50 rounded-lg p-3 md:p-4">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                  <div className="flex items-center gap-3 min-w-0">
                     <img 
-                      src={user.photoURL || darkBrownCat} 
+                      src={getCatImageFromPath(user.photoURL)} 
                       alt={user.displayName || 'User'}
-                      className="w-12 h-12 rounded-full object-contain bg-white border-2 border-orange-300"
+                      className="w-10 h-10 md:w-12 md:h-12 rounded-full object-contain bg-white border-2 border-orange-300 flex-shrink-0"
                     />
-                    <div>
-                      <p className="font-bold">{user.displayName || 'No Name'}</p>
-                      <p className="text-sm text-gray-600">{user.email}</p>
+                    <div className="min-w-0 flex-1">
+                      <p className="font-bold text-sm md:text-base truncate">{user.displayName || 'No Name'}</p>
+                      <p className="text-xs md:text-sm text-gray-600 truncate">{user.email}</p>
                       <p className="text-xs text-gray-500">
                         Applied: {user.appliedAt ? new Date(user.appliedAt.toDate()).toLocaleDateString() : 'Unknown'}
                       </p>
                     </div>
                   </div>
-                  <div className="flex gap-2">
-                    <button
-                      onClick={() => handleApprove(user.uid)}
-                      className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg transition-colors"
-                    >
-                      ✓ Approve
-                    </button>
-                  </div>
+                  <button
+                    onClick={() => handleApprove(user.uid)}
+                    className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg transition-colors text-sm md:text-base w-full sm:w-auto flex-shrink-0"
+                  >
+                    Approve
+                  </button>
                 </div>
               </div>
             ))}
           </div>
         )}
+          </>
+        )}
       </div>
 
       {/* Approved Users */}
       <div>
-        <h3 className="text-2xl font-bold mb-4 text-green-600">
-          Approved Volunteers ({approvedUsers.length})
-        </h3>
+        <button
+          onClick={() => setShowApproved(!showApproved)}
+          className="w-full flex items-center justify-between text-xl md:text-2xl font-bold mb-4 text-green-600 hover:text-green-700 transition-colors"
+        >
+          <span>Approved Volunteers ({approvedUsers.length})</span>
+          <span className="text-2xl">{showApproved ? '▼' : '▶'}</span>
+        </button>
         
-        <div className="space-y-2 max-h-96 overflow-y-auto">
-          {approvedUsers.map(user => (
-            <div key={user.uid} className="border border-gray-300 rounded-lg p-3">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <img 
-                    src={user.photoURL || darkBrownCat} 
-                    alt={user.displayName || 'User'}
-                    className="w-10 h-10 rounded-full object-contain bg-white border-2 border-gray-300"
-                  />
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <p className="font-bold">{user.displayName || 'No Name'}</p>
-                      {user.isAdmin && <span className="text-xs bg-purple-500 text-white px-2 py-1 rounded">ADMIN</span>}
+        {showApproved && (
+          <div className="space-y-2 max-h-96 overflow-y-auto">
+            {approvedUsers.map(user => (
+              <div key={user.uid} className="border border-gray-300 rounded-lg p-3">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                  <div className="flex items-center gap-3 min-w-0">
+                    <img 
+                      src={getCatImageFromPath(user.photoURL)} 
+                      alt={user.displayName || 'User'}
+                      className="w-10 h-10 rounded-full object-contain bg-white border-2 border-gray-300 flex-shrink-0"
+                    />
+                    <div className="min-w-0 flex-1">
+                      <p className="font-bold text-sm md:text-base">{user.displayName || 'No Name'}</p>
+                      <p className="text-xs md:text-sm text-gray-600 truncate">{user.email}</p>
+                      <p className="text-xs text-gray-500">
+                        Approved: {user.approvedAt ? new Date(user.approvedAt.toDate()).toLocaleDateString() : 'N/A'}
+                      </p>
                     </div>
-                    <p className="text-sm text-gray-600">{user.email}</p>
-                    <p className="text-xs text-gray-500">
-                      Approved: {user.approvedAt ? new Date(user.approvedAt.toDate()).toLocaleDateString() : 'N/A'}
-                    </p>
                   </div>
-                </div>
-                <div className="flex gap-2">
-                  {user.uid !== currentUser.uid && (
-                    <>
-                      <button
-                        onClick={() => handleToggleAdmin(user.uid, user.isAdmin)}
-                        className="bg-purple-500 hover:bg-purple-600 text-white font-bold py-1 px-3 rounded text-sm transition-colors"
-                      >
-                        {user.isAdmin ? ' Remove Admin' : ' Make Admin'}
-                      </button>
-                      <button
-                        onClick={() => handleReject(user.uid)}
-                        className="bg-red-500 hover:bg-red-600 text-white font-bold py-1 px-3 rounded text-sm transition-colors"
-                      >
-                        ✗ Revoke
-                      </button>
-                    </>
-                  )}
-                  {user.uid === currentUser.uid && (
+                  {user.uid !== currentUser.uid ? (
+                    <select
+                      value={user.isAdmin ? 'admin' : 'volunteer'}
+                      onChange={(e) => handleRoleChange(user.uid, e.target.value)}
+                      className="bg-white border-2 border-purple-500 text-purple-700 font-bold py-1 px-2 rounded text-xs md:text-sm focus:outline-none focus:ring-2 focus:ring-purple-400 flex-shrink-0"
+                    >
+                      <option value="volunteer">Approved Volunteer</option>
+                      <option value="admin">Admin</option>
+                    </select>
+                  ) : (
                     <span className="text-sm text-gray-500 italic">(You)</span>
                   )}
                 </div>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );

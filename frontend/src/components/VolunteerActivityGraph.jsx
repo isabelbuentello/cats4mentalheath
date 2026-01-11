@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { collectionGroup, getDocs, onSnapshot } from 'firebase/firestore';
+import { collectionGroup, getDocs, onSnapshot, collection } from 'firebase/firestore';
 import { db, auth } from '../firebase/config.js';
 
 function VolunteerActivityGraph() {
@@ -83,7 +83,11 @@ function VolunteerActivityGraph() {
     const daysQuery = collectionGroup(db, 'days');
 
     // This runs immediately AND whenever the database changes
-    const unsubscribe = onSnapshot(daysQuery, (snapshot) => {
+    const unsubscribe = onSnapshot(daysQuery, async (snapshot) => {
+      // Get valid user emails from the users collection
+      const usersSnapshot = await getDocs(collection(db, 'users'));
+      const validEmails = new Set(usersSnapshot.docs.map(doc => doc.data().email));
+
       const activity = {};
       let total = 0;
       const userFeedings = {};
@@ -96,16 +100,17 @@ function VolunteerActivityGraph() {
         // Count slots signed up by this user
         let dayCount = 0;
         Object.values(slots).forEach(slot => {
-          // IMPORTANT CHECK:
-          // When a slot is cancelled, its email becomes null.
-          // This ensures we stop counting it immediately.
-          if (slot && slot.email === currentUser.email) {
-            dayCount++;
-            total++;
-          }
-          
-          // Track all users' feeding counts for ranking
-          if (slot && slot.email) {
+          // IMPORTANT CHECKS:
+          // 1. When a slot is cancelled, its email becomes null.
+          // 2. Only count slots from users that still exist in the users collection
+          if (slot && slot.email && validEmails.has(slot.email)) {
+            // Count for current user
+            if (slot.email === currentUser.email) {
+              dayCount++;
+              total++;
+            }
+            
+            // Track all valid users' feeding counts for ranking
             if (!userFeedings[slot.email]) {
               userFeedings[slot.email] = 0;
             }

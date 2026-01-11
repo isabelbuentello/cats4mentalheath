@@ -18,22 +18,57 @@ function UserProfile() {
   const auth = getAuth();
   const user = auth.currentUser;
 
+  // Helper to convert stored path to actual image
+  const getCatImageFromPath = (photoURL) => {
+    if (!photoURL) return darkbrowncat;
+    
+    const catMap = {
+      'darkbrowncat': darkbrowncat,
+      'darkbrown': darkbrowncat,
+      'blackcat': blackcat,
+      'black': blackcat,
+      'calicocat': calicocat,
+      'calico': calicocat,
+      'creamcat': creamcat,
+      'cream': creamcat,
+      'graycat': graycat,
+      'gray': graycat,
+      'lightbrowncat': lightbrowncat,
+      'lightbrown': lightbrowncat,
+      'orangecat': orangecat,
+      'orange': orangecat,
+      'tuxedocat': tuxedocat,
+      'tuxedo': tuxedocat,
+      'whitecat': whitecat,
+      'white': whitecat
+    };
+
+    // Handle /assets/catname.png format
+    const match = photoURL.match(/\/assets\/(\w+)/);
+    if (match && match[1]) {
+      const catName = match[1].toLowerCase();
+      return catMap[catName] || darkbrowncat;
+    }
+    
+    return darkbrowncat;
+  };
+
   const [isEditing, setIsEditing] = useState(false);
   const [displayName, setDisplayName] = useState(user?.displayName || '');
-  const [selectedAvatar, setSelectedAvatar] = useState(user?.photoURL || darkBrownCat);
+  const [selectedAvatar, setSelectedAvatar] = useState(user?.photoURL || "/assets/darkbrowncat.png");
   const [saving, setSaving] = useState(false);
 
   // Available cat avatars
   const catAvatars = [
-    { id: 'darkbrown', src: darkbrowncat, name: 'Dark Brown Cat' },
-    { id: 'black', src: blackcat, name: 'Black Cat' },
-    { id: 'calico', src: calicocat, name: 'Calico Cat' },
-    { id: 'cream', src: creamcat, name: 'Cream Cat' },
-    { id: 'gray', src: graycat, name: 'Gray Cat' },
-    { id: 'lightbrown', src: lightbrowncat, name: 'Light Brown Cat' },
-    { id: 'orange', src: orangecat, name: 'Orange Cat' },
-    { id: 'tuxedo', src: tuxedocat, name: 'Tuxedo Cat' },
-    { id: 'white', src: whitecat, name: 'White Cat' },
+    { id: 'darkbrown', src: darkbrowncat, name: 'Dark Brown Cat', path: '/assets/darkbrowncat.png' },
+    { id: 'black', src: blackcat, name: 'Black Cat', path: '/assets/blackcat.png' },
+    { id: 'calico', src: calicocat, name: 'Calico Cat', path: '/assets/calicocat.png' },
+    { id: 'cream', src: creamcat, name: 'Cream Cat', path: '/assets/creamcat.png' },
+    { id: 'gray', src: graycat, name: 'Gray Cat', path: '/assets/graycat.png' },
+    { id: 'lightbrown', src: lightbrowncat, name: 'Light Brown Cat', path: '/assets/lightbrowncat.png' },
+    { id: 'orange', src: orangecat, name: 'Orange Cat', path: '/assets/orangecat.png' },
+    { id: 'tuxedo', src: tuxedocat, name: 'Tuxedo Cat', path: '/assets/tuxedocat.png' },
+    { id: 'white', src: whitecat, name: 'White Cat', path: '/assets/whitecat.png' },
   ];
 
   // Update all feeding slots with new profile info
@@ -121,7 +156,7 @@ function UserProfile() {
 
   const handleCancel = () => {
     setDisplayName(user?.displayName || '');
-    setSelectedAvatar(user?.photoURL || darkBrownCat);
+    setSelectedAvatar(user?.photoURL || "/assets/darkbrowncat.png");
     setIsEditing(false);
   };
 
@@ -140,7 +175,7 @@ function UserProfile() {
         <div className="relative mb-4">
           <div className="w-32 h-32 rounded-full bg-white flex items-center justify-center overflow-hidden border-4 border-purple-300">
             <img 
-              src={selectedAvatar || darkBrownCat} 
+              src={getCatImageFromPath(selectedAvatar)} 
               alt="Profile" 
               className="w-full h-full object-contain"
             />
@@ -160,9 +195,9 @@ function UserProfile() {
               {catAvatars.map((avatar) => (
                 <div
                   key={avatar.id}
-                  onClick={() => setSelectedAvatar(avatar.src)}
+                  onClick={() => setSelectedAvatar(avatar.path)}
                   className={`cursor-pointer rounded-full transition-all ${
-                    selectedAvatar === avatar.src
+                    selectedAvatar === avatar.path
                       ? 'ring-4 ring-purple-500 bg-white'
                       : 'hover:ring-2 hover:ring-purple-300 bg-white'
                   }`}

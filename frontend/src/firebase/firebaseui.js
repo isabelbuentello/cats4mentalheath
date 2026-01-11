@@ -4,6 +4,9 @@ import { GoogleAuthProvider, EmailAuthProvider } from 'firebase/auth';
 import { doc, setDoc, getDoc } from 'firebase/firestore';
 import 'firebaseui/dist/firebaseui.css';
 
+// Default avatar path
+const DEFAULT_AVATAR = "/assets/darkbrowncat.png";
+
 let ui = null;
 
 export const initializeFirebaseUI = () => {
@@ -34,11 +37,11 @@ export const initializeFirebaseUI = () => {
           if (!userDoc.exists()) {
             console.log('Creating user document in Firestore...');
             
-            // Create user document
+            // Create user document with default avatar
             await setDoc(userDocRef, {
               email: user.email,
               displayName: user.displayName || null,
-              photoURL: user.photoURL || null,
+              photoURL: user.photoURL || DEFAULT_AVATAR,
               isApproved: false,  // New users need approval
               isAdmin: false,
               appliedAt: new Date(),

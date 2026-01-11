@@ -6,6 +6,9 @@ import {
 import { doc, setDoc, getDoc } from "firebase/firestore";
 import { auth, db } from "./config.js";
 
+// Default avatar path - use a stable identifier that components can recognize
+const DEFAULT_AVATAR = "/assets/darkbrowncat.png";
+
 /**
  * Signs a user in with email and password.
  * @param {string} email
@@ -22,7 +25,7 @@ export const logIn = async (email, password) => {
       await setDoc(doc(db, 'users', userCredential.user.uid), {
         email: userCredential.user.email,
         displayName: userCredential.user.displayName || null,
-        photoURL: userCredential.user.photoURL || null,
+        photoURL: userCredential.user.photoURL || DEFAULT_AVATAR,
         isApproved: false,
         isAdmin: false,
         appliedAt: new Date(),
@@ -47,11 +50,11 @@ export const signUp = async (email, password) => {
   try {
     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
     
-    // Create user document in Firestore
+    // Create user document in Firestore with default avatar
     await setDoc(doc(db, 'users', userCredential.user.uid), {
       email: userCredential.user.email,
       displayName: userCredential.user.displayName || null,
-      photoURL: userCredential.user.photoURL || null,
+      photoURL: userCredential.user.photoURL || DEFAULT_AVATAR,
       isApproved: false,  // New users need approval
       isAdmin: false,
       appliedAt: new Date(),

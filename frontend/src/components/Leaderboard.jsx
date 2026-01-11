@@ -1,12 +1,54 @@
 import React, { useState, useEffect } from 'react';
-import { collectionGroup, getDocs } from 'firebase/firestore';
+import { collectionGroup, getDocs, collection } from 'firebase/firestore';
 import { db, auth } from '../firebase/config.js';
 import darkBrownCat from '../assets/darkbrowncat.png';
+import blackCat from '../assets/blackcat.png';
+import calicoCat from '../assets/calicocat.png';
+import creamCat from '../assets/creamcat.png';
+import grayCat from '../assets/graycat.png';
+import lightBrownCat from '../assets/lightbrowncat.png';
+import orangeCat from '../assets/orangecat.png';
+import tuxedoCat from '../assets/tuxedocat.png';
+import whiteCat from '../assets/whitecat.png';
 
 function Leaderboard() {
   const [leaderboardData, setLeaderboardData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [currentUserRank, setCurrentUserRank] = useState(null);
+
+  // Helper to convert stored path to actual image
+  const getCatImageFromPath = (photoURL) => {
+    if (!photoURL) return darkBrownCat;
+    
+    const catMap = {
+      'darkbrowncat': darkBrownCat,
+      'darkbrown': darkBrownCat,
+      'blackcat': blackCat,
+      'black': blackCat,
+      'calicocat': calicoCat,
+      'calico': calicoCat,
+      'creamcat': creamCat,
+      'cream': creamCat,
+      'graycat': grayCat,
+      'gray': grayCat,
+      'lightbrowncat': lightBrownCat,
+      'lightbrown': lightBrownCat,
+      'orangecat': orangeCat,
+      'orange': orangeCat,
+      'tuxedocat': tuxedoCat,
+      'tuxedo': tuxedoCat,
+      'whitecat': whiteCat,
+      'white': whiteCat
+    };
+
+    const match = photoURL.match(/\/assets\/(\w+)/);
+    if (match && match[1]) {
+      const catName = match[1].toLowerCase();
+      return catMap[catName] || darkBrownCat;
+    }
+    
+    return darkBrownCat;
+  };
 
   useEffect(() => {
     const fetchLeaderboard = async () => {
@@ -35,7 +77,7 @@ function Leaderboard() {
                 userFeedings[slot.email] = {
                   email: slot.email,
                   name: slot.volunteer || slot.email.split('@')[0],
-                  photoURL: slot.photoURL || darkBrownCat,
+                  photoURL: slot.photoURL || "/assets/darkbrowncat.png",
                   count: 0
                 };
               }
@@ -44,8 +86,13 @@ function Leaderboard() {
           });
         });
 
-        // Convert to array and sort by count (descending)
+        // Get all valid users from the users collection
+        const usersSnapshot = await getDocs(collection(db, 'users'));
+        const validEmails = new Set(usersSnapshot.docs.map(doc => doc.data().email));
+
+        // Filter to only include users that still exist in the users collection
         const leaderboardArray = Object.values(userFeedings)
+          .filter(user => validEmails.has(user.email))
           .sort((a, b) => b.count - a.count)
           .map((user, index) => ({
             ...user,
@@ -204,7 +251,7 @@ function Leaderboard() {
                 {/* Avatar */}
                 <div className="w-10 h-10 rounded-full bg-white border-2 border-gray-300 flex items-center justify-center overflow-hidden">
                   <img 
-                    src={user.photoURL || darkBrownCat} 
+                    src={getCatImageFromPath(user.photoURL)} 
                     alt={user.name}
                     className="w-full h-full object-contain"
                   />

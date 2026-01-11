@@ -243,20 +243,20 @@ function VolunteerHoursTracker() {
   };
 
   return (
-    <div className="bg-white rounded-xl shadow-lg p-6" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>
+    <div className="bg-white rounded-xl shadow-lg p-4 md:p-6" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>
       {/* Header */}
-      <div className="flex items-center justify-between mb-6">
-        <h2 className="text-3xl font-bold"> Volunteer Hours Management</h2>
-        <div className="flex gap-2">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4 md:mb-6">
+        <h2 className="text-xl md:text-2xl lg:text-3xl font-bold">Volunteer Hours Management</h2>
+        <div className="flex gap-2 flex-wrap">
           <button
             onClick={exportToCSV}
-            className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg transition-colors text-sm"
+            className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-3 md:px-4 rounded-lg transition-colors text-xs md:text-sm flex-1 sm:flex-none"
           >
             Export Summary
           </button>
           <button
             onClick={exportDetailedCSV}
-            className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg transition-colors text-sm"
+            className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-3 md:px-4 rounded-lg transition-colors text-xs md:text-sm flex-1 sm:flex-none"
           >
             Export Details
           </button>
@@ -264,25 +264,25 @@ function VolunteerHoursTracker() {
       </div>
 
       {/* Overall Stats */}
-      <div className="grid grid-cols-2 md:grid-cols-5 gap-3 mb-6">
-        <div className="bg-purple-100 rounded-lg p-3 text-center">
-          <p className="text-2xl font-bold text-purple-700">{totalStats.totalVolunteers}</p>
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2 md:gap-3 mb-4 md:mb-6">
+        <div className="bg-purple-100 rounded-lg p-2 md:p-3 text-center">
+          <p className="text-xl md:text-2xl font-bold text-purple-700">{totalStats.totalVolunteers}</p>
           <p className="text-xs text-purple-700">Volunteers</p>
         </div>
-        <div className="bg-blue-100 rounded-lg p-3 text-center">
-          <p className="text-2xl font-bold text-blue-700">{totalStats.totalShifts}</p>
+        <div className="bg-blue-100 rounded-lg p-2 md:p-3 text-center">
+          <p className="text-xl md:text-2xl font-bold text-blue-700">{totalStats.totalShifts}</p>
           <p className="text-xs text-blue-700">Total Shifts</p>
         </div>
-        <div className="bg-yellow-100 rounded-lg p-3 text-center">
-          <p className="text-2xl font-bold text-yellow-700">{totalStats.totalPending}</p>
+        <div className="bg-yellow-100 rounded-lg p-2 md:p-3 text-center">
+          <p className="text-xl md:text-2xl font-bold text-yellow-700">{totalStats.totalPending}</p>
           <p className="text-xs text-yellow-700">Pending</p>
         </div>
-        <div className="bg-green-100 rounded-lg p-3 text-center">
-          <p className="text-2xl font-bold text-green-700">{totalStats.totalVerified}</p>
+        <div className="bg-green-100 rounded-lg p-2 md:p-3 text-center">
+          <p className="text-xl md:text-2xl font-bold text-green-700">{totalStats.totalVerified}</p>
           <p className="text-xs text-green-700">Verified</p>
         </div>
-        <div className="bg-pink-100 rounded-lg p-3 text-center">
-          <p className="text-2xl font-bold text-pink-700">{totalStats.totalHours.toFixed(1)}</p>
+        <div className="bg-pink-100 rounded-lg p-2 md:p-3 text-center col-span-2 md:col-span-1">
+          <p className="text-xl md:text-2xl font-bold text-pink-700">{totalStats.totalHours.toFixed(1)}</p>
           <p className="text-xs text-pink-700">Total Hours</p>
         </div>
       </div>
@@ -290,40 +290,40 @@ function VolunteerHoursTracker() {
       {/* Volunteers List */}
       {!selectedUser ? (
         <div>
-          <h3 className="text-xl font-bold mb-4">Volunteers</h3>
-          <div className="space-y-3 max-h-96 overflow-y-auto">
+          <h3 className="text-lg md:text-xl font-bold mb-3 md:mb-4">Volunteers</h3>
+          <div className="space-y-2 md:space-y-3 max-h-96 overflow-y-auto">
             {users.map(user => (
               <div
                 key={user.email}
-                className="border-2 border-gray-200 rounded-lg p-4 hover:border-purple-400 transition-colors cursor-pointer"
+                className="border-2 border-gray-200 rounded-lg p-3 md:p-4 hover:border-purple-400 transition-colors cursor-pointer"
                 onClick={() => setSelectedUser(user)}
               >
-                <div className="flex items-center justify-between">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                   {/* Left: User Info */}
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-3 min-w-0">
                    <img 
                     src={getCatImageFromPath(user.photoURL)}
                     alt={user.name}
-                    className="w-12 h-12 rounded-full object-contain bg-gray-100 border-2 border-gray-300"
+                    className="w-10 h-10 md:w-12 md:h-12 rounded-full object-contain bg-gray-100 border-2 border-gray-300 flex-shrink-0"
                     />
-                    <div>
-                      <p className="font-bold text-lg">{user.name}</p>
-                      <p className="text-sm text-gray-600">{user.email}</p>
+                    <div className="min-w-0 flex-1">
+                      <p className="font-bold text-sm md:text-base lg:text-lg truncate">{user.name}</p>
+                      <p className="text-xs md:text-sm text-gray-600 truncate">{user.email}</p>
                     </div>
                   </div>
 
                   {/* Right: Stats */}
-                  <div className="flex gap-6">
+                  <div className="flex gap-4 md:gap-6 justify-around sm:justify-end">
                     <div className="text-center">
-                      <p className="text-2xl font-bold text-purple-600">{user.verifiedHours.toFixed(1)}</p>
+                      <p className="text-lg md:text-xl lg:text-2xl font-bold text-purple-600">{user.verifiedHours.toFixed(1)}</p>
                       <p className="text-xs text-gray-600">Hours</p>
                     </div>
                     <div className="text-center">
-                      <p className="text-2xl font-bold text-blue-600">{user.totalShifts}</p>
+                      <p className="text-lg md:text-xl lg:text-2xl font-bold text-blue-600">{user.totalShifts}</p>
                       <p className="text-xs text-gray-600">Shifts</p>
                     </div>
                     <div className="text-center">
-                      <p className="text-2xl font-bold text-yellow-600">{user.pendingShifts}</p>
+                      <p className="text-lg md:text-xl lg:text-2xl font-bold text-yellow-600">{user.pendingShifts}</p>
                       <p className="text-xs text-gray-600">Pending</p>
                     </div>
                   </div>
@@ -335,67 +335,65 @@ function VolunteerHoursTracker() {
       ) : (
         /* Individual User View */
         <div>
-          <div className="flex items-center justify-between mb-6">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4 md:mb-6">
             <button
               onClick={() => setSelectedUser(null)}
-              className="text-purple-600 hover:text-purple-700 font-bold"
+              className="text-purple-600 hover:text-purple-700 font-bold text-sm md:text-base"
             >
               ← Back to All Volunteers
             </button>
             <div className="flex items-center gap-3">
               <img 
-                src={selectedUser.photoURL || darkBrownCat}
+                src={getCatImageFromPath(selectedUser.photoURL)}
                 alt={selectedUser.name}
-                className="w-12 h-12 rounded-full object-contain bg-gray-100 border-2 border-purple-300"
+                className="w-10 h-10 md:w-12 md:h-12 rounded-full object-contain bg-gray-100 border-2 border-purple-300"
               />
-              <div>
-                <p className="font-bold text-xl">{selectedUser.name}</p>
-                <p className="text-sm text-gray-600">{selectedUser.email}</p>
+              <div className="min-w-0">
+                <p className="font-bold text-base md:text-lg lg:text-xl truncate">{selectedUser.name}</p>
+                <p className="text-xs md:text-sm text-gray-600 truncate">{selectedUser.email}</p>
               </div>
             </div>
           </div>
 
           {/* User Stats */}
-          <div className="grid grid-cols-4 gap-3 mb-6">
-            <div className="bg-purple-100 rounded-lg p-3 text-center">
-              <p className="text-3xl font-bold text-purple-700">{selectedUser.verifiedHours.toFixed(1)}</p>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-3 mb-4 md:mb-6">
+            <div className="bg-purple-100 rounded-lg p-2 md:p-3 text-center">
+              <p className="text-xl md:text-2xl lg:text-3xl font-bold text-purple-700">{selectedUser.verifiedHours.toFixed(1)}</p>
               <p className="text-xs text-purple-700">Verified Hours</p>
             </div>
-            <div className="bg-green-100 rounded-lg p-3 text-center">
-              <p className="text-3xl font-bold text-green-700">{selectedUser.verifiedShifts}</p>
+            <div className="bg-green-100 rounded-lg p-2 md:p-3 text-center">
+              <p className="text-xl md:text-2xl lg:text-3xl font-bold text-green-700">{selectedUser.verifiedShifts}</p>
               <p className="text-xs text-green-700">Completed</p>
             </div>
-            <div className="bg-yellow-100 rounded-lg p-3 text-center">
-              <p className="text-3xl font-bold text-yellow-700">{selectedUser.pendingShifts}</p>
+            <div className="bg-yellow-100 rounded-lg p-2 md:p-3 text-center">
+              <p className="text-xl md:text-2xl lg:text-3xl font-bold text-yellow-700">{selectedUser.pendingShifts}</p>
               <p className="text-xs text-yellow-700">Pending</p>
             </div>
-            <div className="bg-red-100 rounded-lg p-3 text-center">
-              <p className="text-3xl font-bold text-red-700">{selectedUser.noShowShifts}</p>
+            <div className="bg-red-100 rounded-lg p-2 md:p-3 text-center">
+              <p className="text-xl md:text-2xl lg:text-3xl font-bold text-red-700">{selectedUser.noShowShifts}</p>
               <p className="text-xs text-red-700">No-Shows</p>
             </div>
           </div>
 
           {/* User Shifts Table */}
           <div className="overflow-x-auto max-h-96 overflow-y-auto border rounded-lg">
-            <table className="w-full">
+            <table className="w-full min-w-[500px]">
               <thead className="bg-gray-100 sticky top-0">
                 <tr>
-                  <th className="p-3 text-left">Date</th>
-                  <th className="p-3 text-left">Location</th>
-                  <th className="p-3 text-left">Time</th>
-                  <th className="p-3 text-left">Hours</th>
-                  <th className="p-3 text-left">Status</th>
-                  <th className="p-3 text-left">Actions</th>
+                  <th className="p-2 md:p-3 text-left text-xs md:text-sm">Date</th>
+                  <th className="p-2 md:p-3 text-left text-xs md:text-sm">Time</th>
+                  <th className="p-2 md:p-3 text-left text-xs md:text-sm">Hours</th>
+                  <th className="p-2 md:p-3 text-left text-xs md:text-sm">Status</th>
+                  <th className="p-2 md:p-3 text-left text-xs md:text-sm">Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {selectedUser.shifts.map(shift => (
                   <tr key={shift.id} className="border-b hover:bg-gray-50">
-                    <td className="p-3">{shift.date.toLocaleDateString()}</td>
-                    <td className="p-3">{shift.location}</td>
-                    <td className="p-3">{shift.timeLabel}</td>
-                    <td className="p-3">{shift.hours}h</td>
-                    <td className="p-3">
+                    <td className="p-2 md:p-3 text-xs md:text-sm">{shift.date.toLocaleDateString()}</td>
+                    <td className="p-2 md:p-3 text-xs md:text-sm">{shift.timeLabel}</td>
+                    <td className="p-2 md:p-3 text-xs md:text-sm">{shift.hours}h</td>
+                    <td className="p-2 md:p-3">
                       <span className={`px-2 py-1 rounded text-xs font-bold ${
                         shift.status === 'verified' ? 'bg-green-100 text-green-700' :
                         shift.status === 'no-show' ? 'bg-red-100 text-red-700' :
@@ -404,19 +402,19 @@ function VolunteerHoursTracker() {
                         {shift.status.toUpperCase()}
                       </span>
                     </td>
-                    <td className="p-3">
+                    <td className="p-2 md:p-3">
                       {shift.status === 'pending' ? (
                         <div className="flex gap-1">
                           <button
                             onClick={() => handleVerify(shift, 'verified')}
-                            className="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded text-sm transition-colors"
+                            className="bg-green-500 hover:bg-green-600 text-white px-2 md:px-3 py-1 rounded text-xs md:text-sm transition-colors"
                             title="Mark as completed"
                           >
                             ✓
                           </button>
                           <button
                             onClick={() => handleVerify(shift, 'no-show')}
-                            className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm transition-colors"
+                            className="bg-red-500 hover:bg-red-600 text-white px-2 md:px-3 py-1 rounded text-xs md:text-sm transition-colors"
                             title="Mark as no-show"
                           >
                             ✗
@@ -425,7 +423,7 @@ function VolunteerHoursTracker() {
                       ) : (
                         <button
                           onClick={() => handleVerify(shift, 'pending')}
-                          className="bg-gray-400 hover:bg-gray-500 text-white px-3 py-1 rounded text-sm transition-colors"
+                          className="bg-gray-400 hover:bg-gray-500 text-white px-2 md:px-3 py-1 rounded text-xs md:text-sm transition-colors"
                           title="Reset to pending"
                         >
                           ↺
