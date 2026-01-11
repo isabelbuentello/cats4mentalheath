@@ -68,9 +68,11 @@ function MapPage() {
               </Link>
             </div>
 
-        <h1 className= 'greeting'> the mpa map mpa mpam </h1>
-        <p className= 'volun'> blh ahsjdbhjvbhjwejbchsd <br /> 
-        yes yes yes yses eysgjhbsjhcb </p>
+        <h1 className= 'greeting'> map </h1>
+        <p className= 'volun'> here's where you can find the kitties! <br /> 
+        click on a cat to view each zone <br />
+        </p>
+        
         <CatMapWithMarkers />
     </div>
   )
