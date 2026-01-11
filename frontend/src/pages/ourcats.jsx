@@ -13,13 +13,13 @@ function OurCats() {
 
   const db = getFirestore();
 
-  // Your campus cats - add actual cat data here
+  // Your campus cats
   const cats = [
     {
       id: 'druid-zoned',
       name: 'Druid',
-      location: 'Equal Opportunity Building',
-      description: 'Friendly orange tabby who loves chin scratches'
+      location: 'Zone D Parking Lot',
+      description: 'Hard-to-trap orange tabby often spotted on the fence'
     },
     {
       id: 'mrclaude-eob',
@@ -31,43 +31,43 @@ function OurCats() {
       id: 'artificer-zoned',
       name: 'Artificer',
       location: 'Zone D Parking Lot',
-      description: 'Black cat, very shy but sweet'
+      description: "Grumpy looking little tabby with white socks"
     },
     {
       id: 'margot-law',
       name: 'Margot',
-      location: 'Zone D Parking Lot',
-      description: 'Calico with beautiful markings'
+      location: 'Law Center across The Nook',
+      description: 'Almost-social sweet little brown and black tabby'
     },
     {
       id: 'mo-eob',
       name: 'Mo',
-      location: 'Law Center across The Nook',
-      description: 'Striped tabby with lots of energy'
+      location: 'Equal Opportunity Building',
+      description: 'Black spots with white coat and funny mustache'
     },
     {
       id: 'friday-zoned',
       name: 'Friday the 13th',
-      location: 'Law Center across The Nook',
-      description: 'Tortoiseshell cat, loves to nap'
+      location: 'Zone D Parking Lot',
+      description: 'Gorgeous black cat spotted once every blue moon'
     },
     {
       id: 'natasha-lofts',
       name: 'Natasha',
       location: 'Law Center near Lofts',
-      description: 'Gray cat with green eyes'
+      description: 'Brown and white tabby with a considerable amount of children'
     },
     {
       id: 'ruth-lofts',
       name: 'Ruth',
       location: 'Law Center near Lofts',
-      description: 'Large orange tom cat'
+      description: "Polite brown tabby who won't yell at you to hurry up feeding"
     },
     {
       id: 'enid-lawcenter',
       name: 'Enid',
       location: 'Law Center across The Nook',
-      description: 'Large orange tom cat'
+      description: "Grey little tabby with nicely done eyeliner"
     }
   ];
 
@@ -76,31 +76,31 @@ function OurCats() {
     const unsubscribers = [];
 
     cats.forEach((cat) => {
-      // Get the 3 most recent photos for preview
       const photosRef = collection(db, 'cats', cat.id, 'photos');
       const q = query(photosRef, orderBy('uploadedAt', 'desc'), limit(3));
-
+      
       const unsubscribe = onSnapshot(q, (snapshot) => {
-        const photos = snapshot.docs.map(doc => ({
+        const photosData = snapshot.docs.map(doc => ({
           id: doc.id,
           ...doc.data()
-        }));
-
-        setCatPreviewPhotos(prev => ({
-          ...prev,
-          [cat.id]: photos
         }));
 
         setCatPhotoCounts(prev => ({
           ...prev,
           [cat.id]: snapshot.size
         }));
+
+        setCatPreviewPhotos(prev => ({
+          ...prev,
+          [cat.id]: photosData
+        }));
+      }, (error) => {
+        console.error(`Error loading photos for ${cat.name}:`, error);
       });
 
       unsubscribers.push(unsubscribe);
     });
 
-    // Cleanup listeners on unmount
     return () => unsubscribers.forEach(unsub => unsub());
   }, [db]);
 
@@ -175,15 +175,15 @@ function OurCats() {
 
       <h1 className='greeting'>our cats</h1>
 
-      <div className="max-w-6xl mx-auto px-6 py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
         {!selectedCat ? (
           // Cat list view
           <>
-            <p className="text-center text-gray-700 mb-8" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>
-              Click on a cat to view their photo album!
+            <p className="text-center text-gray-700 mb-8 text-lg" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>
+              Click on a cat to view their photo album! 📸
             </p>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
               {cats.map((cat) => {
                 const previewPhotos = catPreviewPhotos[cat.id] || [];
                 const photoCount = catPhotoCounts[cat.id] || 0;
@@ -192,54 +192,75 @@ function OurCats() {
                   <div
                     key={cat.id}
                     onClick={() => setSelectedCat(cat)}
-                    className="bg-white rounded-xl shadow-lg overflow-hidden cursor-pointer hover:shadow-2xl transition-shadow"
+                    className="bg-white rounded-2xl shadow-lg overflow-hidden cursor-pointer hover:shadow-2xl hover:scale-[1.02] transition-all duration-300"
                     style={{ fontFamily: "'Instrument Sans', sans-serif" }}
                   >
-                    {/* Photo preview section */}
-                    {previewPhotos.length > 0 ? (
-                      <div className="grid grid-cols-3 gap-1 h-32 bg-gray-100">
-                        {previewPhotos.map((photo, index) => (
-                          <img
-                            key={photo.id}
-                            src={photo.imageUrl}
-                            alt={`${cat.name} preview ${index + 1}`}
-                            className="w-full h-full object-cover"
-                          />
-                        ))}
-                        {/* Fill empty slots with placeholder */}
-                        {[...Array(3 - previewPhotos.length)].map((_, index) => (
-                          <div
-                            key={`empty-${index}`}
-                            className="w-full h-full bg-gray-200 flex items-center justify-center"
-                          >
-                            <span className="text-gray-400 text-2xl">📷</span>
-                          </div>
-                        ))}
-                      </div>
-                    ) : (
-                      <div className="h-32 bg-gray-100 flex items-center justify-center">
-                        <div className="text-center">
-                          <p className="text-gray-400 text-3xl mb-2">📷</p>
-                          <p className="text-gray-500 text-sm">No photos yet</p>
+                    {/* Photo preview section with overlay name */}
+                    <div className="relative">
+                      {previewPhotos.length > 0 ? (
+                        <div className="grid grid-cols-3 gap-0.5 h-40 sm:h-48 bg-gray-100">
+                          {previewPhotos.map((photo, index) => (
+                            <div key={photo.id} className="relative overflow-hidden">
+                              <img
+                                src={photo.imageUrl}
+                                alt={`${cat.name} preview ${index + 1}`}
+                                className="w-full h-full object-cover"
+                              />
+                            </div>
+                          ))}
+                          {/* Fill empty slots with placeholder */}
+                          {[...Array(Math.max(0, 3 - previewPhotos.length))].map((_, index) => (
+                            <div
+                              key={`empty-${index}`}
+                              className="w-full h-full bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center"
+                            >
+                              <svg className="w-8 h-8 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                              </svg>
+                            </div>
+                          ))}
                         </div>
+                      ) : (
+                        <div className="h-40 sm:h-48 bg-gradient-to-br from-purple-50 to-pink-50 flex items-center justify-center">
+                          <div className="text-center">
+                            <svg className="mx-auto w-16 h-16 text-gray-300 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                            <p className="text-gray-400 text-sm font-medium">No photos yet</p>
+                          </div>
+                        </div>
+                      )}
+                      
+                      {/* Cat name overlay - much more visible */}
+                      <div className="absolute top-0 left-0 right-0 bg-gradient-to-b from-black/70 via-black/50 to-transparent p-3 sm:p-4">
+                        <h3 className="text-white text-xl sm:text-2xl font-bold drop-shadow-lg">
+                          {cat.name}
+                        </h3>
+                        {photoCount > 0 && (
+                          <div className="mt-1 inline-flex items-center gap-1.5 bg-white/90 backdrop-blur-sm px-2.5 py-1 rounded-full">
+                            <svg className="w-4 h-4 text-purple-500" fill="currentColor" viewBox="0 0 20 20">
+                              <path fillRule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clipRule="evenodd" />
+                            </svg>
+                            <span className="text-sm font-bold text-gray-700">
+                              {photoCount}
+                            </span>
+                          </div>
+                        )}
                       </div>
-                    )}
+                    </div>
 
                     {/* Cat info section */}
-                    <div className="p-6">
-                      <h3 className="text-2xl font-bold mb-2">{cat.name}</h3>
-                      <p className="text-gray-600 mb-2">📍 {cat.location}</p>
-                      <p className="text-gray-700 text-sm mb-3">{cat.description}</p>
+                    <div className="p-4 sm:p-5">
+                      <div className="flex items-start gap-2 mb-3">
+                        <svg className="w-5 h-5 text-purple-400 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
+                        </svg>
+                        <p className="text-gray-600 font-medium text-sm sm:text-base">{cat.location}</p>
+                      </div>
+                      <p className="text-gray-700 text-sm mb-4 line-clamp-2">{cat.description}</p>
                       
-                      {/* Photo count */}
-                      {photoCount > 0 && (
-                        <p className="text-sm text-gray-500 mb-3">
-                          {photoCount} {photoCount === 1 ? 'photo' : 'photos'}
-                        </p>
-                      )}
-
-                      <button className="w-full bg-[#d5caed] hover:bg-[#c4b5e0] text-white font-bold py-2 rounded-lg transition-colors">
-                        View Photo Album
+                      <button className="w-full bg-gradient-to-r from-[#d5caed] to-[#c4b5e0] hover:from-[#c4b5e0] hover:to-[#b3a4cf] text-white font-bold py-3 rounded-xl transition-all duration-300 shadow-md hover:shadow-lg">
+                        View Album →
                       </button>
                     </div>
                   </div>
@@ -256,25 +277,51 @@ function OurCats() {
                 setSelectedCat(null);
                 setShowUploadForm(false);
               }}
-              className="mb-6 bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-2 px-4 rounded-lg transition-colors"
+              className="mb-6 inline-flex items-center gap-2 bg-white hover:bg-gray-50 text-gray-700 font-bold py-3 px-5 rounded-xl transition-all shadow-md hover:shadow-lg"
             >
-              ← Back to All Cats
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              </svg>
+              Back to All Cats
             </button>
 
             {/* Cat info header */}
-            <div className="bg-white rounded-xl shadow-lg p-6 mb-8" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>
-              <h2 className="text-3xl font-bold mb-2">{selectedCat.name}</h2>
-              <p className="text-gray-600 mb-2">📍 {selectedCat.location}</p>
-              <p className="text-gray-700">{selectedCat.description}</p>
+            <div className="bg-white rounded-2xl shadow-lg p-5 sm:p-8 mb-8" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>
+              <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+                <div>
+                  <h2 className="text-3xl sm:text-4xl font-bold mb-5 text-gray-800">{selectedCat.name}</h2>
+                  <div className="flex items-center gap-4 mb-4">
+                    <svg className="w-5 h-5 text-purple-400" fill="currentColor" viewBox="0 0 40 40">
+                      <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
+                    </svg>
+                    <p className="text-gray-600 font-medium text-base sm:text-lg">{selectedCat.location}</p>
+                  </div>
+                  <p className="text-gray-700 text-base sm:text-lg">{selectedCat.description}</p>
+                </div>
+              </div>
             </div>
 
             {/* Add photo button */}
             <div className="mb-8">
               <button
                 onClick={() => setShowUploadForm(!showUploadForm)}
-                className="bg-[#d5caed] hover:bg-[#c4b5e0] text-white font-bold py-3 px-6 rounded-lg transition-colors"
+                className="inline-flex items-center gap-2 bg-gradient-to-r from-[#d5caed] to-[#c4b5e0] hover:from-[#c4b5e0] hover:to-[#b3a4cf] text-white font-bold py-3 px-6 rounded-xl transition-all shadow-md hover:shadow-lg"
               >
-                {showUploadForm ? 'Cancel' : '📸 Add Photo'}
+                {showUploadForm ? (
+                  <>
+                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                    Cancel
+                  </>
+                ) : (
+                  <>
+                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                    </svg>
+                    Add Photo
+                  </>
+                )}
               </button>
             </div>
 
