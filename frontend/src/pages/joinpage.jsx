@@ -17,7 +17,7 @@ function joinpage() {
             </a>
         </div>
         <p className= 'volun'> interested in feeding our campus' cats? <br /> 
-        join our discord to sign up for a training! </p>
+        sign up in our member login, and sign up for a training! </p>
     </div>
   )
 }

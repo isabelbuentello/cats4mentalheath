@@ -51,6 +51,14 @@ function NavBar({ startCollapsed = false }) {
               member login
             </Link>
           </li>
+          <li>
+            <Link 
+              to="/events" 
+              className="block text-white text-center text-2xl font-medium px-6 py-3 no-underline hover:bg-[#e7c0e0] rounded-lg transition-colors"
+            >
+              events
+            </Link>
+          </li>
         </ul>
       )}
 
@@ -91,6 +99,13 @@ function NavBar({ startCollapsed = false }) {
               className="block text-white text-right text-2xl font-medium px-6 py-4 no-underline hover:bg-[#e7c0e0] rounded-lg transition-colors"
             >
               member login
+            </Link>
+             <Link 
+              to="/events" 
+              onClick={() => setIsOpen(false)}
+              className="block text-white text-right text-2xl font-medium px-6 py-4 no-underline hover:bg-[#e7c0e0] rounded-lg transition-colors"
+            >
+              events
             </Link>
           </li>
         </ul>

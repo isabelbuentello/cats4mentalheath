@@ -9,6 +9,7 @@ import YouPage from './pages/you'
 import MapPage from './pages/map' 
 import OurCats from './pages/ourcats' 
 import AdminPage from './pages/admin'
+import EventsPage from './pages/events'
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
         <Route path="/donate" element={<DonatePage />} />
         <Route path="/join" element={<JoinPage />} />
         <Route path="/login" element={<LoginPage />} />
+        <Route path="/events" element={<EventsPage />} />
         <Route path="/volunteer" element={<VolunteerPage />} />
         <Route path="/feeding-instructions" element={<FeedingInstructionsPage />} />
         <Route path="/you-page" element={<YouPage />} />
