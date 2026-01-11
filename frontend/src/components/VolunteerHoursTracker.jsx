@@ -135,28 +135,39 @@ function VolunteerHoursTracker() {
   };
 }, [currentUser]);
 
-  const handleVerify = async (shift, newStatus) => {
-    if (!isAdmin) return;
-
-    try {
-      const pathParts = shift.path.split('/');
-      const userId = pathParts[1];
-      const shiftId = pathParts[3];
-      
-      const shiftRef = doc(db, 'volunteer-logs', userId, 'shifts', shiftId);
-      
-      await updateDoc(shiftRef, {
-        status: newStatus,
-        verifiedBy: currentUser.uid,
-        verifiedAt: new Date()
-      });
-      
-      await fetchAllVolunteers();
-    } catch (error) {
-      console.error('Error updating shift:', error);
-      alert('Failed to update shift status.');
+  // Sync selectedUser when users state updates
+  useEffect(() => {
+    if (selectedUser) {
+      const updatedUser = users.find(u => u.email === selectedUser.email);
+      if (updatedUser) {
+        setSelectedUser(updatedUser);
+      }
     }
-  };
+  }, [users]);
+
+  const handleVerify = async (shift, newStatus) => {
+  if (!isAdmin) return;
+
+  try {
+    const pathParts = shift.path.split('/');
+    const userId = pathParts[1];
+    const shiftId = pathParts[3];
+    
+    const shiftRef = doc(db, 'volunteer-logs', userId, 'shifts', shiftId);
+    
+    // Update Firestore - the onSnapshot listener will automatically update the UI
+    await updateDoc(shiftRef, {
+      status: newStatus,
+      verifiedBy: currentUser.uid,
+      verifiedAt: new Date()
+    });
+    
+    console.log('✅ Shift updated successfully');
+  } catch (error) {
+    console.error('Error updating shift:', error);
+    alert('Failed to update shift status.');
+  }
+};
 
   const exportToCSV = () => {
     const headers = ['Volunteer Name', 'Email', 'Total Shifts', 'Verified Shifts', 'Pending Shifts', 'No-Shows', 'Verified Hours', 'Completion Rate'];
