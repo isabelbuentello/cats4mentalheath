@@ -26,22 +26,22 @@ function WeeklyCalendar() {
   const [checkingApproval, setCheckingApproval] = useState(true);
 
   const FEEDING_ZONES = [
-    { id: "am_law", time: "am law", location: "Law Buildings", isPM: false },
-    { id: "pm_law", time: "pm law", location: "Law Buildings", isPM: true },
+    { id: "am_law", time: "AM Law", location: "Law Buildings", isPM: false },
+    { id: "pm_law", time: "PM Law", location: "Law Buildings", isPM: true },
     {
       id: "am_equal_op",
-      time: "am equal op",
+      time: "AM Equal Op.",
       location: "Equal Opportunity Building",
       isPM: false,
     },
     {
       id: "pm_equal_op",
-      time: "pm equal op",
+      time: "PM Equal Op.",
       location: "Equal Opportunity Building",
       isPM: true,
     },
-    { id: "am_zone_d", time: "am zone d", location: "Zone D Lot", isPM: false },
-    { id: "pm_zone_d", time: "pm zone d", location: "Zone D Lot", isPM: true },
+    { id: "am_zone_d", time: "AM Zone D", location: "Zone D Lot", isPM: false },
+    { id: "pm_zone_d", time: "PM Zone D", location: "Zone D Lot", isPM: true },
   ];
 
   // Get week start (Sunday)
@@ -419,7 +419,7 @@ const deleteVolunteerShift = async (user, day, slot) => {
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            backgroundColor: "#c5d7e8",
+            backgroundColor: "transparent",
             color: "white",
             fontSize: "2.5rem",
             fontWeight: "bold",
@@ -437,7 +437,7 @@ const deleteVolunteerShift = async (user, day, slot) => {
             {formatWeekRange()}
           </h2>
           <p className="text-xl sm:text-2xl mt-4 text-white">
-            sign up to feed!!!
+            Sign Up to Feed!
           </p>
 
           {/* Spacer div */}
@@ -453,7 +453,7 @@ const deleteVolunteerShift = async (user, day, slot) => {
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            backgroundColor: "#c5d7e8",
+            backgroundColor: "transparent",
             color: "white",
             fontSize: "2.5rem",
             fontWeight: "bold",

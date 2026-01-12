@@ -147,8 +147,8 @@ function CatMapWithMarkers() {
         {feedingLocations.map((location) => (
           <div 
             key={location.id}
-            className="bg-white rounded-xl shadow-lg p-6 text-center"
-            style={{ fontFamily: "'Instrument Sans', sans-serif" }}
+            style={{ padding: '32px', fontFamily: "'Instrument Sans', sans-serif" }}
+            className="bg-white rounded-xl shadow-lg text-center"
           >
             <h3 className="text-xl font-bold mb-3">{location.name}</h3>
             
@@ -162,8 +162,8 @@ function CatMapWithMarkers() {
                 href={`http://maps.apple.com/?q=${location.position.lat},${location.position.lng}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="bg-gray-800 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors"
-                style={{ color: 'white', textDecoration: 'none' }}
+                style={{ color: 'white', textDecoration: 'none', padding: '12px 24px' }}
+                className="bg-gray-800 text-white rounded-lg hover:bg-gray-700 transition-colors"
               >
                 Apple Maps
               </a>
@@ -171,8 +171,8 @@ function CatMapWithMarkers() {
                 href={`https://maps.google.com/?q=${location.position.lat},${location.position.lng}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
-                style={{ color: 'white', textDecoration: 'none' }}
+                style={{ color: 'white', textDecoration: 'none', padding: '12px 24px' }}
+                className="bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
               >
                 Google Maps
               </a>

@@ -9,18 +9,19 @@ function FeedingModal({ isOpen, onClose, selectedDay, selectedSlot, onSignUp, on
       onClick={onClose}
     >
       <div 
-        className="bg-white rounded-3xl p-8 max-w-sm w-full shadow-xl text-center flex flex-col items-center"
+        className="bg-white rounded-3xl py-8 max-w-sm w-full shadow-xl text-center flex flex-col items-center relative"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Header Section */}
-        <div className="w-full flex justify-end -mb-4">
-          <button 
-            onClick={onClose}
-            className="text-2xl text-gray-400 hover:text-gray-600 transition-colors"
-          >
-            ×
-          </button>
-        </div>
+        {/* Close Button - Positioned in corner */}
+        <button 
+          onClick={onClose}
+          className="absolute top-2 right-2 text-2xl text-gray-400 hover:text-gray-600 transition-colors"
+        >
+          ×
+        </button>
+
+        {/* Content Container with padding */}
+        <div style={{ paddingLeft: '40px', paddingRight: '40px' }} className="w-full">
         
         <div className="mb-6">
           <h2 className="text-3xl font-bold text-gray-800 mb-2">
@@ -37,18 +38,18 @@ function FeedingModal({ isOpen, onClose, selectedDay, selectedSlot, onSignUp, on
 
         {/* Info Section */}
         <div className="w-full space-y-3 mb-8">
-          <div className="bg-[#f8f0f8] py-3 px-4 rounded-xl border border-[#dfbfdf]/30">
+          <div style={{ padding: '20px' }} className="bg-[#f8f0f8] rounded-xl border border-[#dfbfdf]/30">
             <p className="text-sm text-gray-500 mb-1">Location</p>
             <p className="text-gray-800 font-semibold">{selectedSlot?.location}</p>
           </div>
           
           {selectedSlot?.volunteer ? (
-            <div className="bg-[#cadaed]/30 py-4 px-4 rounded-xl border border-[#cadaed]">
+            <div style={{ padding: '20px' }} className="bg-[#cadaed]/30 rounded-xl border border-[#cadaed]">
               <p className="text-xs text-[#6a8da8] uppercase font-bold tracking-tighter mb-1">Currently Signed Up</p>
               <p className="text-lg font-bold text-[#5a7d98]">{selectedSlot.volunteer}</p>
             </div>
           ) : (
-            <div className="bg-[#d4edca]/40 py-4 px-4">
+            <div style={{ padding: '20px' }} className="bg-[#d4edca]/40 rounded-xl">
               <p className="text-[#6b8e5b] font-bold">Slot is available!</p>
             </div>
           )}
@@ -56,7 +57,7 @@ function FeedingModal({ isOpen, onClose, selectedDay, selectedSlot, onSignUp, on
         
         {/* User Status/Alerts */}
         {!currentUser && (
-          <div className="mb-6 px-4 py-2 bg-pink-50 rounded-lg">
+          <div style={{ padding: '16px' }} className="mb-6 w-full bg-pink-50 rounded-lg">
             <p className="text-xs text-pink-600 font-medium italic">Please log in to sign up for slots</p>
           </div>
         )}
@@ -88,6 +89,7 @@ function FeedingModal({ isOpen, onClose, selectedDay, selectedSlot, onSignUp, on
             Go Back
           </button>
         </div>
+        </div> {/* Close content container */}
       </div>
     </div>
   );

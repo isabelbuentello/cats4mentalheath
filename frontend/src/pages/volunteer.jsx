@@ -16,27 +16,27 @@ function VolunteerPage() {
       <div className="hidden md:flex justify-center items-center gap-8 py-8 px-4">
         <Link to="/volunteer">
           <button className="text-2xl text-white font-bold bg-[#d1abc3] hover:bg-[#ffb3c1] px-6 py-3 rounded-lg transition-colors">
-            signup
+            Sign Up
           </button>
         </Link>
         <Link to="/map-page">
           <button className="text-2xl text-white font-bold bg-[#ede0ca] hover:bg-[#ffb3c1] px-6 py-3 rounded-lg transition-colors">
-            map
+            Map
           </button>
         </Link>
         <Link to="/ourcats">
           <button className="text-2xl text-white font-bold bg-[#cadaed] hover:bg-[#ffb3c1] px-6 py-3 rounded-lg transition-colors">
-            our cats
+            Our Cats
           </button>
         </Link>
         <Link to="/feeding-instructions"> 
           <button className="text-2xl text-white font-bold bg-[#d4edca] hover:bg-[#ffb3c1] px-6 py-3 rounded-lg transition-colors">
-            feeding instructions
+            Feeding Instructions
           </button>
         </Link>
         <Link to="/you-page" className="col-span-2"> 
           <button className="bg-[#d5caed] hover:bg-[#ffb3c1] p-4 text-white font-bold rounded-lg transition-colors w-full">
-            you
+            You
           </button>
         </Link>
       </div>
@@ -45,27 +45,27 @@ function VolunteerPage() {
       <div className="md:hidden grid grid-cols-2 gap-4 p-4">
         <Link to="/volunteer">
           <button className="bg-[#d1abc3] hover:bg-[#ffb3c1] p-4 text-white font-bold rounded-lg transition-colors w-full">
-            signup
+            Sign Up
           </button>
         </Link>
         <Link to="/ourcats">
           <button className="bg-[#cadaed] hover:bg-[#ffb3c1] p-4 text-white font-bold rounded-lg transition-colors w-full">
-            our cats
+            Our Cats
           </button>
         </Link>
         <Link to="/map-page">
           <button className="bg-[#ede0ca] hover:bg-[#ffb3c1] p-4 text-white font-bold rounded-lg transition-colors w-full">
-            map
+            Map
           </button>
         </Link>
         <Link to="/you-page">
           <button className="bg-[#d5caed] hover:bg-[#ffb3c1] p-4 text-white font-bold rounded-lg transition-colors w-full">
-            you
+            You
           </button>
         </Link>
         <Link to="/feeding-instructions" className="col-span-2">
           <button className="bg-[#d4edca] hover:bg-[#ffb3c1] p-4 text-white font-bold rounded-lg transition-colors w-full">
-            feeding instructions
+            Feeding Instructions
           </button>
         </Link>
       </div>

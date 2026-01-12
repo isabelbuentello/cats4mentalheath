@@ -119,27 +119,27 @@ function OurCats() {
       <div className="hidden md:flex justify-center items-center gap-8 py-8 px-4">
         <Link to="/volunteer">
           <button className="text-2xl text-white font-bold bg-[#d1abc3] hover:bg-[#ffb3c1] px-6 py-3 rounded-lg transition-colors">
-            signup
+            Sign Up
           </button>
         </Link>
         <Link to="/map-page">
           <button className="text-2xl text-white font-bold bg-[#ede0ca] hover:bg-[#ffb3c1] px-6 py-3 rounded-lg transition-colors">
-            map
+            Map
           </button>
         </Link>
         <Link to="/ourcats">
           <button className="text-2xl text-white font-bold bg-[#cadaed] hover:bg-[#ffb3c1] px-6 py-3 rounded-lg transition-colors">
-            our cats
+            Our Cats
           </button>
         </Link>
         <Link to="/feeding-instructions"> 
           <button className="text-2xl text-white font-bold bg-[#d4edca] hover:bg-[#ffb3c1] px-6 py-3 rounded-lg transition-colors">
-            feeding instructions
+            Feeding Instructions
           </button>
         </Link>
         <Link to="/you-page" className="col-span-2"> 
           <button className="bg-[#d5caed] hover:bg-[#ffb3c1] p-4 text-white font-bold rounded-lg transition-colors w-full">
-            you
+            You
           </button>
         </Link>
       </div>
@@ -148,34 +148,34 @@ function OurCats() {
       <div className="md:hidden grid grid-cols-2 gap-4 p-4">
         <Link to="/volunteer">
           <button className="bg-[#d1abc3] hover:bg-[#ffb3c1] p-4 text-white font-bold rounded-lg transition-colors w-full">
-            signup
+            Sign Up
           </button>
         </Link>
         <Link to="/ourcats">
           <button className="bg-[#cadaed] hover:bg-[#ffb3c1] p-4 text-white font-bold rounded-lg transition-colors w-full">
-            our cats
+            Our Cats
           </button>
         </Link>
         <Link to="/map-page">
           <button className="bg-[#ede0ca] hover:bg-[#ffb3c1] p-4 text-white font-bold rounded-lg transition-colors w-full">
-            map
+            Map
           </button>
         </Link>
         <Link to="/you-page">
           <button className="bg-[#d5caed] hover:bg-[#ffb3c1] p-4 text-white font-bold rounded-lg transition-colors w-full">
-            you
+            You
           </button>
         </Link>
         <Link to="/feeding-instructions" className="col-span-2">
           <button className="bg-[#d4edca] hover:bg-[#ffb3c1] p-4 text-white font-bold rounded-lg transition-colors w-full">
-            feeding instructions
+            Feeding Instructions
           </button>
         </Link>
       </div>
 
-      <h1 className='greeting'>our cats</h1>
+      <h1 className='greeting'>Our Cats</h1>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
+      <div style={{ padding: '16px' }} className="max-w-7xl mx-auto">
         {!selectedCat ? (
           // Cat list view
           <>
@@ -232,12 +232,12 @@ function OurCats() {
                       )}
                       
                       {/* Cat name overlay - much more visible */}
-                      <div className="absolute top-0 left-0 right-0 bg-gradient-to-b from-black/70 via-black/50 to-transparent p-3 sm:p-4">
+                      <div style={{ padding: '20px' }} className="absolute top-0 left-0 right-0 bg-gradient-to-b from-black/70 via-black/50 to-transparent">
                         <h3 className="text-white text-xl sm:text-2xl font-bold drop-shadow-lg">
                           {cat.name}
                         </h3>
                         {photoCount > 0 && (
-                          <div className="mt-1 inline-flex items-center gap-1.5 bg-white/90 backdrop-blur-sm px-2.5 py-1 rounded-full">
+                          <div style={{ padding: '8px 12px' }} className="mt-1 inline-flex items-center gap-1.5 bg-white/90 backdrop-blur-sm rounded-full">
                             <svg className="w-4 h-4 text-purple-500" fill="currentColor" viewBox="0 0 20 20">
                               <path fillRule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clipRule="evenodd" />
                             </svg>
@@ -250,7 +250,7 @@ function OurCats() {
                     </div>
 
                     {/* Cat info section */}
-                    <div className="p-4 sm:p-5">
+                    <div style={{ padding: '24px' }} className="sm:p-5">
                       <div className="flex items-start gap-2 mb-3">
                         <svg className="w-5 h-5 text-purple-400 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
                           <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
@@ -285,22 +285,6 @@ function OurCats() {
               Back to All Cats
             </button>
 
-            {/* Cat info header */}
-            <div className="bg-white rounded-2xl shadow-lg p-5 sm:p-8 mb-8" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>
-              <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
-                <div>
-                  <h2 className="text-3xl sm:text-4xl font-bold mb-5 text-gray-800">{selectedCat.name}</h2>
-                  <div className="flex items-center gap-4 mb-4">
-                    <svg className="w-5 h-5 text-purple-400" fill="currentColor" viewBox="0 0 40 40">
-                      <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
-                    </svg>
-                    <p className="text-gray-600 font-medium text-base sm:text-lg">{selectedCat.location}</p>
-                  </div>
-                  <p className="text-gray-700 text-base sm:text-lg">{selectedCat.description}</p>
-                </div>
-              </div>
-            </div>
-
             {/* Add photo button */}
             <div className="mb-8">
               <button
@@ -323,6 +307,22 @@ function OurCats() {
                   </>
                 )}
               </button>
+            </div>
+
+            {/* Cat info header */}
+            <div className="bg-white rounded-2xl shadow-lg p-5 sm:p-8 mb-8" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>
+              <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+                <div>
+                  <h2 className="text-3xl sm:text-4xl font-bold mb-5 text-gray-800">{selectedCat.name}</h2>
+                  <div className="flex items-center gap-4 mb-4">
+                    <svg className="w-5 h-5 text-purple-400" fill="currentColor" viewBox="0 0 40 40">
+                      <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
+                    </svg>
+                    <p className="text-gray-600 font-medium text-base sm:text-lg">{selectedCat.location}</p>
+                  </div>
+                  <p className="text-gray-700 text-base sm:text-lg">{selectedCat.description}</p>
+                </div>
+              </div>
             </div>
 
             {/* Upload form */}

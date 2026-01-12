@@ -108,7 +108,7 @@ function PhotoGallery({ catId, catName }) {
         <h3 className="text-2xl sm:text-3xl font-bold text-gray-800">
           {catName}'s Photo Album
         </h3>
-        <div className="bg-purple-100 text-purple-700 font-bold px-4 py-2 rounded-full text-sm sm:text-base">
+        <div style={{ padding: '16px 32px' }} className="bg-purple-100 text-purple-700 font-bold rounded-full text-sm sm:text-base">
           {photos.length} {photos.length === 1 ? 'photo' : 'photos'}
         </div>
       </div>

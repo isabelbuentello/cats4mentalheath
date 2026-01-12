@@ -243,7 +243,7 @@ function VolunteerHoursTracker() {
   };
 
   return (
-    <div className="bg-white rounded-xl shadow-lg p-4 md:p-6" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>
+    <div style={{ padding: '32px', fontFamily: "'Instrument Sans', sans-serif" }} className="bg-white rounded-xl shadow-lg">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4 md:mb-6">
         <h2 className="text-xl md:text-2xl lg:text-3xl font-bold">Volunteer Hours Management</h2>
@@ -264,24 +264,24 @@ function VolunteerHoursTracker() {
       </div>
 
       {/* Overall Stats */}
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2 md:gap-3 mb-4 md:mb-6">
-        <div className="bg-purple-100 rounded-lg p-2 md:p-3 text-center">
+      <div style={{ marginLeft: '16px', marginRight: '16px' }} className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2 md:gap-3 mb-4 md:mb-6">
+        <div style={{ padding: '16px' }} className="bg-purple-100 rounded-lg text-center">
           <p className="text-xl md:text-2xl font-bold text-purple-700">{totalStats.totalVolunteers}</p>
           <p className="text-xs text-purple-700">Volunteers</p>
         </div>
-        <div className="bg-blue-100 rounded-lg p-2 md:p-3 text-center">
+        <div style={{ padding: '16px' }} className="bg-blue-100 rounded-lg text-center">
           <p className="text-xl md:text-2xl font-bold text-blue-700">{totalStats.totalShifts}</p>
           <p className="text-xs text-blue-700">Total Shifts</p>
         </div>
-        <div className="bg-yellow-100 rounded-lg p-2 md:p-3 text-center">
+        <div style={{ padding: '16px' }} className="bg-yellow-100 rounded-lg text-center">
           <p className="text-xl md:text-2xl font-bold text-yellow-700">{totalStats.totalPending}</p>
           <p className="text-xs text-yellow-700">Pending</p>
         </div>
-        <div className="bg-green-100 rounded-lg p-2 md:p-3 text-center">
+        <div style={{ padding: '16px' }} className="bg-green-100 rounded-lg text-center">
           <p className="text-xl md:text-2xl font-bold text-green-700">{totalStats.totalVerified}</p>
           <p className="text-xs text-green-700">Verified</p>
         </div>
-        <div className="bg-pink-100 rounded-lg p-2 md:p-3 text-center col-span-2 md:col-span-1">
+        <div style={{ padding: '16px' }} className="bg-pink-100 rounded-lg text-center col-span-2 md:col-span-1">
           <p className="text-xl md:text-2xl font-bold text-pink-700">{totalStats.totalHours.toFixed(1)}</p>
           <p className="text-xs text-pink-700">Total Hours</p>
         </div>
@@ -289,13 +289,14 @@ function VolunteerHoursTracker() {
 
       {/* Volunteers List */}
       {!selectedUser ? (
-        <div>
+        <div style={{ marginLeft: '16px', marginRight: '16px' }}>
           <h3 className="text-lg md:text-xl font-bold mb-3 md:mb-4">Volunteers</h3>
           <div className="space-y-2 md:space-y-3 max-h-96 overflow-y-auto">
             {users.map(user => (
               <div
                 key={user.email}
-                className="border-2 border-gray-200 rounded-lg p-3 md:p-4 hover:border-purple-400 transition-colors cursor-pointer"
+                style={{ padding: '20px' }}
+                className="border-2 border-gray-200 rounded-lg hover:border-purple-400 transition-colors cursor-pointer"
                 onClick={() => setSelectedUser(user)}
               >
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
@@ -334,7 +335,7 @@ function VolunteerHoursTracker() {
         </div>
       ) : (
         /* Individual User View */
-        <div>
+        <div style={{ marginLeft: '16px', marginRight: '16px' }}>
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4 md:mb-6">
             <button
               onClick={() => setSelectedUser(null)}
@@ -357,19 +358,19 @@ function VolunteerHoursTracker() {
 
           {/* User Stats */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-3 mb-4 md:mb-6">
-            <div className="bg-purple-100 rounded-lg p-2 md:p-3 text-center">
+            <div style={{ padding: '16px' }} className="bg-purple-100 rounded-lg text-center">
               <p className="text-xl md:text-2xl lg:text-3xl font-bold text-purple-700">{selectedUser.verifiedHours.toFixed(1)}</p>
               <p className="text-xs text-purple-700">Verified Hours</p>
             </div>
-            <div className="bg-green-100 rounded-lg p-2 md:p-3 text-center">
+            <div style={{ padding: '16px' }} className="bg-green-100 rounded-lg text-center">
               <p className="text-xl md:text-2xl lg:text-3xl font-bold text-green-700">{selectedUser.verifiedShifts}</p>
               <p className="text-xs text-green-700">Completed</p>
             </div>
-            <div className="bg-yellow-100 rounded-lg p-2 md:p-3 text-center">
+            <div style={{ padding: '16px' }} className="bg-yellow-100 rounded-lg text-center">
               <p className="text-xl md:text-2xl lg:text-3xl font-bold text-yellow-700">{selectedUser.pendingShifts}</p>
               <p className="text-xs text-yellow-700">Pending</p>
             </div>
-            <div className="bg-red-100 rounded-lg p-2 md:p-3 text-center">
+            <div style={{ padding: '16px' }} className="bg-red-100 rounded-lg text-center">
               <p className="text-xl md:text-2xl lg:text-3xl font-bold text-red-700">{selectedUser.noShowShifts}</p>
               <p className="text-xs text-red-700">No-Shows</p>
             </div>

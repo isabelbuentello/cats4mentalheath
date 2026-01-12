@@ -34,33 +34,33 @@ function YouPage() {
       <div className="hidden md:flex justify-center items-center gap-8 py-8 px-4">
         <Link to="/volunteer">
           <button className="text-2xl text-white font-bold bg-[#d1abc3] hover:bg-[#ffb3c1] px-6 py-3 rounded-lg transition-colors">
-            signup
+            Sign Up
           </button>
         </Link>
         <Link to="/map-page">
           <button className="text-2xl text-white font-bold bg-[#ede0ca] hover:bg-[#ffb3c1] px-6 py-3 rounded-lg transition-colors">
-            map
+            Map
           </button>
         </Link>
         <Link to="/ourcats">
           <button className="text-2xl text-white font-bold bg-[#cadaed] hover:bg-[#ffb3c1] px-6 py-3 rounded-lg transition-colors">
-            our cats
+            Our Cats
           </button>
         </Link>
         <Link to="/feeding-instructions"> 
           <button className="text-2xl text-white font-bold bg-[#d4edca] hover:bg-[#ffb3c1] px-6 py-3 rounded-lg transition-colors">
-            feeding instructions
+            Feeding Instructions
           </button>
         </Link>
         <Link to="/you-page">
           <button className="text-2xl text-white font-bold bg-[#d5caed] hover:bg-[#ffb3c1] px-6 py-3 rounded-lg transition-colors">
-            you
+            You
           </button>
         </Link>
         {isAdmin && (
           <Link to="/admin">
             <button className="text-2xl text-white font-bold bg-[#b8a0d4] hover:bg-[#ffb3c1] px-6 py-3 rounded-lg transition-colors">
-              admin
+              Admin
             </button>
           </Link>
         )}
@@ -70,22 +70,22 @@ function YouPage() {
       <div className="md:hidden grid grid-cols-2 gap-4 p-4">
         <Link to="/volunteer">
           <button className="bg-[#d1abc3] hover:bg-[#ffb3c1] p-4 text-white font-bold rounded-lg transition-colors w-full">
-            signup
+            Sign Up
           </button>
         </Link>
         <Link to="/ourcats">
           <button className="bg-[#cadaed] hover:bg-[#ffb3c1] p-4 text-white font-bold rounded-lg transition-colors w-full">
-            our cats
+            Our Cats
           </button>
         </Link>
         <Link to="/map-page">
           <button className="bg-[#ede0ca] hover:bg-[#ffb3c1] p-4 text-white font-bold rounded-lg transition-colors w-full">
-            map
+            Map
           </button>
         </Link>
         <Link to="/you-page">
           <button className="bg-[#d5caed] hover:bg-[#ffb3c1] p-4 text-white font-bold rounded-lg transition-colors w-full">
-            you
+            You
           </button>
         </Link>
         {isAdmin ? (
@@ -97,23 +97,23 @@ function YouPage() {
             </Link>
             <Link to="/admin">
               <button className="bg-[#b8a0d4] hover:bg-[#ffb3c1] p-4 text-white font-bold rounded-lg transition-colors w-full">
-                admin
+                Admin
               </button>
             </Link>
           </>
         ) : (
           <Link to="/feeding-instructions" className="col-span-2">
             <button className="bg-[#d4edca] hover:bg-[#ffb3c1] p-4 text-white font-bold rounded-lg transition-colors w-full">
-              feeding instructions
+              Feeding Instructions
             </button>
           </Link>
         )}
       </div>
 
-      <h1 className='greeting'>your profile</h1>
+      <h1 className='greeting'>Your Profile</h1>
 
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-6 py-8">
+      <div style={{ padding: '0 16px' }} className="max-w-7xl mx-auto py-8">
         {/* Desktop Layout - 3 columns */}
         <div className="hidden lg:grid lg:grid-cols-3 gap-8">
           {/* Left Column - Activity Graph (spans 2 columns) */}

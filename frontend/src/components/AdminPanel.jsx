@@ -157,7 +157,7 @@ function AdminPanel() {
   const approvedUsers = users.filter(u => u.isApproved);
 
   return (
-    <div className="bg-white rounded-xl shadow-lg p-4 md:p-6" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>
+    <div style={{ padding: '32px', fontFamily: "'Instrument Sans', sans-serif" }} className="bg-white rounded-xl shadow-lg">
       <h2 className="text-2xl md:text-3xl font-bold mb-4 md:mb-6">Admin Panel</h2>
 
       {/* Pending Approvals */}

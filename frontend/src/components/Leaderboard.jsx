@@ -202,19 +202,19 @@ function Leaderboard() {
   }
 
   return (
-    <div className="bg-white rounded-xl shadow-lg p-6" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>
+    <div style={{ padding: '32px' }} className="bg-white rounded-xl shadow-lg">
       {/* Rank Message Banner */}
       {rankInfo && (
         <div className={`mb-6 p-4 ${rankInfo.bgColor} border-2 ${rankInfo.borderColor} rounded-lg ${rankInfo.textColor}`}>
           <div className="flex items-center justify-center gap-3">
             <span className="text-3xl">{rankInfo.emoji}</span>
-            <p className="font-bold text-center">{rankInfo.message}</p>
+            <p className="font-bold text-center" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>{rankInfo.message}</p>
           </div>
         </div>
       )}
 
-      <h2 className="text-2xl font-bold mb-2 text-center">Volunteer Leaderboard</h2>
-      <p className="text-sm text-gray-600 mb-6 text-center">
+      <h2 className="text-2xl font-bold mb-2 text-center" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>Volunteer Leaderboard</h2>
+      <p className="text-sm text-gray-600 mb-6 text-center" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>
         Top feeders of all time 
       </p>
 
@@ -229,7 +229,8 @@ function Leaderboard() {
           return (
             <div
               key={user.email}
-              className={`flex items-center justify-between p-3 rounded-lg transition-colors ${
+              style={{ paddingRight: '18px' }}
+              className={`flex items-center justify-between py-3 px-4 rounded-lg transition-colors ${
                 isCurrentUser
                   ? 'bg-purple-100 border-2 border-purple-400'
                   : 'bg-gray-50 hover:bg-gray-100'
@@ -259,7 +260,7 @@ function Leaderboard() {
 
                 {/* Name */}
                 <div>
-                  <p className={`font-semibold ${isCurrentUser ? 'text-purple-700' : 'text-gray-800'}`}>
+                  <p className={`font-semibold ${isCurrentUser ? 'text-purple-700' : 'text-gray-800'}`} style={{ fontFamily: "'Instrument Sans', sans-serif" }}>
                     {user.name}
                     {isCurrentUser && <span className="ml-2 text-xs">(You)</span>}
                   </p>
@@ -268,10 +269,10 @@ function Leaderboard() {
 
               {/* Right: Feeding Count */}
               <div className="text-right">
-                <p className={`text-xl font-bold ${isCurrentUser ? 'text-purple-600' : 'text-gray-700'}`}>
+                <p className={`text-xl font-bold ${isCurrentUser ? 'text-purple-600' : 'text-gray-700'}`} style={{ fontFamily: "'Instrument Sans', sans-serif" }}>
                   {user.count}
                 </p>
-                <p className="text-xs text-gray-500">
+                <p className="text-xs text-gray-500" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>
                   feeding{user.count !== 1 ? 's' : ''}
                 </p>
               </div>
@@ -284,16 +285,16 @@ function Leaderboard() {
       <div className="mt-6 pt-4 border-t border-gray-200">
         <div className="grid grid-cols-2 gap-4 text-center">
           <div>
-            <p className="text-2xl font-bold text-purple-600">
+            <p className="text-2xl font-bold text-purple-600" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>
               {leaderboardData.length}
             </p>
-            <p className="text-sm text-gray-600">Total Volunteers</p>
+            <p className="text-sm text-gray-600" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>Total Volunteers</p>
           </div>
           <div>
-            <p className="text-2xl font-bold text-purple-600">
+            <p className="text-2xl font-bold text-purple-600" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>
               {leaderboardData.reduce((sum, user) => sum + user.count, 0)}
             </p>
-            <p className="text-sm text-gray-600">Total Feedings</p>
+            <p className="text-sm text-gray-600" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>Total Feedings</p>
           </div>
         </div>
       </div>
