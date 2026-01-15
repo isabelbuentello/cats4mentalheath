@@ -1,4 +1,9 @@
 import NavBar from '../components/NavBar.jsx'
+import amazon from '../assets/amazon.png'
+import cashapp from '../assets/cashapp.png'
+import venmo from '../assets/venmo.png'
+import catpic from '../assets/donatecat.png'
+
 
 function DonatePage() {
   return (
@@ -12,68 +17,73 @@ function DonatePage() {
         <h1 className="text-white text-center text-4xl sm:text-5xl md:text-6xl mb-8 sm:mb-12">
           Support Our Cats
         </h1>
-
-        <div className="h-14 sm:h-16 md:h-20 lg:h-28"></div>
         
-        <div className="max-w-3xl w-full bg-white/20 backdrop-blur-sm rounded-3xl p-6 sm:p-8 md:p-12">
-          <p className="text-white text-center text-base sm:text-lg md:text-xl mb-8">
-            Your donations help us feed and care for the stray cats on our campus. 
-            Every contribution makes a difference! 
-          </p>
+        {/* Two-column layout on desktop, single column on mobile */}
+        <div className="max-w-6xl w-full flex flex-col lg:flex-row gap-8 lg:gap-12 items-center">
           
-       {/* Container for all 3 buttons */}
-      <div className="flex flex-col md:flex-row justify-center items-center gap-8 mt-12">
-        
-        <a 
-          href="https://www.amazon.com/hz/wishlist/ls/2I61EMFF773H8?ref_=wl_share"
-          target="_blank" 
-          rel="noopener noreferrer"
-          className="inline-block bg-[#9fc8a7] hover:bg-[#addbc4] text-gray-800 hover:!text-gray-800 font-normal py-12 px-18 rounded-2xl text-2xl text-center transition-all shadow-md min-w-[250px]"
-        >
-          Amazon Wishlist
-        </a>
+          {/* Left column - Text and buttons */}
+          <div className="w-full lg:w-1/2 backdrop-blur-sm rounded-3xl p-6 sm:p-8 lg:p-12">
+            <h2 className="text-white text-center text-lg sm:text-xl lg:text-left mb-8">
+              Your donations help us feed and care for the stray cats on our campus. 
+              Every contribution makes a difference! 
+            </h2>
+            
+            {/* Container for all 3 buttons - stacked vertically on all screens */}
+            <div className="flex flex-col justify-center items-center gap-4">
+              
+              <a 
+                href="https://www.amazon.com/hz/wishlist/ls/2I61EMFF773H8?ref_=wl_share"
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-center hover:bg-gray-100 py-3 px-6 rounded-2xl transition-all w-48"
+              >
+                <img 
+                  src={amazon} 
+                  alt="Amazon Wishlist" 
+                  className="w-full h-auto"
+                />
+              </a>
 
-        <a 
-          href="https://venmo.com/u/cats4mentalhealth"
-          target="_blank" 
-          rel="noopener noreferrer"
-          className="inline-block bg-[#9fc8a7] hover:bg-[#addbc4] text-gray-800 hover:!text-gray-800 font-semibold py-6 px-12 rounded-2xl text-2xl text-center transition-all shadow-md min-w-[200px]"
-        >
-          Venmo
-        </a>
+              <a 
+                href="https://venmo.com/u/cats4mentalhealth"
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-center hover:bg-gray-100 py-3 px-6 rounded-2xl transition-all w-48"
+              >
+                <img 
+                  src={venmo} 
+                  alt="Venmo" 
+                  className="w-full h-auto"
+                />
+              </a>
 
-        <a 
-          href="https://cash.app/$CatsForMentalHealth"
-          target="_blank" 
-          rel="noopener noreferrer"
-          className="inline-block bg-[#9fc8a7] hover:bg-[#addbc4] text-gray-800 hover:!text-gray-800 font-semibold py-6 px-12 rounded-2xl text-2xl text-center transition-all shadow-md min-w-[200px]"
-        >
-          CashApp
-        </a>
+              <a 
+                href="https://cash.app/$CatsForMentalHealth"
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-center hover:bg-gray-100 py-3 px-6 rounded-2xl transition-all w-48"
+              >
+                <img 
+                  src={cashapp} 
+                  alt="CashApp" 
+                  className="w-full h-auto"
+                />
+              </a>
+            </div>
+          </div>
 
-      </div>
-
+          {/* Right column - Cat image */}
+          <div className="w-64 sm:w-72 lg:w-1/2 flex items-center justify-center lg:justify-end">
+            <img 
+              src={catpic} 
+              alt="Donate cat" 
+              className="w-full max-w-md h-auto rounded-3xl shadow-lg object-cover"
+            />
+          </div>
         </div>
       </div>
     </div>
   )
 }
-/* <div className="text-gray-700 mb-3">
-            <p>Thanks for your interest in volunteering to feed our campus cats!</p>
-            <p>
-            If you haven't completed your training orientation with an officer, please fill out{' '}
-            <a 
-                href="https://forms.gle/3TWKgvE5iEQVugFJA" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="text-blue-600 hover:text-blue-800 underline font-semibold"
-            >
-                this form
-            </a>
-            , and an officer will reach out shortly.
-            </p>
-          </div>
-
-*/
 
 export default DonatePage

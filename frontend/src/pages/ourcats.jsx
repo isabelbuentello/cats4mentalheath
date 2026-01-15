@@ -54,7 +54,7 @@ function OurCats() {
     {
       id: 'natasha-lofts',
       name: 'Natasha',
-      location: 'Law Center near Lofts',
+      location: 'Moody Towers',
       description: 'Brown and white tabby with a considerable amount of children'
     },
     {

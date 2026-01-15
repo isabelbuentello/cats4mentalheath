@@ -7,7 +7,7 @@ function joinpage() {
   return (
     <div>
         <NavBar />
-        <h1 className= 'greeting'> we'd love to have you! </h1>
+        <h1 className= 'greeting'> We'd Love to Have You! </h1>
         <div className= 'img-container'> 
             <a href="https://www.instagram.com/cats4mentalhealth/" target="_blank" rel="noopener noreferrer">
                 <img className= 'ig' src= {ig} alt="instagram"/> 
@@ -16,8 +16,8 @@ function joinpage() {
                 <img className= 'ds' src= {ds} alt="discord" />
             </a>
         </div>
-        <p className= 'volun'> interested in feeding our campus' cats? <br /> 
-        sign up in our member login, and sign up for a training! </p>
+        <p className= 'volun'> Interested in feeding our campus' cats? <br /> 
+        Sign up in our member login, and sign up for a training! </p>
     </div>
   )
 }

@@ -28,7 +28,13 @@ function CatMapWithMarkers() {
       id: 4,
       name: 'Law Center near Lofts',
       position: { lat: 29.722842, lng: -95.339067 },
-      cats: ['Ruth, Natasha']
+      cats: ['Ruth']
+    },
+    {
+      id: 5,
+      name: 'Moody Towers',
+      position: { lat: 29.7175235, lng: -95.3423427 },
+      cats: ['Natasha']
     }
   ];
 

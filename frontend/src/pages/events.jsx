@@ -33,11 +33,11 @@ function EventsPage() {
   return (
     <div className="min-h-screen bg-[#dfbfdf]">
       <NavBar />
-      <h1 className='greeting'>upcoming events</h1>
+      <h1 className='greeting'>Upcoming Events</h1>
       
       <p className='volun'>
-        join CFMH for our upcoming events, both on and off campus. <br /> 
-        follow us on instagram for all the latest event details and updates
+        Join CFMH for our upcoming events, both on and off campus. <br /> 
+        Follow us on Instagram for all the latest event details and updates!
       </p>
 
       <Calendar isAdmin={isAdmin} />

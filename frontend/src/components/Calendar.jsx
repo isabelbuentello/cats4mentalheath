@@ -10,8 +10,8 @@ function Calendar({ isAdmin = false }) {
   const [showModal, setShowModal] = useState(false);
 
   const monthNames = [
-    'january', 'february', 'march', 'april', 'may', 'june',
-    'july', 'august', 'september', 'october', 'november', 'december'
+    'January', 'February', 'March', 'April', 'May', 'June',
+    'July', 'August', 'September', 'October', 'November', 'December'
   ];
 
   useEffect(() => {
@@ -199,7 +199,7 @@ function Calendar({ isAdmin = false }) {
 
         {/* Days of Week */}
         <div className="grid grid-cols-7 gap-1 sm:gap-2 mb-2">
-          {['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'].map(day => (
+          {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
             <div key={day} className="text-center font-bold text-gray-600 text-xs sm:text-sm py-2">
               {day}
             </div>
@@ -217,7 +217,7 @@ function Calendar({ isAdmin = false }) {
         <div className="fixed inset-0 bg-[#dfbfdf] bg-opacity-80 flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-xl shadow-2xl p-6 max-w-md w-full">
             <h3 className="text-2xl font-bold mb-4 text-gray-800">
-              add event - {monthNames[currentDate.getMonth()]} {selectedDay}
+              Add Event - {monthNames[currentDate.getMonth()]} {selectedDay}
             </h3>
             <input
               type="text"
@@ -232,7 +232,7 @@ function Calendar({ isAdmin = false }) {
                 onClick={handleAddEvent}
                 className="flex-1 bg-[#d4edca] hover:bg-[#ffb3c1] text-white font-bold py-3 rounded-lg transition-colors"
               >
-                add event
+                Add Event
               </button>
               <button
                 onClick={() => {
@@ -241,7 +241,7 @@ function Calendar({ isAdmin = false }) {
                 }}
                 className="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-700 font-bold py-3 rounded-lg transition-colors"
               >
-                cancel
+                Cancel
               </button>
             </div>
           </div>
