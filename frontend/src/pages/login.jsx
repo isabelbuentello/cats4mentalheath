@@ -60,10 +60,10 @@ function LoginPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#dfbfdf]">
+      <div className="min-h-screen">
         <NavBar />
         <h1 className="text-white text-center text-3xl md:text-4xl py-8">Member Login</h1>
-        <div className="bg-[#9fc8a7] px-8 py-12 rounded-3xl w-[70%] mx-auto mt-16">
+        <div className=" px-8 py-12 rounded-3xl w-[70%] mx-auto mt-16">
           <p className="text-white">Loading...</p>
         </div>
       </div>
@@ -71,7 +71,7 @@ function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#dfbfdf]"> 
+    <div className="min-h-screen"> 
       <NavBar />
 
       {/* Spacer div */}

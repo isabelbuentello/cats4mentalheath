@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 
 function FeedingInstructionsPage() {
   return (
-    <div className="min-h-screen bg-[#dfbfdf]">
+    <div className="min-h-screen">
       <NavBar startCollapsed={true} />
 
       {/* Spacer div */}

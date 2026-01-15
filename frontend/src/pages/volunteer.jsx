@@ -6,7 +6,7 @@ import ApprovalGate from '../components/ApprovalGate.jsx';
 
 function VolunteerPage() {
   return (
-    <div className="min-h-screen bg-[#dfbfdf]">
+    <div className="min-h-screen">
       <NavBar startCollapsed={true} />
 
       {/* Spacer div */}

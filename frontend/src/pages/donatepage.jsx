@@ -7,7 +7,7 @@ import catpic from '../assets/donatecat.png'
 
 function DonatePage() {
   return (
-    <div className="min-h-screen bg-[#dfbfdf]">
+    <div className="min-h-screen">
       <NavBar />
 
       {/* Spacer div */}
@@ -22,7 +22,7 @@ function DonatePage() {
         <div className="max-w-6xl w-full flex flex-col lg:flex-row gap-8 lg:gap-12 items-center">
           
           {/* Left column - Text and buttons */}
-          <div className="w-full lg:w-1/2 backdrop-blur-sm rounded-3xl p-6 sm:p-8 lg:p-12">
+          <div className="w-full lg:w-1/2 rounded-3xl p-6 sm:p-8 lg:p-12">
             <h2 className="text-white text-center text-lg sm:text-xl lg:text-left mb-8">
               Your donations help us feed and care for the stray cats on our campus. 
               Every contribution makes a difference! 

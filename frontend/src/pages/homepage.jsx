@@ -1,10 +1,11 @@
 import { useState } from 'react'
 import NavBar from '../components/NavBar.jsx'
 import CircularGallery from '../components/CircularGallery.jsx'
+import isabel from '../assets/isabel.png';
 
 function Home() {
   return (
-    <div className="min-h-screen bg-[#dfbfdf]">
+    <div className="min-h-screen">
       <NavBar />
       
       {/* Spacer div */}
@@ -58,35 +59,58 @@ function Home() {
         </div>
         
         {/* Officers Section */}
-        <div style={{ marginTop: '64px', paddingBottom: '80px' }} className="sm:mt-20">
+        <div style={{ marginTop: '64px', paddingBottom: '20px' }} className="sm:mt-20">
           <h2 className="text-white text-center text-3xl sm:text-4xl md:text-5xl font-bold mb-8 sm:mb-12">
             Meet Our Officers
           </h2>
           
           <div className="max-w-5xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
-            {/* Officer Card Template - Replace with actual officer info */}
             <div className="backdrop-blur-sm bg-white/10 rounded-2xl p-6 text-center">
               <div className="w-32 h-32 mx-auto mb-4 rounded-full bg-white/20"></div>
-              <h3 className="text-white text-xl font-bold mb-1">Officer Name</h3>
-              <p className="text-[#986e82] text-sm mb-2">Position</p>
+              <h3 className="text-white text-xl font-bold mb-1">Emilie Z</h3>
+              <p className="text-[#986e82] text-sm mb-2">President</p>
               <p className="text-white text-sm">Brief bio or fun fact about the officer</p>
             </div>
             
             <div className="backdrop-blur-sm bg-white/10 rounded-2xl p-6 text-center">
               <div className="w-32 h-32 mx-auto mb-4 rounded-full bg-white/20"></div>
-              <h3 className="text-white text-xl font-bold mb-1">Officer Name</h3>
-              <p className="text-[#986e82] text-sm mb-2">Position</p>
+              <h3 className="text-white text-xl font-bold mb-1">Evelyn T</h3>
+              <p className="text-[#986e82] text-sm mb-2">Vice President</p>
               <p className="text-white text-sm">Brief bio or fun fact about the officer</p>
             </div>
             
             <div className="backdrop-blur-sm bg-white/10 rounded-2xl p-6 text-center">
               <div className="w-32 h-32 mx-auto mb-4 rounded-full bg-white/20"></div>
-              <h3 className="text-white text-xl font-bold mb-1">Officer Name</h3>
-              <p className="text-[#986e82] text-sm mb-2">Position</p>
+              <h3 className="text-white text-xl font-bold mb-1">Ornella M</h3>
+              <p className="text-[#986e82] text-sm mb-2">Treasurer</p>
               <p className="text-white text-sm">Brief bio or fun fact about the officer</p>
             </div>
-            
-            {/* Add more officer cards as needed */}
+
+            <div className="backdrop-blur-sm bg-white/10 rounded-2xl p-6 text-center">
+              <div className="w-32 h-32 mx-auto mb-4 rounded-full bg-white/20"></div>
+              <h3 className="text-white text-xl font-bold mb-1">Rashmika K</h3>
+              <p className="text-[#986e82] text-sm mb-2">Event Coordinator</p>
+              <p className="text-white text-sm">Brief bio or fun fact about the officer</p>
+            </div>
+
+            <div className="backdrop-blur-sm bg-white/10 rounded-2xl p-6 text-center">
+              <div className="w-32 h-32 mx-auto mb-4 rounded-full bg-white/20"></div>
+              <h3 className="text-white text-xl font-bold mb-1">Laura L</h3>
+              <p className="text-[#986e82] text-sm mb-2">Social Media Coordinator</p>
+              <p className="text-white text-sm">Brief bio or fun fact about the officer</p>
+            </div>
+
+            <div className="backdrop-blur-sm bg-white/10 rounded-2xl p-6 text-center">
+              <img 
+                src={isabel} 
+                alt="Isabel B" 
+                className="w-32 h-32 mx-auto mb-4 rounded-full object-cover"
+              />
+              <h3 className="text-white text-xl font-bold mb-1">Isabel B</h3>
+              <p className="text-[#986e82] text-sm mb-2">Webmaster</p>
+              <p className="text-white text-sm">My cats' names are Butter & Jupie!</p>
+            </div>
+
           </div>
         </div>
       </div>

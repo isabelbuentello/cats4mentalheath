@@ -24,7 +24,7 @@ function YouPage() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-[#dfbfdf]">
+    <div className="min-h-screen ">
       <NavBar startCollapsed={true} />
 
       {/* Spacer div */}

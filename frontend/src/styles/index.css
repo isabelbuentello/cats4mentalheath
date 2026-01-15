@@ -2,6 +2,13 @@
 
 body {
   font-family: 'Chango', sans-serif;
+  background-color: #dfbfdf;
+  background-image:
+    repeating-linear-gradient(0deg, transparent, transparent 10px, rgba(230, 214, 230, 0.5) 10px, rgba(230, 214, 230, 0.5) 20px),
+    repeating-linear-gradient(90deg, transparent, transparent 10px, rgba(230, 214, 230, 0.5) 10px, rgba(230, 214, 230, 0.5) 20px),
+    repeating-linear-gradient(0deg, transparent, transparent 10px, rgba(200, 180, 200, 0.3) 10px, rgba(200, 180, 200, 0.3) 20px),
+    repeating-linear-gradient(90deg, transparent, transparent 10px, rgba(200, 180, 200, 0.3) 10px, rgba(200, 180, 200, 0.3) 20px);
+  background-size: 20px 20px, 20px 20px, 40px 40px, 40px 40px;
 }
 
 :root {
@@ -16,7 +23,6 @@ body {
 }
 
 * {
-  /* margin: 0; */
   padding: 0;
   box-sizing: border-box;
 }
@@ -27,12 +33,6 @@ html, body {
   min-height: 100vh;
   background-color: #dfbfdf;
 }
-
-/* a {
-  font-weight: 500;
-  color: #ffffff;
-  text-decoration: inherit;
-} */
 
 a:hover {
   color: #ffffff;

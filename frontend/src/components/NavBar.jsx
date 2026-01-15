@@ -5,12 +5,12 @@ function NavBar({ startCollapsed = false }) {
   const [isOpen, setIsOpen] = useState(!startCollapsed);
 
   return (
-    <nav className="w-full bg-[#dfbfdf] py-6 px-8">
+    <nav className="w-full py-6 px-8">
       {/* Menu button - visible on all screens when startCollapsed is true */}
       <div className={`flex justify-end ${startCollapsed ? '' : 'md:hidden'}`}>
         <button 
           onClick={() => setIsOpen(!isOpen)}
-          className="bg-[#ffc0cb] text-white text-3xl focus:outline-none hover:bg-[#f7dcf7] px-4 py-2 rounded-lg transition-colors"
+          className=" text-white text-3xl focus:outline-none hover:bg-[#f7dcf7] px-4 py-2 rounded-lg transition-colors"
         >
           {isOpen ? '✕' : '☰'}
         </button>
@@ -64,7 +64,7 @@ function NavBar({ startCollapsed = false }) {
 
       {/* Collapsible menu - shown when isOpen is true */}
       {isOpen && (
-        <ul className={`flex flex-col items-end list-none m-0 p-0 bg-[#dfbfdf] mt-4 space-y-2 ${startCollapsed ? '' : 'md:hidden'}`}>
+        <ul className={`flex flex-col items-end list-none m-0 p-0 mt-4 space-y-2 ${startCollapsed ? '' : 'md:hidden'}`}>
           <li className="w-full">
             <Link 
               to="/" 

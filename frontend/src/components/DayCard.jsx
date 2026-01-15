@@ -12,7 +12,7 @@ function DayCard({ day, dayName, slots, onSlotClick }) {
   const takenPM = takenSlots.filter(slot => slot.isPM);
 
   return (
-    <div className="bg-white/30 rounded-xl min-h-[450px] font-sans" style={{ padding: '28px 18px 2px 18px' }}>
+    <div className="bg-white rounded-xl min-h-[450px] font-sans" style={{ padding: '28px 18px 2px 18px' }}>
       <h3 className="text-2xl font-bold capitalize text-center" style={{ marginBottom: '32px' }}>
         {dayName}
         <span className="text-base block text-gray-700 mt-2 font-normal">

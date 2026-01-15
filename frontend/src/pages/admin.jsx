@@ -25,7 +25,7 @@ function AdminPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#dfbfdf] flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center">
         <p className="text-2xl text-white font-bold">Loading...</p>
       </div>
     );
@@ -33,7 +33,7 @@ function AdminPage() {
 
   if (!auth.currentUser || !isAdmin) {
     return (
-      <div className="min-h-screen bg-[#dfbfdf]">
+      <div className="min-h-screen">
         <NavBar startCollapsed={true} />
         <div className="flex items-center justify-center min-h-[60vh]">
           <div className="bg-white rounded-xl shadow-lg p-8 max-w-md text-center">
@@ -54,7 +54,7 @@ function AdminPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#dfbfdf]">
+    <div className="min-h-screen">
       <NavBar startCollapsed={true} />
 
       {/* Spacer div */}
