@@ -2,6 +2,11 @@ import { useState } from 'react'
 import NavBar from '../components/NavBar.jsx'
 import CircularGallery from '../components/CircularGallery.jsx'
 import isabel from '../assets/isabel.png';
+import emilie from '../assets/emilie.png';
+import eve from '../assets/eve.png';
+import rashmika from '../assets/rashmika.png';
+import laura from '../assets/laura.png';
+import ornella from '../assets/ornella.png';
 
 function Home() {
   return (
@@ -66,38 +71,58 @@ function Home() {
           
           <div className="max-w-5xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
             <div className="backdrop-blur-sm bg-white/10 rounded-2xl p-6 text-center">
-              <div className="w-32 h-32 mx-auto mb-4 rounded-full bg-white/20"></div>
+              <img 
+                src={emilie} 
+                alt="Emilie Z" 
+                className="w-32 h-32 mx-auto mb-4 rounded-full object-cover"
+              />
               <h3 className="text-white text-xl font-bold mb-1">Emilie Z</h3>
               <p className="text-[#986e82] text-sm mb-2">President</p>
-              <p className="text-white text-sm">Brief bio or fun fact about the officer</p>
+              <p className="text-white text-sm pb-4">"If you give me a sticky note and 6 to 7 minutes, I can fold an origami dragon." </p>
             </div>
             
             <div className="backdrop-blur-sm bg-white/10 rounded-2xl p-6 text-center">
-              <div className="w-32 h-32 mx-auto mb-4 rounded-full bg-white/20"></div>
+              <img 
+                src={eve} 
+                alt="Evelyn T" 
+                className="w-32 h-32 mx-auto mb-4 rounded-full object-cover"
+              />
               <h3 className="text-white text-xl font-bold mb-1">Evelyn T</h3>
               <p className="text-[#986e82] text-sm mb-2">Vice President</p>
-              <p className="text-white text-sm">Brief bio or fun fact about the officer</p>
+              <p className="text-white text-sm pb-4">"I'm from Singapore and I have the same birthday as BTS Jungkook! ദ്ദി/ᐠ - ˕ -マ"</p>
             </div>
             
             <div className="backdrop-blur-sm bg-white/10 rounded-2xl p-6 text-center">
-              <div className="w-32 h-32 mx-auto mb-4 rounded-full bg-white/20"></div>
+              <img 
+                src={ornella} 
+                alt="Ornella M" 
+                className="w-32 h-32 mx-auto mb-4 rounded-full object-cover"
+              />
               <h3 className="text-white text-xl font-bold mb-1">Ornella M</h3>
               <p className="text-[#986e82] text-sm mb-2">Treasurer</p>
-              <p className="text-white text-sm">Brief bio or fun fact about the officer</p>
+              <p className="text-white text-sm pb-4">"I love animal crossing, but not more than cats! :) "</p>
             </div>
 
             <div className="backdrop-blur-sm bg-white/10 rounded-2xl p-6 text-center">
-              <div className="w-32 h-32 mx-auto mb-4 rounded-full bg-white/20"></div>
+              <img 
+                src={rashmika} 
+                alt="Rashmika K" 
+                className="w-32 h-32 mx-auto mb-4 rounded-full object-cover"
+              />
               <h3 className="text-white text-xl font-bold mb-1">Rashmika K</h3>
               <p className="text-[#986e82] text-sm mb-2">Event Coordinator</p>
-              <p className="text-white text-sm">Brief bio or fun fact about the officer</p>
+              <p className="text-white text-sm pb-4">"I rescued three cats with two other officers :3"</p>
             </div>
 
             <div className="backdrop-blur-sm bg-white/10 rounded-2xl p-6 text-center">
-              <div className="w-32 h-32 mx-auto mb-4 rounded-full bg-white/20"></div>
+              <img 
+                src={laura} 
+                alt="Laura L" 
+                className="w-32 h-32 mx-auto mb-4 rounded-full object-cover"
+              />
               <h3 className="text-white text-xl font-bold mb-1">Laura L</h3>
               <p className="text-[#986e82] text-sm mb-2">Social Media Coordinator</p>
-              <p className="text-white text-sm">Brief bio or fun fact about the officer</p>
+              <p className="text-white text-sm pb-4">"I love dill pickle chips😋😋"</p>
             </div>
 
             <div className="backdrop-blur-sm bg-white/10 rounded-2xl p-6 text-center">
@@ -108,7 +133,7 @@ function Home() {
               />
               <h3 className="text-white text-xl font-bold mb-1">Isabel B</h3>
               <p className="text-[#986e82] text-sm mb-2">Webmaster</p>
-              <p className="text-white text-sm">My cats' names are Butter & Jupie!</p>
+              <p className="text-white text-sm pb-4">"My cats' names are Butter & Jupie!"</p>
             </div>
 
           </div>
