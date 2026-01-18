@@ -98,7 +98,7 @@ function Home() {
                 alt="Ornella M" 
                 className="w-32 h-32 mx-auto mb-4 rounded-full object-cover"
               />
-              <h3 className="text-white text-xl font-bold mb-1">Ornella M</h3>
+              <h3 className="text-white text-xl font-bold mb-1">Ornella G</h3>
               <p className="text-[#986e82] text-sm mb-2">Treasurer</p>
               <p className="text-white text-sm pb-4">"I love animal crossing, but not more than cats! :) "</p>
             </div>

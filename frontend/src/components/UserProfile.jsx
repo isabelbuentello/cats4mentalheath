@@ -180,37 +180,34 @@ function UserProfile() {
               className="w-full h-full object-contain"
             />
           </div>
-          {isEditing && (
-            <div className="absolute -bottom-2 -right-2 bg-purple-500 text-white rounded-full p-2 text-xs">
-              ✏️
-            </div>
-          )}
         </div>
 
         {/* Avatar Selector (only in edit mode) */}
         {isEditing && (
           <div className="w-full mb-4">
             <p className="text-sm font-semibold text-gray-700 mb-3 text-center">Choose Your Avatar:</p>
-            <div className="grid grid-cols-3 gap-3 max-h-64 overflow-y-auto p-3 bg-gray-50 rounded-lg">
-              {catAvatars.map((avatar) => (
-                <div
-                  key={avatar.id}
-                  onClick={() => setSelectedAvatar(avatar.path)}
-                  className={`cursor-pointer rounded-full transition-all ${
-                    selectedAvatar === avatar.path
-                      ? 'ring-4 ring-purple-500 bg-white'
-                      : 'hover:ring-2 hover:ring-purple-300 bg-white'
-                  }`}
-                >
-                  <div className="w-20 h-20 rounded-full bg-white flex items-center justify-center p-2">
-                    <img 
-                      src={avatar.src} 
-                      alt={avatar.name}
-                      className="w-full h-full object-contain"
-                    />
+            <div className="flex justify-center pb-8">
+              <div className="grid grid-cols-3 gap-3 max-h-80 overflow-y-auto p-4 bg-gray-50 rounded-lg">
+                {catAvatars.map((avatar) => (
+                  <div
+                    key={avatar.id}
+                    onClick={() => setSelectedAvatar(avatar.path)}
+                    className={`cursor-pointer rounded-full transition-all ${
+                      selectedAvatar === avatar.path
+                        ? 'ring-4 ring-purple-500 bg-white'
+                        : 'hover:ring-2 hover:ring-purple-300 bg-white'
+                    }`}
+                  >
+                    <div className="w-20 h-20 rounded-full bg-white flex items-center justify-center p-2">
+                      <img 
+                        src={avatar.src} 
+                        alt={avatar.name}
+                        className="w-full h-full object-contain"
+                      />
+                    </div>
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
           </div>
         )}
@@ -228,7 +225,7 @@ function UserProfile() {
                 value={displayName}
                 onChange={(e) => setDisplayName(e.target.value)}
                 placeholder="Enter your name"
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-400 focus:border-transparent"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-400 focus:border-transparent text-center"
                 maxLength={50}
               />
             </div>
@@ -270,31 +267,33 @@ function UserProfile() {
         </div>
 
         {/* Action Buttons */}
-        {isEditing ? (
-          <div className="mt-6 w-full flex gap-2">
+        <div style={{ padding: '24px 16px 12px 16px' }} className="w-full">
+          {isEditing ? (
+            <div className="flex gap-2">
+              <button 
+                onClick={handleCancel}
+                disabled={saving}
+                className="flex-1 bg-gray-200 hover:bg-gray-300 disabled:bg-gray-100 text-gray-700 font-bold py-3 px-6 rounded-lg transition-colors"
+              >
+                Cancel
+              </button>
+              <button 
+                onClick={handleSave}
+                disabled={saving}
+                className="flex-1 bg-[#d5caed] hover:bg-[#c4b5e0] disabled:bg-gray-300 text-white font-bold py-3 px-6 rounded-lg transition-colors"
+              >
+                {saving ? 'Saving...' : 'Save Changes'}
+              </button>
+            </div>
+          ) : (
             <button 
-              onClick={handleCancel}
-              disabled={saving}
-              className="flex-1 bg-gray-200 hover:bg-gray-300 disabled:bg-gray-100 text-gray-700 font-bold py-2 px-4 rounded-lg transition-colors"
+              onClick={() => setIsEditing(true)}
+              className="w-full bg-[#d5caed] hover:bg-[#c4b5e0] text-white font-bold py-3 px-6 rounded-lg transition-colors"
             >
-              Cancel
+              Edit Profile
             </button>
-            <button 
-              onClick={handleSave}
-              disabled={saving}
-              className="flex-1 bg-[#d5caed] hover:bg-[#c4b5e0] disabled:bg-gray-300 text-white font-bold py-2 px-4 rounded-lg transition-colors"
-            >
-              {saving ? 'Saving...' : 'Save Changes'}
-            </button>
-          </div>
-        ) : (
-          <button 
-            onClick={() => setIsEditing(true)}
-            className="mt-6 w-full bg-[#d5caed] hover:bg-[#c4b5e0] text-white font-bold py-2 px-4 rounded-lg transition-colors"
-          >
-            Edit Profile
-          </button>
-        )}
+          )}
+        </div>
       </div>
     </div>
   );

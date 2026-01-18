@@ -103,7 +103,7 @@ function UserHoursBadge() {
 
   return (
     <div style={{ padding: '32px' }} className="bg-white rounded-xl shadow-lg">
-      <h3 className="text-2xl font-bold mb-4" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>🕐 Your Volunteer Hours</h3>
+      <h3 className="text-2xl font-bold mb-4" style={{ fontFamily: "'Instrument Sans', sans-serif" }}> Your Volunteer Hours</h3>
 
       {/* Hours Display - Simple */}
       <div className="grid grid-cols-2 gap-4" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>
