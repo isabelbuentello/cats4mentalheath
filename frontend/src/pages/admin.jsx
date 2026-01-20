@@ -124,9 +124,6 @@ function AdminPage() {
       <div style={{ padding: '0 16px' }} className="max-w-7xl mx-auto py-8 space-y-8">
         <AdminPanel />
         <VolunteerHoursTracker />
-         <div style={{ padding: '32px', fontFamily: "'Instrument Sans', sans-serif" }} className="bg-white rounded-xl shadow-lg">
-          <h2 className="text-2xl md:text-3xl font-bold mb-4 md:mb-6">Officer History Book</h2>
-         </div>
       </div>
     </div>
   );
