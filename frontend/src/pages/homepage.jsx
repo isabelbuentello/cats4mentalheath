@@ -7,6 +7,7 @@ import eve from '../assets/eve.png';
 import rashmika from '../assets/rashmika.png';
 import laura from '../assets/laura.png';
 import ornella from '../assets/ornella.png';
+import lear from '../assets/lear.png';
 
 function Home() {
   return (
@@ -41,27 +42,30 @@ function Home() {
       
       {/* About Section */}
       <div style={{ paddingLeft: '24px', paddingRight: '24px', paddingTop: '48px', paddingBottom: '80px' }} className="sm:px-8 md:px-16 lg:px-24 sm:py-16 md:py-20">
-        <h2 className="text-white text-center text-3xl sm:text-4xl md:text-5xl font-bold mb-8 sm:mb-12">
-          Our Story
-        </h2>
-        
-        <div className="max-w-6xl mx-auto space-y-6 text-[#986e82] text-base sm:text-lg leading-relaxed">
-          <p>
-            Our story began in 2017 when two brothers, Hamlet and Lear, arrived at the University of Houston after Hurricane Harvey. These young cats quickly captured the hearts of students and faculty who banded together to care for them. Though Hamlet eventually disappeared, Lear remained and became a beloved campus fixture.
-          </p>
-          
-          <p>
-            When Lear brought home his partner, Momma, the feeding group officially became UH Campus Cats. Together, Lear and Momma raised their son Napolean, who later found his own mate, Natasha. The campus cat family grew, and so did our community of dedicated volunteers committed to their wellbeing.
-          </p>
-          
-          <p>
-            As the university raised concerns about the cats' public presence, we took action by microchipping them and eventually finding them safe homes. This challenge inspired us to evolve. We rebranded as "Cats for Mental Health" and became a registered student organization at UH, focusing on education about TNR (Trap-Neuter-Return) and rescue work.
-          </p>
-          
-          <p>
-            In 2023, approximately one year after being adopted, Lear went missing and the club lost contact with his adopter. The heartbreak of losing Lear inspired our community to take action, leading to the foundation of Lear's Legacy Cat Rescue, a non-profit providing TNR and rescue services for Houston-area cats. Today, both the club and the rescue continue the legacy of Lear and Momma, helping stray and feral cats across campus and beyond.
-          </p>
-        </div>
+       <div className="max-w-6xl mx-auto text-[#986e82] text-base sm:text-lg leading-relaxed">
+      {/* Wrapped image of Lear */}
+      <img 
+        src={lear} 
+        alt="Lear the cat" 
+        className="float-left mr-6 mb-4 w-48 sm:w-56 md:w-64 rounded-lg shadow-lg"
+      />
+      
+      <p className="mb-6">
+        Our story began in 2017 when two brothers, Hamlet and Lear, arrived at the University of Houston after Hurricane Harvey. These young cats quickly captured the hearts of students and faculty who banded together to care for them. Though Hamlet eventually disappeared, Lear remained and became a beloved campus fixture.
+      </p>
+      
+      <p className="mb-6">
+        When Lear brought home his partner, Momma, the feeding group officially became UH Campus Cats. Together, Lear and Momma raised their son Napolean, who later found his own mate, Natasha. The campus cat family grew, and so did our community of dedicated volunteers committed to their wellbeing.
+      </p>
+      
+      <p className="mb-6">
+        As the university raised concerns about the cats' public presence, we took action by microchipping them and eventually finding them safe homes. This challenge inspired us to evolve. We rebranded as "Cats for Mental Health" and became a registered student organization at UH, focusing on education about TNR (Trap-Neuter-Return) and rescue work.
+      </p>
+      
+      <p className="mb-6">
+        In 2023, approximately one year after being adopted, Lear went missing and the club lost contact with his adopter. The heartbreak of losing Lear inspired our community to take action, leading to the foundation of Lear's Legacy Cat Rescue, a non-profit providing TNR and rescue services for Houston-area cats. Today, both the club and the rescue continue the legacy of Lear and Momma, helping stray and feral cats across campus and beyond.
+      </p>
+    </div>
         
         {/* Officers Section */}
         <div style={{ marginTop: '64px', paddingBottom: '20px' }} className="sm:mt-20">

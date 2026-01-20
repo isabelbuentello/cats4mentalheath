@@ -34,7 +34,7 @@ function YouPage() {
       <div className="hidden md:flex justify-center items-center gap-8 py-8 px-4">
         <Link to="/volunteer">
           <button className="text-2xl text-white font-bold bg-[#d1abc3] hover:bg-[#ffb3c1] px-6 py-3 rounded-lg transition-colors">
-            Sign Up
+            Volunteer
           </button>
         </Link>
         <Link to="/map-page">
@@ -70,7 +70,7 @@ function YouPage() {
       <div className="md:hidden grid grid-cols-2 gap-4 p-4">
         <Link to="/volunteer">
           <button className="bg-[#d1abc3] hover:bg-[#ffb3c1] p-4 text-white font-bold rounded-lg transition-colors w-full">
-            Sign Up
+            Volunteer
           </button>
         </Link>
         <Link to="/ourcats">

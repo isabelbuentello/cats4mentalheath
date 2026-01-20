@@ -100,7 +100,9 @@ function NavBar({ startCollapsed = false }) {
             >
               Login
             </Link>
-             <Link 
+          </li>
+          <li className="w-full">
+            <Link 
               to="/events" 
               onClick={() => setIsOpen(false)}
               className="block text-white text-right text-2xl font-medium px-6 py-4 no-underline hover:bg-[#e7c0e0] rounded-lg transition-colors"

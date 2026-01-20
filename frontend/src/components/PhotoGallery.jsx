@@ -105,10 +105,10 @@ function PhotoGallery({ catId, catName }) {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h3 className="text-2xl sm:text-3xl font-bold text-gray-800">
+        <h3 className="text-2xl sm:text-3xl font-bold text-white">
           {catName}'s Photo Album
         </h3>
-        <div style={{ padding: '16px 32px' }} className="bg-purple-100 text-purple-700 font-bold rounded-full text-sm sm:text-base">
+        <div style={{ padding: '12px 24px' }} className="bg-purple-100 text-white font-bold rounded-full text-sm sm:text-base">
           {photos.length} {photos.length === 1 ? 'photo' : 'photos'}
         </div>
       </div>
@@ -153,97 +153,97 @@ function PhotoGallery({ catId, catName }) {
         ))}
       </div>
 
-      {/* Modal for full-size photo */}
+      {/* Modal for full-size photo - True Polaroid Style */}
       {selectedPhoto && (
         <div
-          className="fixed inset-0 bg-black/95 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-fadeIn"
+          className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 animate-fadeIn"
+          style={{ padding: 0, margin: 0 }}
           onClick={() => setSelectedPhoto(null)}
         >
-          <div
-            className="bg-white rounded-2xl w-full max-w-4xl max-h-[95vh] overflow-auto shadow-2xl animate-slideUp"
-            onClick={(e) => e.stopPropagation()}
-          >
-            {/* Header */}
-            <div className="sticky top-0 bg-white border-b border-gray-200 p-4 sm:p-6 z-10">
-              <div className="flex justify-between items-start gap-4">
-                <div className="flex-1 min-w-0">
-                  {selectedPhoto.caption && (
-                    <h3 className="text-lg sm:text-2xl font-bold mb-2 text-gray-800">
-                      {selectedPhoto.caption}
-                    </h3>
-                  )}
-                  <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-sm">
-                    <div className="flex items-center gap-2">
-                      <svg className="w-4 h-4 text-purple-500" fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
-                      </svg>
-                      <span className="text-gray-700 font-medium truncate">
-                        {selectedPhoto.uploadedByEmail || 'Anonymous'}
-                      </span>
-                    </div>
-                    {selectedPhoto.uploadedAt && (
-                      <div className="flex items-center gap-2 text-gray-600">
-                        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                          <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
-                        </svg>
-                        <span>
-                          {selectedPhoto.uploadedAt.toDate().toLocaleDateString('en-US', { 
-                            month: 'short', 
-                            day: 'numeric', 
-                            year: 'numeric' 
-                          })}
-                        </span>
-                      </div>
-                    )}
-                  </div>
-                </div>
+          <div className="relative w-full max-w-2xl mx-4">
+            {/* Close button - Top Right */}
+            <button
+              onClick={() => setSelectedPhoto(null)}
+              className="absolute -top-4 -right-4 z-20 text-white hover:text-gray-300 bg-black/50 hover:bg-black/70 rounded-full p-3 transition-all backdrop-blur-sm"
+              aria-label="Close"
+            >
+              <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+
+            {/* Polaroid card */}
+            <div
+              className="bg-white shadow-2xl animate-slideUp relative"
+              style={{ 
+                fontFamily: "'Instrument Sans', sans-serif",
+                padding: '24px 24px 48px 24px'
+              }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Image container with delete button */}
+              <div className="bg-gray-50 mb-6 relative">
+                <img
+                  src={selectedPhoto.imageUrl}
+                  alt={selectedPhoto.caption || `Photo of ${catName}`}
+                  className="w-full max-h-[55vh] object-contain"
+                />
                 
-                {/* Close button */}
-                <button
-                  onClick={() => setSelectedPhoto(null)}
-                  className="flex-shrink-0 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-full p-2 transition-colors"
-                  aria-label="Close"
-                >
-                  <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </button>
-              </div>
-            </div>
-
-            {/* Image */}
-            <div className="p-4 sm:p-6">
-              <img
-                src={selectedPhoto.imageUrl}
-                alt={selectedPhoto.caption || `Photo of ${catName}`}
-                className="w-full max-h-[60vh] object-contain rounded-lg bg-gray-50"
-              />
-            </div>
-
-            {/* Delete button (only for photo owner) */}
-            {auth.currentUser && selectedPhoto.uploadedBy === auth.currentUser.uid && (
-              <div className="p-4 sm:p-6 pt-0">
-                <button
-                  onClick={() => handleDelete(selectedPhoto)}
-                  disabled={deleting}
-                  className="w-full bg-red-500 hover:bg-red-600 disabled:bg-red-300 text-white font-bold py-3 sm:py-4 rounded-xl transition-colors flex items-center justify-center gap-2 shadow-lg hover:shadow-xl disabled:cursor-not-allowed"
-                >
-                  {deleting ? (
-                    <>
+                {/* Delete button - Bottom Right of photo (only for photo owner) */}
+                {auth.currentUser && selectedPhoto.uploadedBy === auth.currentUser.uid && (
+                  <button
+                    onClick={() => handleDelete(selectedPhoto)}
+                    disabled={deleting}
+                    className="absolute bottom-3 right-3 bg-red-500 hover:bg-red-600 disabled:bg-red-300 text-white rounded-full p-3 shadow-lg hover:shadow-xl transition-all disabled:cursor-not-allowed"
+                    title="Delete photo"
+                  >
+                    {deleting ? (
                       <div className="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent"></div>
-                      Deleting...
-                    </>
-                  ) : (
-                    <>
+                    ) : (
                       <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                       </svg>
-                      Delete Photo
-                    </>
-                  )}
-                </button>
+                    )}
+                  </button>
+                )}
               </div>
-            )}
+
+              {/* Polaroid-style caption area at bottom */}
+              <div className="text-center space-y-3">
+                {/* Caption */}
+                {selectedPhoto.caption && (
+                  <h3 className="text-xl sm:text-2xl font-bold text-gray-800">
+                    {selectedPhoto.caption}
+                  </h3>
+                )}
+                
+                {/* User and date info */}
+                <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4 text-sm text-gray-600">
+                  <div className="flex items-center gap-2">
+                    <svg className="w-4 h-4 text-purple-500" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
+                    </svg>
+                    <span className="font-medium">
+                      {selectedPhoto.uploadedByEmail || 'Anonymous'}
+                    </span>
+                  </div>
+                  {selectedPhoto.uploadedAt && (
+                    <div className="flex items-center gap-2">
+                      <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
+                      </svg>
+                      <span>
+                        {selectedPhoto.uploadedAt.toDate().toLocaleDateString('en-US', { 
+                          month: 'short', 
+                          day: 'numeric', 
+                          year: 'numeric' 
+                        })}
+                      </span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       )}

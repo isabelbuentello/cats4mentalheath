@@ -3,13 +3,15 @@ import NavBar from '../components/NavBar.jsx';
 import { Link } from 'react-router-dom';
 import PhotoUpload from '../components/PhotoUpload.jsx';
 import PhotoGallery from '../components/PhotoGallery.jsx';
-import { getFirestore, collection, query, orderBy, limit, onSnapshot } from 'firebase/firestore';
+import { getFirestore, collection, query, orderBy, limit, onSnapshot, doc, getDoc } from 'firebase/firestore';
+import { auth } from '../firebase/config.js';
 
 function OurCats() {
   const [selectedCat, setSelectedCat] = useState(null);
   const [showUploadForm, setShowUploadForm] = useState(false);
   const [catPhotoCounts, setCatPhotoCounts] = useState({});
   const [catPreviewPhotos, setCatPreviewPhotos] = useState({});
+  const [isAdmin, setIsAdmin] = useState(false);
 
   const db = getFirestore();
 
@@ -108,6 +110,18 @@ function OurCats() {
     setShowUploadForm(false);
   };
 
+   useEffect(() => {
+    const checkAdmin = async () => {
+      if (auth.currentUser) {
+        const userDoc = await getDoc(doc(db, 'users', auth.currentUser.uid));
+        if (userDoc.exists()) {
+          setIsAdmin(userDoc.data().isAdmin || false);
+        }
+      }
+    };
+    checkAdmin();
+  }, []);
+
   return (
     <div className="min-h-screen">
       <NavBar startCollapsed={true} />
@@ -116,71 +130,97 @@ function OurCats() {
       <div className="h-3 sm:h-4 md:h-10 lg:h-14"></div>
       
       {/* Desktop Navigation */}
-      <div className="hidden md:flex justify-center items-center gap-8 py-8 px-4">
-        <Link to="/volunteer">
-          <button className="text-2xl text-white font-bold bg-[#d1abc3] hover:bg-[#ffb3c1] px-6 py-3 rounded-lg transition-colors">
-            Sign Up
-          </button>
-        </Link>
-        <Link to="/map-page">
-          <button className="text-2xl text-white font-bold bg-[#ede0ca] hover:bg-[#ffb3c1] px-6 py-3 rounded-lg transition-colors">
-            Map
-          </button>
-        </Link>
-        <Link to="/ourcats">
-          <button className="text-2xl text-white font-bold bg-[#cadaed] hover:bg-[#ffb3c1] px-6 py-3 rounded-lg transition-colors">
-            Our Cats
-          </button>
-        </Link>
-        <Link to="/feeding-instructions"> 
-          <button className="text-2xl text-white font-bold bg-[#d4edca] hover:bg-[#ffb3c1] px-6 py-3 rounded-lg transition-colors">
-            Feeding Instructions
-          </button>
-        </Link>
-        <Link to="/you-page" className="col-span-2"> 
-          <button className="bg-[#d5caed] hover:bg-[#ffb3c1] p-4 text-white font-bold rounded-lg transition-colors w-full">
-            You
-          </button>
-        </Link>
-      </div>
+        <div className="hidden md:flex justify-center items-center gap-8 py-8 px-4">
+            <Link to="/volunteer">
+            <button className="text-2xl text-white font-bold bg-[#d1abc3] hover:bg-[#ffb3c1] px-6 py-3 rounded-lg transition-colors">
+                Volunteer
+            </button>
+            </Link>
+            <Link to="/map-page">
+            <button className="text-2xl text-white font-bold bg-[#ede0ca] hover:bg-[#ffb3c1] px-6 py-3 rounded-lg transition-colors">
+                Map
+            </button>
+            </Link>
+            <Link to="/ourcats">
+            <button className="text-2xl text-white font-bold bg-[#cadaed] hover:bg-[#ffb3c1] px-6 py-3 rounded-lg transition-colors">
+                Our Cats
+            </button>
+            </Link>
+            <Link to="/feeding-instructions"> 
+            <button className="text-2xl text-white font-bold bg-[#d4edca] hover:bg-[#ffb3c1] px-6 py-3 rounded-lg transition-colors">
+                Feeding Instructions
+            </button>
+            </Link>
+            <Link to="/you-page" className="col-span-2"> 
+            <button className="bg-[#d5caed] hover:bg-[#ffb3c1] p-4 text-white font-bold rounded-lg transition-colors w-full">
+                You
+            </button>
+            </Link>
+        </div>
 
-      {/* Mobile Navigation */}
-      <div className="md:hidden grid grid-cols-2 gap-4 p-4">
-        <Link to="/volunteer">
-          <button className="bg-[#d1abc3] hover:bg-[#ffb3c1] p-4 text-white font-bold rounded-lg transition-colors w-full">
-            Sign Up
-          </button>
-        </Link>
-        <Link to="/ourcats">
-          <button className="bg-[#cadaed] hover:bg-[#ffb3c1] p-4 text-white font-bold rounded-lg transition-colors w-full">
-            Our Cats
-          </button>
-        </Link>
-        <Link to="/map-page">
-          <button className="bg-[#ede0ca] hover:bg-[#ffb3c1] p-4 text-white font-bold rounded-lg transition-colors w-full">
-            Map
-          </button>
-        </Link>
-        <Link to="/you-page">
-          <button className="bg-[#d5caed] hover:bg-[#ffb3c1] p-4 text-white font-bold rounded-lg transition-colors w-full">
-            You
-          </button>
-        </Link>
-        <Link to="/feeding-instructions" className="col-span-2">
-          <button className="bg-[#d4edca] hover:bg-[#ffb3c1] p-4 text-white font-bold rounded-lg transition-colors w-full">
-            Feeding Instructions
-          </button>
-        </Link>
-      </div>
+        {/* Mobile Navigation */}
+        <div className="md:hidden grid grid-cols-2 gap-4 p-4">
+            <Link to="/volunteer">
+            <button className="bg-[#d1abc3] hover:bg-[#ffb3c1] p-4 text-white font-bold rounded-lg transition-colors w-full">
+                Volunteer
+            </button>
+            </Link>
+            <Link to="/ourcats">
+            <button className="bg-[#cadaed] hover:bg-[#ffb3c1] p-4 text-white font-bold rounded-lg transition-colors w-full">
+                Our Cats
+            </button>
+            </Link>
+            <Link to="/map-page">
+            <button className="bg-[#ede0ca] hover:bg-[#ffb3c1] p-4 text-white font-bold rounded-lg transition-colors w-full">
+                Map
+            </button>
+            </Link>
+            <Link to="/you-page">
+            <button className="bg-[#d5caed] hover:bg-[#ffb3c1] p-4 text-white font-bold rounded-lg transition-colors w-full">
+                You
+            </button>
+            </Link>
+            <Link to="/feeding-instructions" className="col-span-2">
+            <button className="bg-[#d4edca] hover:bg-[#ffb3c1] p-4 text-white font-bold rounded-lg transition-colors w-full">
+                Feeding Instructions
+            </button>
+            </Link>
+        </div>
+
 
       <h1 className='greeting'>Our Cats</h1>
 
-      <div style={{ padding: '16px' }} className="max-w-7xl mx-auto">
+      <div style={{ padding: '13px' }} className="max-w-7xl mx-auto">
         {!selectedCat ? (
           // Cat list view
           <>
-            <p className="text-center text-gray-700 mb-8 text-lg" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>
+            <p className="text-center text-gray-700 mb-2 text-lg" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>
               Click on a cat to view their photo album! 📸
+            </p>
+            <p className="text-center text-gray-700 mb-8 text-lg" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>
+              {isAdmin ? (
+                <>
+                  Click <a 
+                    href="https://docs.google.com/document/d/1wgzHosL1A4fdNLRzsXPqOYWr34kgo-abW7kcomiCr_o/edit?usp=sharing" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="text-blue-600 hover:text-blue-300"
+                  >
+                    here
+                  </a> to view our extended Cat History Book
+                </>
+              ) : (
+                <>
+                  Click <a 
+                    href="https://docs.google.com/document/d/1LaMDEzzvm5ojNlr8yrbCeP7gSRjtxAXwnU8ODxm9Dv4/edit?usp=sharing" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="text-blue-600 hover:text-blue-300"
+                  >
+                    here
+                  </a> for our extended Cat History Book
+                </>
+              )}
             </p>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
@@ -310,8 +350,8 @@ function OurCats() {
             </div>
 
             {/* Cat info header */}
-            <div className="bg-white rounded-2xl shadow-lg p-5 sm:p-8 mb-8" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>
-              <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+            <div style={{ padding: '32px' }} className="bg-white rounded-2xl shadow-lg sm:p-8 mb-8">
+              <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>
                 <div>
                   <h2 className="text-3xl sm:text-4xl font-bold mb-5 text-gray-800">{selectedCat.name}</h2>
                   <div className="flex items-center gap-4 mb-4">
