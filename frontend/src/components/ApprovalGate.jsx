@@ -95,8 +95,16 @@ function ApprovalGate({ children, requireApproval = false }) {
             </a>
             , and an officer will reach out shortly.
           </p>
+          <p> or if your connection timed out... </p>
+           <Link to="/you-page">
+              <button className="bg-purple-500 hover:bg-purple-600 text-white font-bold py-3 px-6 rounded-lg transition-colors">
+              Back to Profile
+              </button>
+              </Link>
         </div>
       </div>
+
+
     );
   }
 
