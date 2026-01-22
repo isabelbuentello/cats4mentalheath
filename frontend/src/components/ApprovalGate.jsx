@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { doc, getDoc } from 'firebase/firestore';
 import { db, auth } from '../firebase/config.js';
 import { onAuthStateChanged } from 'firebase/auth';
+import { Link } from 'react-router-dom';
 
 function ApprovalGate({ children, requireApproval = false }) {
   const [isApproved, setIsApproved] = useState(null);
