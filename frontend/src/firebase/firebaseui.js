@@ -1,64 +1,57 @@
 import * as firebaseui from 'firebaseui';
 import { auth, db } from './config.js';
-import { GoogleAuthProvider, EmailAuthProvider } from 'firebase/auth';
+import { EmailAuthProvider, GoogleAuthProvider } from 'firebase/auth';
 import { doc, setDoc, getDoc } from 'firebase/firestore';
 import 'firebaseui/dist/firebaseui.css';
 
-// Default avatar path
 const DEFAULT_AVATAR = "/assets/darkbrowncat.png";
 
 let ui = null;
 
 export const initializeFirebaseUI = () => {
-  if (!ui) {
-    ui = new firebaseui.auth.AuthUI(auth);
+  // Completely reset UI each time
+  if (ui) {
+    ui.delete();
   }
+  
+  ui = new firebaseui.auth.AuthUI(auth);
   
   const uiConfig = {
     signInFlow: 'popup',
     signInOptions: [
       GoogleAuthProvider.PROVIDER_ID,
-      EmailAuthProvider.PROVIDER_ID,
+      EmailAuthProvider.PROVIDER_ID, // Simple, no custom config
     ],
     callbacks: {
       signInSuccessWithAuthResult: async (authResult) => {
-        // This callback fires AFTER successful sign-in
         const user = authResult.user;
-        console.log('=== FIREBASEUI SIGN-IN SUCCESS ===');
-        console.log('User:', user.email);
-        console.log('UID:', user.uid);
-        console.log('Is new user?', authResult.additionalUserInfo.isNewUser);
+        console.log('=== SIGN-IN SUCCESS ===');
+        console.log('Email:', user.email);
+        console.log('Provider:', authResult.credential?.providerId || authResult.additionalUserInfo.providerId);
         
         try {
-          // Check if user document exists
           const userDocRef = doc(db, 'users', user.uid);
           const userDoc = await getDoc(userDocRef);
           
           if (!userDoc.exists()) {
-            console.log('Creating user document in Firestore...');
-            
-            // Create user document with default avatar
+            console.log('Creating Firestore document...');
             await setDoc(userDocRef, {
               email: user.email,
               displayName: user.displayName || null,
               photoURL: user.photoURL || DEFAULT_AVATAR,
-              isApproved: false,  // New users need approval
+              isApproved: false,
               isAdmin: false,
               appliedAt: new Date(),
               approvedAt: null,
               approvedBy: null
             });
-            
-            console.log('✓ User document created successfully!');
-          } else {
-            console.log('✓ User document already exists');
+            console.log('✓ Document created');
           }
         } catch (error) {
-          console.error('❌ Error creating user document:', error);
+          console.error('Error with Firestore:', error);
         }
         
-        // Return false to handle redirect manually
-        return false;
+        return false; // Don't redirect automatically
       },
     },
   };
@@ -68,6 +61,7 @@ export const initializeFirebaseUI = () => {
 
 export const resetFirebaseUI = () => {
   if (ui) {
-    ui.reset();
+    ui.delete();
+    ui = null;
   }
 };
