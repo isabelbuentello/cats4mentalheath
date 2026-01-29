@@ -6,7 +6,6 @@ import c3 from '../assets/c3.png'
 import c4 from '../assets/c4.png'
 import c5 from '../assets/c5.png'
 import '../styles/circulargallery.css';
-console.log('Image paths:', { c1, c2, c3, c4, c5 });
 
 function debounce(func, wait) {
   let timeout;

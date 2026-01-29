@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { db, auth } from "../firebase/config.js";
 import { collection, doc, getDoc, setDoc, updateDoc, deleteDoc, onSnapshot, runTransaction } from "firebase/firestore";
 import DayCard from "./DayCard.jsx";
@@ -6,17 +6,15 @@ import FeedingModal from "./FeedingModal.jsx";
 
 function WeeklyCalendar() {
   const [currentWeekStart, setCurrentWeekStart] = useState(() => {
-    // Get current date
     const now = new Date();
-
+    // Set to midnight first
+    now.setHours(0, 0, 0, 0);
     // Calculate the Sunday of the current week
     const day = now.getDay();
-    const diff = now.getDate() - day;
-    const sunday = new Date(now);
-    sunday.setDate(diff);
-
-    return sunday;
+    now.setDate(now.getDate() - day);
+    return now;
   });
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedDay, setSelectedDay] = useState(null);
   const [selectedSlot, setSelectedSlot] = useState(null);
@@ -24,6 +22,8 @@ function WeeklyCalendar() {
   const [loading, setLoading] = useState(true);
   const [isApproved, setIsApproved] = useState(null);
   const [checkingApproval, setCheckingApproval] = useState(true);
+
+  const activeTransactionsRef = useRef(new Set());
   const [activeTransactions, setActiveTransactions] = useState(new Set());
 
   const FEEDING_ZONES = [
@@ -46,12 +46,14 @@ function WeeklyCalendar() {
   ];
 
   // Get week start (Sunday)
-  const getWeekStart = (date) => {
-    const d = new Date(date);
-    const day = d.getDay();
-    const diff = d.getDate() - day;
-    return new Date(d.setDate(diff));
-  };
+const getWeekStart = (date) => {
+  const d = new Date(date);
+  const day = d.getDay();
+  // Set to midnight to avoid any time-based issues
+  d.setHours(0, 0, 0, 0);
+  d.setDate(d.getDate() - day);
+  return d;
+};
 
   // Navigate weeks
   const previousWeek = () => {
@@ -95,12 +97,18 @@ function WeeklyCalendar() {
   // Get week ID for Firestore
   const getWeekId = (date) => {
     const weekStart = getWeekStart(date);
-    return weekStart.toISOString().split("T")[0]; // "2024-11-23" format
-  };
+    const year = weekStart.getFullYear();
+    const month = String(weekStart.getMonth() + 1).padStart(2, '0');
+    const day = String(weekStart.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+};
 
   // Get day ID for Firestore
   const getDayId = (date) => {
-    return date.toISOString().split("T")[0]; // "2024-11-26" format
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
   };
 
   // Initialize empty slots for a day
@@ -133,7 +141,7 @@ function WeeklyCalendar() {
         dayDocRef,
         (docSnapshot) => {
           // Don't update if there's an active transaction for this day
-          if (activeTransactions.has(dayId)) {
+          if (activeTransactionsRef.current.has(dayId)) {
             console.log(`Skipping listener update for ${dayId} - transaction in progress`);
             return;
           }
@@ -180,7 +188,7 @@ function WeeklyCalendar() {
     return () => {
       unsubscribers.forEach((unsub) => unsub());
     };
-  }, [currentWeekStart, activeTransactions]);
+  }, [currentWeekStart]);
   
   useEffect(() => {
     const checkApprovalStatus = async () => {
@@ -298,7 +306,8 @@ function WeeklyCalendar() {
     const dayDocRef = doc(db, "feeding-schedule", weekId, "days", dayId);
 
     // Mark this day as having an active transaction
-    setActiveTransactions(prev => new Set([...prev, dayId]));
+    activeTransactionsRef.current.add(dayId);
+    
 
     try {
       console.log("Signing up for:", { weekId, dayId, slotId: slot.id });
@@ -361,11 +370,7 @@ function WeeklyCalendar() {
     } finally {
       // Clear transaction lock after a small delay
       setTimeout(() => {
-        setActiveTransactions(prev => {
-          const next = new Set(prev);
-          next.delete(dayId);
-          return next;
-        });
+      activeTransactionsRef.current.delete(dayId);
       }, 500);
     }
   };
@@ -384,7 +389,7 @@ function WeeklyCalendar() {
     const dayDocRef = doc(db, "feeding-schedule", weekId, "days", dayId);
 
     // Mark this day as having an active transaction
-    setActiveTransactions(prev => new Set([...prev, dayId]));
+    activeTransactionsRef.current.add(dayId);
 
     try {
       console.log("Cancelling sign-up for:", {
@@ -451,11 +456,7 @@ function WeeklyCalendar() {
     } finally {
       // Clear transaction lock after a small delay
       setTimeout(() => {
-        setActiveTransactions(prev => {
-          const next = new Set(prev);
-          next.delete(dayId);
-          return next;
-        });
+      activeTransactionsRef.current.delete(dayId);
       }, 500);
     }
   };
