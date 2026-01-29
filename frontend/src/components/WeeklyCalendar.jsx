@@ -142,7 +142,6 @@ const getWeekStart = (date) => {
         (docSnapshot) => {
           // Don't update if there's an active transaction for this day
           if (activeTransactionsRef.current.has(dayId)) {
-            console.log(`Skipping listener update for ${dayId} - transaction in progress`);
             return;
           }
 
@@ -377,89 +376,87 @@ const getWeekStart = (date) => {
 
   // TRANSACTION-BASED CANCEL: Prevents race conditions
   const handleCancelSignUp = async (day, slot) => {
-    const user = auth.currentUser;
+  const user = auth.currentUser;
 
-    if (!user) {
-      alert("Please log in!");
-      return;
-    }
+  if (!user) {
+    alert("Please log in!");
+    return;
+  }
 
-    const weekId = getWeekId(currentWeekStart);
-    const dayId = getDayId(day);
-    const dayDocRef = doc(db, "feeding-schedule", weekId, "days", dayId);
+  const weekId = getWeekId(currentWeekStart);
+  const dayId = getDayId(day);
+  const dayDocRef = doc(db, "feeding-schedule", weekId, "days", dayId);
+  
+  // Reference to the volunteer log
+  const shiftId = `${dayId}_${slot.id}`;
+  const shiftLogRef = doc(db, 'volunteer-logs', user.uid, 'shifts', shiftId);
 
-    // Mark this day as having an active transaction
-    activeTransactionsRef.current.add(dayId);
+  activeTransactionsRef.current.add(dayId);
 
-    try {
-      console.log("Cancelling sign-up for:", {
-        weekId,
-        dayId,
-        slotId: slot.id,
-      });
+  try {
+    console.log("Cancelling sign-up for:", {
+      weekId,
+      dayId,
+      slotId: slot.id,
+    });
 
-      let finalSlots = {};
+    let finalSlots = {};
 
-      // Use transaction to ensure atomic read-check-write
-      await runTransaction(db, async (transaction) => {
-        const dayDoc = await transaction.get(dayDocRef);
-        
-        let currentSlots = {};
-        if (dayDoc.exists()) {
-          const data = dayDoc.data();
-          currentSlots = data.slots || data;
-        }
-
-        // Verify this user owns this slot
-        if (currentSlots[slot.id]?.email !== user.email) {
-          throw new Error("You can only cancel your own sign-ups!");
-        }
-
-        // Clear the slot
-        finalSlots = {
-          ...currentSlots,
-          [slot.id]: {
-            volunteer: null,
-            email: null,
-            photoURL: null, 
-            signedUpAt: null,
-          },
-        };
-
-        // Write update within transaction
-        transaction.set(
-          dayDocRef,
-          {
-            slots: finalSlots,
-            updatedAt: new Date().toISOString(),
-          },
-          { merge: true }
-        );
-      });
-
-      console.log("Successfully cancelled in Firebase");
+    await runTransaction(db, async (transaction) => {
+      const dayDoc = await transaction.get(dayDocRef);
       
-      // Manually update local state immediately with transaction result
-      setScheduleData((prev) => ({
-        ...prev,
-        [dayId]: finalSlots,
-      }));
+      let currentSlots = {};
+      if (dayDoc.exists()) {
+        const data = dayDoc.data();
+        currentSlots = data.slots || data;
+      }
 
-      // Only delete log AFTER transaction succeeds
-      await deleteVolunteerShift(user, day, slot);
+      if (currentSlots[slot.id]?.email !== user.email) {
+        throw new Error("You can only cancel your own sign-ups!");
+      }
 
-      alert("Sign-up cancelled!");
-      setIsModalOpen(false);
-    } catch (error) {
-      console.error("Error cancelling:", error);
-      alert(error.message || `Failed to cancel: ${error.message}`);
-    } finally {
-      // Clear transaction lock after a small delay
-      setTimeout(() => {
+      finalSlots = {
+        ...currentSlots,
+        [slot.id]: {
+          volunteer: null,
+          email: null,
+          photoURL: null,
+          signedUpAt: null,
+        },
+      };
+
+      // Update feeding schedule
+      transaction.set(
+        dayDocRef,
+        {
+          slots: finalSlots,
+          updatedAt: new Date().toISOString(),
+        },
+        { merge: true }
+      );
+
+      // Delete volunteer log in same transaction - atomic operation
+      transaction.delete(shiftLogRef);
+    });
+
+    console.log("Successfully cancelled in Firebase");
+    
+    setScheduleData((prev) => ({
+      ...prev,
+      [dayId]: finalSlots,
+    }));
+
+    alert("Sign-up cancelled!");
+    setIsModalOpen(false);
+  } catch (error) {
+    console.error("Error cancelling:", error);
+    alert(error.message || `Failed to cancel: ${error.message}`);
+  } finally {
+    setTimeout(() => {
       activeTransactionsRef.current.delete(dayId);
-      }, 500);
-    }
-  };
+    }, 500);
+  }
+};
 
 
   if (loading) {

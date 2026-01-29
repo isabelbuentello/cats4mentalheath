@@ -19,7 +19,7 @@ function VolunteerHoursTracker() {
   const [loading, setLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
-  const [viewMode, setViewMode] = useState('users'); // 'users' or 'shifts'
+  const [viewMode, setViewMode] = useState('users');
   const currentUser = auth.currentUser;
 
 
@@ -76,7 +76,10 @@ function VolunteerHoursTracker() {
             id: doc.id,
             path: doc.ref.path,
             ...shift,
-            date: new Date(shift.date),
+            date: (() => {
+              const [year, month, day] = shift.date.split('-').map(Number);
+              return new Date(year, month - 1, day);
+            })(),
             signedUpAt: shift.signedUpAt?.toDate()
           };
 
