@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { db, auth } from "../firebase/config.js";
-import { collection, doc, getDoc, setDoc, updateDoc, deleteDoc, onSnapshot, runTransaction } from "firebase/firestore";
+import { collection, doc, getDoc, setDoc, updateDoc, deleteDoc, onSnapshot, runTransaction, getDocs } from "firebase/firestore";
 import DayCard from "./DayCard.jsx";
 import FeedingModal from "./FeedingModal.jsx";
 
@@ -22,6 +22,7 @@ function WeeklyCalendar() {
   const [loading, setLoading] = useState(true);
   const [isApproved, setIsApproved] = useState(null);
   const [checkingApproval, setCheckingApproval] = useState(true);
+  const [userProfiles, setUserProfiles] = useState({});
 
   const activeTransactionsRef = useRef(new Set());
   const [activeTransactions, setActiveTransactions] = useState(new Set());
@@ -125,6 +126,29 @@ const getWeekStart = (date) => {
     return slots;
   };
 
+  useEffect(() => {
+  const fetchUserProfiles = async () => {
+    try {
+      const usersSnapshot = await getDocs(collection(db, 'users'));
+      const profiles = {};
+      usersSnapshot.forEach((doc) => {
+        const data = doc.data();
+        if (data.email) {
+          profiles[data.email] = {
+            displayName: data.displayName || data.email.split('@')[0],
+            photoURL: data.photoURL || null
+          };
+        }
+      });
+      setUserProfiles(profiles);
+    } catch (error) {
+      console.error('Error fetching user profiles:', error);
+    }
+  };
+
+  fetchUserProfiles();
+}, []);
+
   // REAL-TIME LISTENERS: Subscribe to schedule updates
   useEffect(() => {
     const weekId = getWeekId(currentWeekStart);
@@ -218,16 +242,24 @@ const getWeekStart = (date) => {
 
   // Get slots for a specific day
   const getSlots = (day) => {
-    const dayId = getDayId(day);
-    const daySlots = scheduleData[dayId] || {};
+  const dayId = getDayId(day);
+  const daySlots = scheduleData[dayId] || {};
 
-    return FEEDING_ZONES.map((zone) => ({
+  return FEEDING_ZONES.map((zone) => {
+    const slotData = daySlots[zone.id];
+    const email = slotData?.email;
+    
+    // Get current profile data if user exists
+    const currentProfile = email ? userProfiles[email] : null;
+    
+    return {
       ...zone,
-      volunteer: daySlots[zone.id]?.volunteer || null,
-      email: daySlots[zone.id]?.email || null,
-      photoURL: daySlots[zone.id]?.photoURL || null,  
-    }));
-  };
+      volunteer: currentProfile?.displayName || slotData?.volunteer || null,
+      email: email || null,
+      photoURL: currentProfile?.photoURL || slotData?.photoURL || null,
+    };
+  });
+};
 
   // Handle slot click
   const handleSlotClick = (day, slot) => {

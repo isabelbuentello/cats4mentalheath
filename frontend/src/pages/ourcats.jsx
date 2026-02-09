@@ -18,12 +18,6 @@ function OurCats() {
   // Your campus cats
   const cats = [
     {
-      id: 'druid-zoned',
-      name: 'Druid',
-      location: 'Zone D Parking Lot',
-      description: 'Hard-to-trap orange tabby often spotted on the fence'
-    },
-    {
       id: 'mrclaude-eob',
       name: 'Mr. Claude',
       location: 'Equal Opportunity Building',
@@ -34,6 +28,12 @@ function OurCats() {
       name: 'Artificer',
       location: 'Zone D Parking Lot',
       description: "Grumpy looking little tabby with white socks"
+    },
+    {
+      id: 'druid-zoned',
+      name: 'Druid',
+      location: 'Now up for adoption!',
+      description: 'Formerly a hard-to-trap orange tabby who was often spotted on the fence'
     },
     {
       id: 'margot-law',

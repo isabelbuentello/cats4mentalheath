@@ -218,7 +218,6 @@ function Leaderboard() {
         Top feeders of all time 
       </p>
 
-      {/* Current User Rank Highlight - Removed, now shown in banner above */}
 
       {/* Leaderboard List */}
       <div className="space-y-2 max-h-96 overflow-y-auto">

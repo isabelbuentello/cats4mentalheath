@@ -16,7 +16,7 @@ function CatMapWithMarkers() {
       id: 2,
       name: 'Zone D Parking Lot',
       position: { lat: 29.715792, lng: -95.341824 },
-      cats: ['Druid', 'Artificer', 'Friday the 13th', 'Mage']
+      cats: ['Artificer', 'Friday the 13th', 'Mage']
     },
     {
       id: 3,
