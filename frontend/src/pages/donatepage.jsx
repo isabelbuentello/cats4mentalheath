@@ -58,7 +58,7 @@ function DonatePage() {
               </a>
 
               <a 
-                href="https://cash.app/$CatsForMentalHealth"
+                href="https://cash.app/$uhc4mh"
                 target="_blank" 
                 rel="noopener noreferrer"
                 className="inline-flex items-center justify-center hover:bg-gray-100 py-3 px-6 rounded-2xl transition-all w-48"
