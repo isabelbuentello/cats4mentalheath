@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { getAuth, updateProfile } from 'firebase/auth';
-import { collection, collectionGroup, getDocs, writeBatch, doc } from 'firebase/firestore';
+import { collectionGroup, getDocs, writeBatch, doc, setDoc } from 'firebase/firestore';
 import { db } from '../firebase/config.js';
 
 // Import cat images
@@ -132,6 +132,19 @@ function UserProfile() {
       photoURL: selectedAvatar
     });
 
+    // Update the Firestore users doc. This is the source of truth for the
+    // weekly calendar, admin panel, and hours tracker — without this write it
+    // keeps whatever DEFAULT_AVATAR was set at signup, so everywhere except
+    // the leaderboard (which reads slot.photoURL) shows the default cat.
+    await setDoc(
+      doc(db, 'users', user.uid),
+      {
+        displayName: displayName.trim() || null,
+        photoURL: selectedAvatar
+      },
+      { merge: true }
+    );
+
     // Update all feeding slots in Firestore
     const updatedCount = await updateAllFeedingSlots(
       displayName.trim() || null,
@@ -162,18 +175,18 @@ function UserProfile() {
 
   if (!user) {
     return (
-      <div className="bg-white rounded-xl shadow-lg p-6 text-center" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>
-        <p className="text-gray-600">Please sign in to view your profile</p>
+      <div className="c4-panel font-hand rounded-[18px] p-4 text-center">
+        <p className="text-ink/70">Please sign in to view your profile</p>
       </div>
     );
   }
 
   return (
-    <div className="bg-white rounded-xl shadow-lg p-6" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>
+    <div className="c4-panel font-hand rounded-[18px] p-4">
       <div className="flex flex-col items-center">
         {/* Profile Picture */}
         <div className="relative mb-4">
-          <div className="w-32 h-32 rounded-full bg-white flex items-center justify-center overflow-hidden border-4 border-purple-300">
+          <div className="w-32 h-32 rounded-full bg-white flex items-center justify-center overflow-hidden border-4 border-line">
             <img 
               src={getCatImageFromPath(selectedAvatar)} 
               alt="Profile" 
@@ -185,17 +198,17 @@ function UserProfile() {
         {/* Avatar Selector (only in edit mode) */}
         {isEditing && (
           <div className="w-full mb-4">
-            <p className="text-sm font-semibold text-gray-700 mb-3 text-center">Choose Your Avatar:</p>
+            <p className="text-sm font-semibold text-ink mb-3 text-center">Choose Your Avatar:</p>
             <div className="flex justify-center pb-8">
-              <div className="grid grid-cols-3 gap-3 max-h-80 overflow-y-auto p-4 bg-gray-50 rounded-lg">
+              <div className="grid grid-cols-3 gap-3 max-h-80 overflow-y-auto p-4 bg-soft rounded-lg">
                 {catAvatars.map((avatar) => (
                   <div
                     key={avatar.id}
                     onClick={() => setSelectedAvatar(avatar.path)}
                     className={`cursor-pointer rounded-full transition-all ${
                       selectedAvatar === avatar.path
-                        ? 'ring-4 ring-purple-500 bg-white'
-                        : 'hover:ring-2 hover:ring-purple-300 bg-white'
+                        ? 'ring-4 ring-accent bg-white'
+                        : 'hover:ring-2 hover:ring-line bg-white'
                     }`}
                   >
                     <div className="w-20 h-20 rounded-full bg-white flex items-center justify-center p-2">
@@ -217,7 +230,7 @@ function UserProfile() {
           {isEditing ? (
             // Edit mode
             <div className="mb-4">
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
+              <label className="block text-sm font-semibold text-ink mb-2">
                 Display Name
               </label>
               <input
@@ -225,36 +238,36 @@ function UserProfile() {
                 value={displayName}
                 onChange={(e) => setDisplayName(e.target.value)}
                 placeholder="Enter your name"
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-400 focus:border-transparent text-center"
+                className="w-full px-4 py-2 border border-line rounded-lg focus:ring-2 focus:ring-accent focus:border-transparent text-center"
                 maxLength={50}
               />
             </div>
           ) : (
             // View mode
-            <h2 className="text-2xl font-bold mb-2">
+            <h2 className="font-pix text-accent m-0 mb-2 text-xl sm:text-2xl">
               {user.displayName || 'Volunteer'}
             </h2>
           )}
           
           <div className="space-y-3 mt-4">
             {/* Email (non-editable) */}
-            <div className="bg-gray-50 rounded-lg p-3">
-              <p className="text-sm text-gray-600 mb-1">Email</p>
-              <p className="font-semibold text-gray-800 break-words">{user.email}</p>
+            <div className="bg-soft rounded-lg p-3">
+              <p className="text-sm text-ink/70 mb-1">Email</p>
+              <p className="font-semibold text-ink break-words">{user.email}</p>
             </div>
 
             {/* Display Name (only show in view mode if exists) */}
             {!isEditing && user.displayName && (
-              <div className="bg-gray-50 rounded-lg p-3">
-                <p className="text-sm text-gray-600 mb-1">Name</p>
-                <p className="font-semibold text-gray-800">{user.displayName}</p>
+              <div className="bg-soft rounded-lg p-3">
+                <p className="text-sm text-ink/70 mb-1">Name</p>
+                <p className="font-semibold text-ink">{user.displayName}</p>
               </div>
             )}
 
             {/* Member Since */}
-            <div className="bg-gray-50 rounded-lg p-3">
-              <p className="text-sm text-gray-600 mb-1">Member Since</p>
-              <p className="font-semibold text-gray-800">
+            <div className="bg-soft rounded-lg p-3">
+              <p className="text-sm text-ink/70 mb-1">Member Since</p>
+              <p className="font-semibold text-ink">
                 {user.metadata.creationTime 
                   ? new Date(user.metadata.creationTime).toLocaleDateString('en-US', { 
                       month: 'long', 
@@ -273,14 +286,15 @@ function UserProfile() {
               <button 
                 onClick={handleCancel}
                 disabled={saving}
-                className="flex-1 bg-gray-200 hover:bg-gray-300 disabled:bg-gray-100 text-gray-700 font-bold py-3 px-6 rounded-lg transition-colors"
+                className="flex-1 bg-soft hover:bg-soft disabled:bg-soft text-ink font-bold py-3 px-6 rounded-lg transition-colors"
               >
                 Cancel
               </button>
               <button 
                 onClick={handleSave}
                 disabled={saving}
-                className="flex-1 bg-[#d5caed] hover:bg-[#c4b5e0] disabled:bg-gray-300 text-white font-bold py-3 px-6 rounded-lg transition-colors"
+                className="c4-btn flex-1"
+                style={{ background: 'var(--color-accent)', color: 'var(--color-panel)' }}
               >
                 {saving ? 'Saving...' : 'Save Changes'}
               </button>
@@ -288,7 +302,8 @@ function UserProfile() {
           ) : (
             <button 
               onClick={() => setIsEditing(true)}
-              className="w-full bg-[#d5caed] hover:bg-[#c4b5e0] text-white font-bold py-3 px-6 rounded-lg transition-colors"
+              className="c4-btn w-full"
+              style={{ background: 'var(--color-chip-1)' }}
             >
               Edit Profile
             </button>

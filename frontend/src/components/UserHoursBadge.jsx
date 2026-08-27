@@ -93,8 +93,8 @@ function UserHoursBadge() {
 
   if (loading) {
     return (
-      <div className="bg-white rounded-xl shadow-lg p-6">
-        <p className="text-gray-600">Loading hours...</p>
+      <div className="c4-panel font-hand rounded-[18px] p-4">
+        <p className="text-ink/70">Loading hours...</p>
       </div>
     );
   }
@@ -102,24 +102,30 @@ function UserHoursBadge() {
   const currentSemester = getCurrentSemester(new Date());
 
   return (
-    <div style={{ padding: '32px' }} className="bg-white rounded-xl shadow-lg">
-      <h3 className="text-2xl font-bold mb-4" style={{ fontFamily: "'Instrument Sans', sans-serif" }}> Your Volunteer Hours</h3>
+    <div className="c4-panel font-hand rounded-[18px] p-4 sm:p-5">
+      <h3 className="font-pix text-accent m-0 mb-3 text-xl sm:text-2xl">♡ your volunteer hours</h3>
 
       {/* Hours Display - Simple */}
-      <div className="grid grid-cols-2 gap-4" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>
-        <div className="bg-gradient-to-br from-purple-400 to-pink-400 rounded-lg p-6 text-center text-white">
-          <p className="text-4xl font-bold mb-1">{hours.total.toFixed(1)}</p>
-          <p className="text-sm opacity-90">Total Hours</p>
+      <div className="grid grid-cols-2 gap-2.5">
+        <div
+          className="border-line rounded-[12px] border-[1.5px] p-4 text-center"
+          style={{ background: 'var(--color-chip-1)' }}
+        >
+          <p className="font-pix text-ink m-0 mb-1 text-3xl">{hours.total.toFixed(1)}</p>
+          <p className="text-ink/70 m-0 text-sm">Total Hours</p>
         </div>
-        <div className="bg-gradient-to-br from-blue-400 to-purple-400 rounded-lg p-6 text-center text-white">
-          <p className="text-4xl font-bold mb-1">{hours.semester.toFixed(1)}</p>
-          <p className="text-sm opacity-90">{currentSemester.name}</p>
+        <div
+          className="border-line rounded-[12px] border-[1.5px] p-4 text-center"
+          style={{ background: 'var(--color-chip-3)' }}
+        >
+          <p className="font-pix text-ink m-0 mb-1 text-3xl">{hours.semester.toFixed(1)}</p>
+          <p className="text-ink/70 m-0 text-sm">{currentSemester.name}</p>
         </div>
       </div>
 
       {hours.total === 0 && (
-        <div className="mt-6 text-center py-4 bg-gray-50 rounded-lg">
-          <p className="text-gray-600" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>
+        <div className="mt-6 text-center py-4 bg-soft rounded-lg">
+          <p className="text-ink/70">
             Sign up for feeding shifts to start earning volunteer hours! 
           </p>
         </div>
@@ -127,7 +133,7 @@ function UserHoursBadge() {
 
       {hours.total > 0 && (
         <div className="mt-6 text-center py-3 bg-green-50 rounded-lg">
-          <p className="text-green-700 font-semibold" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>
+          <p className="text-green-700 font-semibold">
             Great work! Keep up the amazing volunteering! 
           </p>
         </div>

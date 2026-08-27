@@ -12,15 +12,15 @@ function DayCard({ day, dayName, slots, onSlotClick }) {
   const takenPM = takenSlots.filter(slot => slot.isPM);
 
   return (
-    <div className="bg-white rounded-xl min-h-[450px] font-sans" style={{ padding: '28px 18px 2px 18px' }}>
-      <h3 className="text-2xl font-bold capitalize text-center" style={{ marginBottom: '32px' }}>
+    <div className="c4-panel font-hand min-h-[420px] rounded-[14px] p-3">
+      <h3 className="font-pix text-accent m-0 mb-4 text-center text-lg capitalize">
         {dayName}
-        <span className="text-base block text-gray-700 mt-2 font-normal">
+        <span className="text-ink/70 font-hand mt-1 block text-sm font-normal">
           {day.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
         </span>
       </h3>
-      
-      <div className="">
+
+      <div className="flex flex-col gap-2.5">
 
         {/* Available AM slots */}
         {availableAM.map((slot) => (

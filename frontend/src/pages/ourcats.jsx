@@ -1,17 +1,18 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import NavBar from '../components/NavBar.jsx';
+import { ScallopStrip } from '../components/Decor.jsx';
 import { Link } from 'react-router-dom';
 import PhotoUpload from '../components/PhotoUpload.jsx';
 import PhotoGallery from '../components/PhotoGallery.jsx';
-import { getFirestore, collection, query, orderBy, limit, onSnapshot, doc, getDoc } from 'firebase/firestore';
-import { auth } from '../firebase/config.js';
+import { getFirestore, collection, query, orderBy, limit, onSnapshot } from 'firebase/firestore';
+import useIsAdmin from '../hooks/useIsAdmin.js';
 
 function OurCats() {
+  const { isAdmin } = useIsAdmin();
   const [selectedCat, setSelectedCat] = useState(null);
   const [showUploadForm, setShowUploadForm] = useState(false);
   const [catPhotoCounts, setCatPhotoCounts] = useState({});
   const [catPreviewPhotos, setCatPreviewPhotos] = useState({});
-  const [isAdmin, setIsAdmin] = useState(false);
 
   const db = getFirestore();
 
@@ -110,120 +111,129 @@ function OurCats() {
     setShowUploadForm(false);
   };
 
-   useEffect(() => {
-    const checkAdmin = async () => {
-      if (auth.currentUser) {
-        const userDoc = await getDoc(doc(db, 'users', auth.currentUser.uid));
-        if (userDoc.exists()) {
-          setIsAdmin(userDoc.data().isAdmin || false);
-        }
-      }
-    };
-    checkAdmin();
-  }, []);
 
   return (
-    <div className="min-h-screen">
+    <div className="c4-gingham c4-scope font-hand min-h-screen py-6 sm:py-8">
+      <header className="c4-container relative">
+        <div className="c4-panel rounded-[22px] px-6 py-6 text-center sm:px-7">
+          <h1 className="font-pix text-accent m-0 text-2xl leading-tight tracking-wide sm:text-4xl">
+            ♡ our cats ♡
+          </h1>
+          <p className="text-ink mt-1 mb-0 text-base sm:text-lg">
+            click on a cat to view their photo album!
+          </p>
+        </div>
+        <ScallopStrip />
+      </header>
+
       <NavBar startCollapsed={true} />
 
-      {/* Spacer div */}
-      <div className="h-3 sm:h-4 md:h-10 lg:h-14"></div>
-      
       {/* Desktop Navigation */}
-        <div className="hidden md:flex justify-center items-center gap-8 py-8 px-4">
+        <div className="c4-scope hidden md:flex justify-center items-center gap-3 py-6 px-4">
             <Link to="/volunteer">
-            <button className="text-2xl text-white font-bold bg-[#d1abc3] hover:bg-[#ffb3c1] px-6 py-3 rounded-lg transition-colors">
-                Volunteer
+            <button className="c4-btn w-full" style={{ fontSize: '20px', background: 'var(--color-chip-2)' }}>
+                volunteer
             </button>
             </Link>
             <Link to="/map-page">
-            <button className="text-2xl text-white font-bold bg-[#ede0ca] hover:bg-[#ffb3c1] px-6 py-3 rounded-lg transition-colors">
-                Map
+            <button className="c4-btn w-full" style={{ fontSize: '20px', background: 'var(--color-chip-5)' }}>
+                map
             </button>
             </Link>
             <Link to="/ourcats">
-            <button className="text-2xl text-white font-bold bg-[#cadaed] hover:bg-[#ffb3c1] px-6 py-3 rounded-lg transition-colors">
-                Our Cats
+            <button className="c4-btn w-full" style={{ fontSize: '20px', background: 'var(--color-chip-3)' }}>
+                our cats
             </button>
             </Link>
             <Link to="/feeding-instructions"> 
-            <button className="text-2xl text-white font-bold bg-[#d4edca] hover:bg-[#ffb3c1] px-6 py-3 rounded-lg transition-colors">
-                Feeding Instructions
+            <button className="c4-btn w-full" style={{ fontSize: '20px', background: 'var(--color-chip-4)' }}>
+                feeding instructions
             </button>
             </Link>
             <Link to="/you-page" className="col-span-2"> 
-            <button className="bg-[#d5caed] hover:bg-[#ffb3c1] p-4 text-white font-bold rounded-lg transition-colors w-full">
-                You
+            <button className="c4-btn w-full" style={{ fontSize: '20px', background: 'var(--color-chip-1)' }}>
+                you
             </button>
             </Link>
+            {isAdmin && (
+              <Link to="/admin" className="col-span-2">
+                <button className="c4-btn w-full" style={{ fontSize: '20px', background: 'var(--color-accent)', color: 'var(--color-panel)' }}>
+                  admin
+                </button>
+              </Link>
+            )}
         </div>
 
         {/* Mobile Navigation */}
-        <div className="md:hidden grid grid-cols-2 gap-4 p-4">
+        <div className="c4-scope md:hidden grid grid-cols-2 gap-2.5 p-4">
             <Link to="/volunteer">
-            <button className="bg-[#d1abc3] hover:bg-[#ffb3c1] p-4 text-white font-bold rounded-lg transition-colors w-full">
-                Volunteer
+            <button className="c4-btn w-full" style={{ fontSize: '20px', background: 'var(--color-chip-2)' }}>
+                volunteer
             </button>
             </Link>
             <Link to="/ourcats">
-            <button className="bg-[#cadaed] hover:bg-[#ffb3c1] p-4 text-white font-bold rounded-lg transition-colors w-full">
-                Our Cats
+            <button className="c4-btn w-full" style={{ fontSize: '20px', background: 'var(--color-chip-3)' }}>
+                our cats
             </button>
             </Link>
             <Link to="/map-page">
-            <button className="bg-[#ede0ca] hover:bg-[#ffb3c1] p-4 text-white font-bold rounded-lg transition-colors w-full">
-                Map
+            <button className="c4-btn w-full" style={{ fontSize: '20px', background: 'var(--color-chip-5)' }}>
+                map
             </button>
             </Link>
             <Link to="/you-page">
-            <button className="bg-[#d5caed] hover:bg-[#ffb3c1] p-4 text-white font-bold rounded-lg transition-colors w-full">
-                You
+            <button className="c4-btn w-full" style={{ fontSize: '20px', background: 'var(--color-chip-1)' }}>
+                you
             </button>
             </Link>
+            {isAdmin && (
+              <Link to="/admin" className="col-span-2">
+                <button className="c4-btn w-full" style={{ fontSize: '20px', background: 'var(--color-accent)', color: 'var(--color-panel)' }}>
+                  admin
+                </button>
+              </Link>
+            )}
             <Link to="/feeding-instructions" className="col-span-2">
-            <button className="bg-[#d4edca] hover:bg-[#ffb3c1] p-4 text-white font-bold rounded-lg transition-colors w-full">
-                Feeding Instructions
+            <button className="c4-btn w-full" style={{ fontSize: '20px', background: 'var(--color-chip-4)' }}>
+                feeding instructions
             </button>
             </Link>
         </div>
 
 
-      <h1 className='greeting'>Our Cats</h1>
-
-      <div style={{ padding: '13px' }} className="max-w-7xl mx-auto">
+      <div className="c4-container">
         {!selectedCat ? (
           // Cat list view
           <>
-            <p className="text-center text-gray-700 mb-2 text-lg" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>
-              Click on a cat to view their photo album! 📸
-            </p>
-            <p className="text-center text-gray-700 mb-8 text-lg" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>
-              {isAdmin ? (
-                <>
-                  Click <a 
-                    href="https://docs.google.com/document/d/1wgzHosL1A4fdNLRzsXPqOYWr34kgo-abW7kcomiCr_o/edit?usp=sharing" 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="text-blue-600 hover:text-blue-300"
-                  >
-                    here
-                  </a> to view our extended Cat History Book
-                </>
-              ) : (
-                <>
-                  Click <a 
-                    href="https://docs.google.com/document/d/1LaMDEzzvm5ojNlr8yrbCeP7gSRjtxAXwnU8ODxm9Dv4/edit?usp=sharing" 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="text-blue-600 hover:text-blue-300"
-                  >
-                    here
-                  </a> for our extended Cat History Book
-                </>
-              )}
-            </p>
+            <section className="c4-panel mb-3.5 rounded-[18px] p-4 text-center">
+              <p className="text-ink m-0 text-[15px] leading-relaxed">
+                {isAdmin ? (
+                  <>
+                    Click <a
+                      href="https://docs.google.com/document/d/1wgzHosL1A4fdNLRzsXPqOYWr34kgo-abW7kcomiCr_o/edit?usp=sharing"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="underline decoration-dotted underline-offset-2"
+                    >
+                      <span className="text-accent font-bold">here</span>
+                    </a> to view our extended Cat History Book
+                  </>
+                ) : (
+                  <>
+                    Click <a
+                      href="https://docs.google.com/document/d/1LaMDEzzvm5ojNlr8yrbCeP7gSRjtxAXwnU8ODxm9Dv4/edit?usp=sharing"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="underline decoration-dotted underline-offset-2"
+                    >
+                      <span className="text-accent font-bold">here</span>
+                    </a> for our extended Cat History Book
+                  </>
+                )}
+              </p>
+            </section>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+            <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2 lg:grid-cols-3">
               {cats.map((cat) => {
                 const previewPhotos = catPreviewPhotos[cat.id] || [];
                 const photoCount = catPhotoCounts[cat.id] || 0;
@@ -232,19 +242,18 @@ function OurCats() {
                   <div
                     key={cat.id}
                     onClick={() => setSelectedCat(cat)}
-                    className="bg-white rounded-2xl shadow-lg overflow-hidden cursor-pointer hover:shadow-2xl hover:scale-[1.02] transition-all duration-300"
-                    style={{ fontFamily: "'Instrument Sans', sans-serif" }}
+                    className="c4-panel cursor-pointer overflow-hidden rounded-[18px] transition-transform duration-300 hover:-translate-y-0.5"
                   >
                     {/* Photo preview section with overlay name */}
                     <div className="relative">
                       {previewPhotos.length > 0 ? (
-                        <div className="grid grid-cols-3 gap-0.5 h-40 sm:h-48 bg-gray-100">
+                        <div className="bg-soft grid h-40 grid-cols-3 gap-0.5 sm:h-48">
                           {previewPhotos.map((photo, index) => (
                             <div key={photo.id} className="relative overflow-hidden">
                               <img
                                 src={photo.imageUrl}
                                 alt={`${cat.name} preview ${index + 1}`}
-                                className="w-full h-full object-cover"
+                                className="h-full w-full object-cover"
                               />
                             </div>
                           ))}
@@ -252,36 +261,39 @@ function OurCats() {
                           {[...Array(Math.max(0, 3 - previewPhotos.length))].map((_, index) => (
                             <div
                               key={`empty-${index}`}
-                              className="w-full h-full bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center"
+                              className="bg-soft flex h-full w-full items-center justify-center"
                             >
-                              <svg className="w-8 h-8 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <svg className="text-line h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                               </svg>
                             </div>
                           ))}
                         </div>
                       ) : (
-                        <div className="h-40 sm:h-48 bg-gradient-to-br from-purple-50 to-pink-50 flex items-center justify-center">
+                        <div className="bg-soft flex h-40 items-center justify-center sm:h-48">
                           <div className="text-center">
-                            <svg className="mx-auto w-16 h-16 text-gray-300 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <svg className="text-line mx-auto mb-2 h-16 w-16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                             </svg>
-                            <p className="text-gray-400 text-sm font-medium">No photos yet</p>
+                            <p className="text-ink/60 m-0 text-sm">no photos yet</p>
                           </div>
                         </div>
                       )}
-                      
+
                       {/* Cat name overlay - much more visible */}
-                      <div style={{ padding: '20px' }} className="absolute top-0 left-0 right-0 bg-gradient-to-b from-black/70 via-black/50 to-transparent">
-                        <h3 className="text-white text-xl sm:text-2xl font-bold drop-shadow-lg">
+                      <div
+                        className="absolute top-0 right-0 left-0 p-3"
+                        style={{ background: 'linear-gradient(to bottom, rgb(60 44 82 / 0.75), rgb(60 44 82 / 0.45), transparent)' }}
+                      >
+                        <h3 className="font-pix m-0 text-xl text-white sm:text-2xl">
                           {cat.name}
                         </h3>
                         {photoCount > 0 && (
-                          <div style={{ padding: '8px 12px' }} className="mt-1 inline-flex items-center gap-1.5 bg-white/90 backdrop-blur-sm rounded-full">
-                            <svg className="w-4 h-4 text-purple-500" fill="currentColor" viewBox="0 0 20 20">
+                          <div className="bg-panel mt-1 inline-flex items-center gap-1.5 rounded-full px-2.5 py-1">
+                            <svg className="text-accent h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
                               <path fillRule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clipRule="evenodd" />
                             </svg>
-                            <span className="text-sm font-bold text-gray-700">
+                            <span className="text-ink text-sm font-bold">
                               {photoCount}
                             </span>
                           </div>
@@ -290,17 +302,20 @@ function OurCats() {
                     </div>
 
                     {/* Cat info section */}
-                    <div style={{ padding: '24px' }} className="sm:p-5">
-                      <div className="flex items-start gap-2 mb-3">
-                        <svg className="w-5 h-5 text-purple-400 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                    <div className="p-3.5">
+                      <div className="mb-2 flex items-start gap-1.5">
+                        <svg className="text-accent mt-0.5 h-5 w-5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                           <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
                         </svg>
-                        <p className="text-gray-600 font-medium text-sm sm:text-base">{cat.location}</p>
+                        <p className="text-ink m-0 text-sm font-semibold sm:text-base">{cat.location}</p>
                       </div>
-                      <p className="text-gray-700 text-sm mb-4 line-clamp-2">{cat.description}</p>
-                      
-                      <button className="w-full bg-gradient-to-r from-[#d5caed] to-[#c4b5e0] hover:from-[#c4b5e0] hover:to-[#b3a4cf] text-white font-bold py-3 rounded-xl transition-all duration-300 shadow-md hover:shadow-lg">
-                        View Album →
+                      <p className="text-ink/80 m-0 mb-3 text-sm">{cat.description}</p>
+
+                      <button
+                        className="c4-btn w-full"
+                        style={{ background: 'var(--color-chip-1)' }}
+                      >
+                        view album →
                       </button>
                     </div>
                   </div>
@@ -317,57 +332,55 @@ function OurCats() {
                 setSelectedCat(null);
                 setShowUploadForm(false);
               }}
-              className="mb-6 inline-flex items-center gap-2 bg-white hover:bg-gray-50 text-gray-700 font-bold py-3 px-5 rounded-xl transition-all shadow-md hover:shadow-lg"
+              className="c4-btn mb-3.5 inline-flex items-center gap-2"
+              style={{ background: 'var(--color-panel)' }}
             >
-              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
               </svg>
-              Back to All Cats
+              back to all cats
             </button>
 
             {/* Add photo button */}
-            <div className="mb-8">
+            <div className="mb-3.5">
               <button
                 onClick={() => setShowUploadForm(!showUploadForm)}
-                className="inline-flex items-center gap-2 bg-gradient-to-r from-[#d5caed] to-[#c4b5e0] hover:from-[#c4b5e0] hover:to-[#b3a4cf] text-white font-bold py-3 px-6 rounded-xl transition-all shadow-md hover:shadow-lg"
+                className="c4-btn inline-flex items-center gap-2"
+                style={{ background: 'var(--color-chip-1)' }}
               >
                 {showUploadForm ? (
                   <>
-                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                     </svg>
-                    Cancel
+                    cancel
                   </>
                 ) : (
                   <>
-                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
                     </svg>
-                    Add Photo
+                    add photo
                   </>
                 )}
               </button>
             </div>
 
             {/* Cat info header */}
-            <div style={{ padding: '32px' }} className="bg-white rounded-2xl shadow-lg sm:p-8 mb-8">
-              <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>
-                <div>
-                  <h2 className="text-3xl sm:text-4xl font-bold mb-5 text-gray-800">{selectedCat.name}</h2>
-                  <div className="flex items-center gap-4 mb-4">
-                    <svg className="w-5 h-5 text-purple-400" fill="currentColor" viewBox="0 0 40 40">
-                      <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
-                    </svg>
-                    <p className="text-gray-600 font-medium text-base sm:text-lg">{selectedCat.location}</p>
-                  </div>
-                  <p className="text-gray-700 text-base sm:text-lg">{selectedCat.description}</p>
-                </div>
+            <div className="c4-panel mb-3.5 rounded-[18px] p-4 sm:p-5">
+              <h2 className="font-pix text-accent m-0 mb-2 text-2xl sm:text-3xl">{selectedCat.name}</h2>
+              <div className="mb-2 flex items-center gap-2">
+                <svg className="text-accent h-5 w-5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
+                </svg>
+                <p className="text-ink m-0 font-semibold sm:text-lg">{selectedCat.location}</p>
               </div>
+              <p className="text-ink/80 m-0 sm:text-lg">{selectedCat.description}</p>
             </div>
 
             {/* Upload form */}
             {showUploadForm && (
-              <div className="mb-8">
+              <div className="mb-3.5">
                 <PhotoUpload
                   catId={selectedCat.id}
                   catName={selectedCat.name}

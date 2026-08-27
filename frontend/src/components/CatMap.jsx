@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import mapThumbnail from '../assets/mapthumbnail.png';
 
 function CatMapWithMarkers() {
@@ -103,21 +103,24 @@ function CatMapWithMarkers() {
           }
         });
 
-        // Create info window content
+        // Create info window content.
+        // Google renders this outside the React tree and outside `.c4-scope`,
+        // so it can only use inline styles with literal colours — utility
+        // classes and the padding reset opt-out don't reach in here.
         const infoWindowContent = `
-          <div style="font-family: 'Instrument Sans', sans-serif; padding: 10px; min-width: 200px;">
-            <h3 style="margin: 0 0 10px 0; font-size: 16px; font-weight: bold;">${location.name}</h3>
-            <p style="margin: 5px 0; font-size: 14px; color: #666;">Cats here:</p>
+          <div style="font-family: 'Patrick Hand', 'Comic Sans MS', cursive; padding: 10px; min-width: 200px; color: #5c4678;">
+            <h3 style="margin: 0 0 10px 0; font-family: 'Pixelify Sans', monospace; font-size: 16px; color: #9b7bc4;">${location.name}</h3>
+            <p style="margin: 5px 0; font-size: 14px; opacity: 0.7;">Cats here:</p>
             <p style="margin: 5px 0; font-weight: 600;">${location.cats.join(', ')}</p>
             <div style="margin-top: 10px; display: flex; gap: 8px;">
-              <a href="http://maps.apple.com/?q=${location.position.lat},${location.position.lng}" 
-                 target="_blank" 
-                 style="background: #333; color: white; padding: 6px 12px; border-radius: 6px; text-decoration: none; font-size: 12px;">
+              <a href="http://maps.apple.com/?q=${location.position.lat},${location.position.lng}"
+                 target="_blank"
+                 style="background: #e9ddf4; color: #5c4678; border: 1.5px solid #c9b6df; padding: 6px 12px; border-radius: 10px; text-decoration: none; font-size: 12px;">
                 Apple Maps
               </a>
-              <a href="https://maps.google.com/?q=${location.position.lat},${location.position.lng}" 
+              <a href="https://maps.google.com/?q=${location.position.lat},${location.position.lng}"
                  target="_blank"
-                 style="background: #4285f4; color: white; padding: 6px 12px; border-radius: 6px; text-decoration: none; font-size: 12px;">
+                 style="background: #e9ddf4; color: #5c4678; border: 1.5px solid #c9b6df; padding: 6px 12px; border-radius: 10px; text-decoration: none; font-size: 12px;">
                 Google Maps
               </a>
             </div>
@@ -138,49 +141,56 @@ function CatMapWithMarkers() {
     loadGoogleMaps();
   }, []);
 
+  const CHIPS = [
+    'var(--color-chip-1)',
+    'var(--color-chip-2)',
+    'var(--color-chip-3)',
+    'var(--color-chip-4)',
+    'var(--color-chip-5)'
+  ];
+
   return (
-    <div className="max-w-6xl mx-auto py-8" style={{ paddingLeft: '1.5rem', paddingRight: '1.5rem' }}>
+    <div className="font-hand">
       {/* Google Map with custom markers */}
-      <div className="bg-white rounded-xl shadow-lg overflow-hidden mb-8">
-        <div 
-          ref={mapRef} 
+      <div className="c4-panel mb-3.5 overflow-hidden rounded-[18px] p-3.5">
+        <div
+          ref={mapRef}
+          className="rounded-[12px] overflow-hidden"
           style={{ width: '100%', height: '450px' }}
         />
       </div>
 
       {/* Location Cards (optional - you can remove if you only want the map) */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {feedingLocations.map((location) => (
-          <div 
+      <div className="grid grid-cols-1 gap-2.5 md:grid-cols-2">
+        {feedingLocations.map((location, i) => (
+          <div
             key={location.id}
-            style={{ padding: '32px', fontFamily: "'Instrument Sans', sans-serif" }}
-            className="bg-white rounded-xl shadow-lg text-center"
+            className="border-line rounded-[14px] border-[1.5px] p-4 text-center"
+            style={{ background: CHIPS[i % CHIPS.length] }}
           >
-            <h3 className="text-xl font-bold mb-3">{location.name}</h3>
-            
-            <div className="mb-4">
-              <p className="text-sm text-gray-600 mb-1">Cats here:</p>
-              <p className="font-semibold text-gray-800">{location.cats.join(', ')}</p>
+            <h3 className="font-pix text-ink m-0 mb-2 text-lg">{location.name}</h3>
+
+            <div className="mb-3">
+              <p className="text-ink/70 m-0 mb-0.5 text-sm">Cats here:</p>
+              <p className="text-ink m-0 font-semibold">{location.cats.join(', ')}</p>
             </div>
 
-            <div className="flex gap-3 justify-center">
-              <a 
+            <div className="flex flex-wrap justify-center gap-2">
+              <a
                 href={`http://maps.apple.com/?q=${location.position.lat},${location.position.lng}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                style={{ color: 'white', textDecoration: 'none', padding: '12px 24px' }}
-                className="bg-gray-800 text-white rounded-lg hover:bg-gray-700 transition-colors"
+                className="border-line bg-panel rounded-[12px] border-[1.5px] px-4 py-2 no-underline transition-transform hover:-translate-y-0.5"
               >
-                Apple Maps
+                <span className="text-ink text-sm">Apple Maps</span>
               </a>
-              <a 
+              <a
                 href={`https://maps.google.com/?q=${location.position.lat},${location.position.lng}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                style={{ color: 'white', textDecoration: 'none', padding: '12px 24px' }}
-                className="bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                className="border-line bg-panel rounded-[12px] border-[1.5px] px-4 py-2 no-underline transition-transform hover:-translate-y-0.5"
               >
-                Google Maps
+                <span className="text-ink text-sm">Google Maps</span>
               </a>
             </div>
           </div>

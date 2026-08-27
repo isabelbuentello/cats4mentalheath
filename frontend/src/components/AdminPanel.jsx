@@ -15,8 +15,10 @@ function AdminPanel() {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
-  const [showPending, setShowPending] = useState(true);
-  const [showApproved, setShowApproved] = useState(true);
+  const [showPending, setShowPending] = useState(false);
+  const [pendingSearch, setPendingSearch] = useState('');
+  const [approvedSearch, setApprovedSearch] = useState('');
+  const [showApproved, setShowApproved] = useState(false);
   const currentUser = auth.currentUser;
 
   // Helper to convert stored path to actual image
@@ -84,11 +86,27 @@ function AdminPanel() {
         ...doc.data()
       }));
       
-      // Sort: pending first, then approved, then by email
+      // Firestore Timestamp | Date | ISO string | missing -> millis
+      const appliedTime = (u) => {
+        const t = u.appliedAt;
+        if (!t) return 0;
+        if (typeof t.toDate === 'function') return t.toDate().getTime();
+        const d = new Date(t);
+        return Number.isNaN(d.getTime()) ? 0 : d.getTime();
+      };
+
       usersList.sort((a, b) => {
+        // Pending always above approved.
         if (a.isApproved !== b.isApproved) {
           return a.isApproved ? 1 : -1;
         }
+        // Pending: newest signups first, so a fresh application lands at the
+        // top of the queue instead of wherever the alphabet puts it.
+        // (Accounts predating `appliedAt` sort to the bottom of this group.)
+        if (!a.isApproved) {
+          return appliedTime(b) - appliedTime(a);
+        }
+        // Approved: alphabetical — it's a lookup list, and it has its own search.
         return (a.email || '').localeCompare(b.email || '');
       });
       
@@ -131,24 +149,24 @@ function AdminPanel() {
 
   if (loading) {
     return (
-      <div className="bg-white rounded-xl shadow-lg p-6">
-        <p className="text-gray-600">Loading admin panel...</p>
+      <div className="c4-panel font-hand rounded-[18px] p-4">
+        <p className="text-ink/70">Loading admin panel...</p>
       </div>
     );
   }
 
   if (!currentUser) {
     return (
-      <div className="bg-white rounded-xl shadow-lg p-6">
-        <p className="text-gray-600">Please sign in to access the admin panel.</p>
+      <div className="c4-panel font-hand rounded-[18px] p-4">
+        <p className="text-ink/70">Please sign in to access the admin panel.</p>
       </div>
     );
   }
 
   if (!isAdmin) {
     return (
-      <div className="bg-white rounded-xl shadow-lg p-6">
-        <p className="text-gray-600">You do not have admin privileges.</p>
+      <div className="c4-panel font-hand rounded-[18px] p-4">
+        <p className="text-ink/70">You do not have admin privileges.</p>
       </div>
     );
   }
@@ -156,9 +174,20 @@ function AdminPanel() {
   const pendingUsers = users.filter(u => !u.isApproved);
   const approvedUsers = users.filter(u => u.isApproved);
 
+  const matches = (user, q) => {
+    const query = q.trim().toLowerCase();
+    if (!query) return true;
+    return (
+      (user.displayName || '').toLowerCase().includes(query) ||
+      (user.email || '').toLowerCase().includes(query)
+    );
+  };
+  const shownPending = pendingUsers.filter((u) => matches(u, pendingSearch));
+  const shownApproved = approvedUsers.filter((u) => matches(u, approvedSearch));
+
   return (
-    <div style={{ padding: '32px', fontFamily: "'Instrument Sans', sans-serif" }} className="bg-white rounded-xl shadow-lg">
-      <h2 className="text-2xl md:text-3xl font-bold mb-4 md:mb-6">Admin Panel</h2>
+    <div className="c4-panel font-hand rounded-[18px] p-4 sm:p-5">
+      <h2 className="font-pix text-accent m-0 mb-4 text-xl sm:text-2xl">♡ admin panel</h2>
 
       {/* Pending Approvals */}
       <div className="mb-8">
@@ -172,11 +201,24 @@ function AdminPanel() {
         
         {showPending && (
           <>
-            {pendingUsers.length === 0 ? (
-          <p className="text-gray-600 italic">No pending approvals</p>
+            <label htmlFor="pending-search" className="sr-only">Search pending approvals</label>
+            <input
+              id="pending-search"
+              type="search"
+              value={pendingSearch}
+              onChange={(e) => setPendingSearch(e.target.value)}
+              placeholder="search pending by name or email…"
+              className="c4-input mb-3"
+            />
+            {shownPending.length === 0 ? (
+          <p className="text-ink/70 italic">
+            {pendingUsers.length === 0
+              ? 'No pending approvals'
+              : `No pending approvals matching "${pendingSearch}"`}
+          </p>
         ) : (
           <div className="space-y-3">
-            {pendingUsers.map(user => (
+            {shownPending.map(user => (
               <div key={user.uid} className="border-2 border-orange-300 bg-orange-50 rounded-lg p-3 md:p-4">
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                   <div className="flex items-center gap-3 min-w-0">
@@ -187,8 +229,8 @@ function AdminPanel() {
                     />
                     <div className="min-w-0 flex-1">
                       <p className="font-bold text-sm md:text-base truncate">{user.displayName || 'No Name'}</p>
-                      <p className="text-xs md:text-sm text-gray-600 truncate">{user.email}</p>
-                      <p className="text-xs text-gray-500">
+                      <p className="text-xs md:text-sm text-ink/70 truncate">{user.email}</p>
+                      <p className="text-xs text-ink/60">
                         Applied: {user.appliedAt ? new Date(user.appliedAt.toDate()).toLocaleDateString() : 'Unknown'}
                       </p>
                     </div>
@@ -219,20 +261,37 @@ function AdminPanel() {
         </button>
         
         {showApproved && (
+          <>
+          <label htmlFor="approved-search" className="sr-only">Search approved volunteers</label>
+          <input
+            id="approved-search"
+            type="search"
+            value={approvedSearch}
+            onChange={(e) => setApprovedSearch(e.target.value)}
+            placeholder="search volunteers by name or email…"
+            className="c4-input mb-3"
+          />
+          {shownApproved.length === 0 && (
+            <p className="text-ink/70 italic">
+              {approvedUsers.length === 0
+                ? 'No approved volunteers yet'
+                : `No volunteers matching "${approvedSearch}"`}
+            </p>
+          )}
           <div className="space-y-2 max-h-96 overflow-y-auto">
-            {approvedUsers.map(user => (
-              <div key={user.uid} className="border border-gray-300 rounded-lg p-3">
+            {shownApproved.map(user => (
+              <div key={user.uid} className="border border-line rounded-lg p-3">
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                   <div className="flex items-center gap-3 min-w-0">
                     <img 
                       src={getCatImageFromPath(user.photoURL)} 
                       alt={user.displayName || 'User'}
-                      className="w-10 h-10 rounded-full object-contain bg-white border-2 border-gray-300 flex-shrink-0"
+                      className="w-10 h-10 rounded-full object-contain bg-white border-2 border-line flex-shrink-0"
                     />
                     <div className="min-w-0 flex-1">
                       <p className="font-bold text-sm md:text-base">{user.displayName || 'No Name'}</p>
-                      <p className="text-xs md:text-sm text-gray-600 truncate">{user.email}</p>
-                      <p className="text-xs text-gray-500">
+                      <p className="text-xs md:text-sm text-ink/70 truncate">{user.email}</p>
+                      <p className="text-xs text-ink/60">
                         Approved: {user.approvedAt ? new Date(user.approvedAt.toDate()).toLocaleDateString() : 'N/A'}
                       </p>
                     </div>
@@ -241,18 +300,19 @@ function AdminPanel() {
                     <select
                       value={user.isAdmin ? 'admin' : 'volunteer'}
                       onChange={(e) => handleRoleChange(user.uid, e.target.value)}
-                      className="bg-white border-2 border-purple-500 text-purple-700 font-bold py-1 px-2 rounded text-xs md:text-sm focus:outline-none focus:ring-2 focus:ring-purple-400 flex-shrink-0"
+                      className="bg-white border-2 border-accent text-accent font-bold py-1 px-2 rounded text-xs md:text-sm focus:outline-none focus:ring-2 focus:ring-accent flex-shrink-0"
                     >
                       <option value="volunteer">Approved Volunteer</option>
                       <option value="admin">Admin</option>
                     </select>
                   ) : (
-                    <span className="text-sm text-gray-500 italic">(You)</span>
+                    <span className="text-sm text-ink/60 italic">(You)</span>
                   )}
                 </div>
               </div>
             ))}
           </div>
+          </>
         )}
       </div>
     </div>

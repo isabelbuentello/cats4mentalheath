@@ -256,7 +256,12 @@ const getWeekStart = (date) => {
       ...zone,
       volunteer: currentProfile?.displayName || slotData?.volunteer || null,
       email: email || null,
-      photoURL: currentProfile?.photoURL || slotData?.photoURL || null,
+      // Slot first, users doc second — the slot records the avatar chosen at
+      // sign-up and UserProfile keeps it in sync, whereas the users doc was
+      // never updated on save until now, so for anyone who picked an avatar
+      // before that fix it still holds the signup default. This is also what
+      // the leaderboard reads, so the two views agree.
+      photoURL: slotData?.photoURL || currentProfile?.photoURL || null,
     };
   });
 };
@@ -493,78 +498,36 @@ const getWeekStart = (date) => {
 
   if (loading) {
     return (
-      <div className="text-center py-20">
-        <p className="text-2xl text-white">loading schedule...</p>
+      <div className="c4-panel rounded-[18px] p-8 text-center">
+        <p className="font-pix text-accent m-0 text-xl">loading schedule…</p>
       </div>
     );
   }
 
   return (
-    <div className="pb-12 px-4 sm:px-6 md:px-8">
+    <div className="font-hand">
       {/* Week Header with Arrows */}
-      <div className="flex justify-center items-center gap-6 sm:gap-12 py-12 px-4">
-        <button
-          onClick={previousWeek}
-          style={{
-            width: "64px",
-            height: "64px",
-            borderRadius: "50%",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            backgroundColor: "transparent",
-            color: "white",
-            fontSize: "2.5rem",
-            fontWeight: "bold",
-            cursor: "pointer",
-            transition: "color 0.3s",
-          }}
-          onMouseEnter={(e) => (e.target.style.color = "#ffc0cb")}
-          onMouseLeave={(e) => (e.target.style.color = "white")}
-        >
+      <div className="c4-panel mb-3.5 flex items-center justify-between gap-3 rounded-[18px] p-4">
+        <button onClick={previousWeek} className="c4-btn shrink-0" aria-label="Previous week">
           ←
         </button>
 
         <div className="text-center">
-          <h2 className="text-3xl sm:text-5xl md:text-6xl font-bold text-white leading-tight whitespace-pre-line">
+          <h2 className="font-pix text-accent m-0 text-xl leading-tight tracking-wide whitespace-pre-line sm:text-3xl">
             {formatWeekRange()}
           </h2>
-          <p className="text-xl sm:text-2xl mt-4 text-white">
+          <p className="text-ink mt-1 mb-0 text-base sm:text-lg">
             Sign Up to Feed!
           </p>
-
-          {/* Spacer div */}
-          <div className="h-3 sm:h-4 md:h-10 lg:h-14"></div>
         </div>
 
-        <button
-          onClick={nextWeek}
-          style={{
-            width: "64px",
-            height: "64px",
-            borderRadius: "50%",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            backgroundColor: "transparent",
-            color: "white",
-            fontSize: "2.5rem",
-            fontWeight: "bold",
-            cursor: "pointer",
-            transition: "color 0.3s",
-          }}
-          onMouseEnter={(e) => (e.target.style.color = "#ffc0cb")}
-          onMouseLeave={(e) => (e.target.style.color = "white")}
-        >
+        <button onClick={nextWeek} className="c4-btn shrink-0" aria-label="Next week">
           →
         </button>
       </div>
 
       {/* Calendar Grid - Desktop */}
-      <div
-        className="hidden md:grid md:grid-cols-7 gap-6 pb-12"
-        style={{ paddingLeft: "32px", paddingRight: "32px" }}
-      >
+      <div className="hidden gap-2.5 md:grid md:grid-cols-7">
         {weekDays.map((day, index) => (
           <DayCard
             key={index}
@@ -577,10 +540,7 @@ const getWeekStart = (date) => {
       </div>
 
       {/* Calendar Grid - Mobile - 2 columns */}
-      <div
-        className="md:hidden pb-12 grid grid-cols-2 gap-4"
-        style={{ paddingLeft: "24px", paddingRight: "24px" }}
-      >
+      <div className="grid grid-cols-2 gap-2.5 md:hidden">
         {weekDays.map((day, index) => (
           <DayCard
             key={index}

@@ -4,133 +4,127 @@ import VolunteerActivityGraph from '../components/VolunteerActivityGraph.jsx';
 import UserProfile from '../components/UserProfile.jsx';
 import Leaderboard from '../components/Leaderboard.jsx';
 import UserHoursBadge from '../components/UserHoursBadge.jsx';
-import { useState, useEffect } from 'react';
-import { doc, getDoc } from 'firebase/firestore';
-import { db, auth } from '../firebase/config.js';
+import { ScallopStrip } from '../components/Decor.jsx';
+import useIsAdmin from '../hooks/useIsAdmin.js';
 
 function YouPage() {
-  const [isAdmin, setIsAdmin] = useState(false);
-
-  useEffect(() => {
-    const checkAdmin = async () => {
-      if (auth.currentUser) {
-        const userDoc = await getDoc(doc(db, 'users', auth.currentUser.uid));
-        if (userDoc.exists()) {
-          setIsAdmin(userDoc.data().isAdmin || false);
-        }
-      }
-    };
-    checkAdmin();
-  }, []);
+  const { isAdmin } = useIsAdmin();
 
   return (
-    <div className="min-h-screen ">
+    <div className="c4-gingham c4-scope font-hand min-h-screen py-6 sm:py-8">
+      <header className="c4-container relative">
+        <div className="c4-panel rounded-[22px] px-6 py-6 text-center sm:px-7">
+          <h1 className="font-pix text-accent m-0 text-2xl leading-tight tracking-wide sm:text-4xl">
+            ♡ your profile ♡
+          </h1>
+          <p className="text-ink mt-1 mb-0 text-base sm:text-lg">
+            your shifts, your hours, your stats
+          </p>
+        </div>
+        <ScallopStrip />
+      </header>
+
       <NavBar startCollapsed={true} />
 
-      {/* Spacer div */}
-      <div className="h-3 sm:h-4 md:h-10 lg:h-14"></div>
-      
       {/* Desktop Navigation */}
-      <div className="hidden md:flex justify-center items-center gap-8 py-8 px-4">
+      <div className="c4-scope hidden md:flex justify-center items-center gap-3 py-6 px-4">
         <Link to="/volunteer">
-          <button className="text-2xl text-white font-bold bg-[#d1abc3] hover:bg-[#ffb3c1] px-6 py-3 rounded-lg transition-colors">
-            Volunteer
+          <button className="c4-btn w-full" style={{ fontSize: '20px', background: 'var(--color-chip-2)' }}>
+            volunteer
           </button>
         </Link>
         <Link to="/map-page">
-          <button className="text-2xl text-white font-bold bg-[#ede0ca] hover:bg-[#ffb3c1] px-6 py-3 rounded-lg transition-colors">
-            Map
+          <button className="c4-btn w-full" style={{ fontSize: '20px', background: 'var(--color-chip-5)' }}>
+            map
           </button>
         </Link>
         <Link to="/ourcats">
-          <button className="text-2xl text-white font-bold bg-[#cadaed] hover:bg-[#ffb3c1] px-6 py-3 rounded-lg transition-colors">
-            Our Cats
+          <button className="c4-btn w-full" style={{ fontSize: '20px', background: 'var(--color-chip-3)' }}>
+            our cats
           </button>
         </Link>
         <Link to="/feeding-instructions"> 
-          <button className="text-2xl text-white font-bold bg-[#d4edca] hover:bg-[#ffb3c1] px-6 py-3 rounded-lg transition-colors">
-            Feeding Instructions
+          <button className="c4-btn w-full" style={{ fontSize: '20px', background: 'var(--color-chip-4)' }}>
+            feeding instructions
           </button>
         </Link>
         <Link to="/you-page">
-          <button className="text-2xl text-white font-bold bg-[#d5caed] hover:bg-[#ffb3c1] px-6 py-3 rounded-lg transition-colors">
-            You
+          <button className="c4-btn w-full" style={{ fontSize: '20px', background: 'var(--color-chip-1)' }}>
+            you
           </button>
         </Link>
         {isAdmin && (
-          <Link to="/admin">
-            <button className="text-2xl text-white font-bold bg-[#b8a0d4] hover:bg-[#ffb3c1] px-6 py-3 rounded-lg transition-colors">
-              Admin
+          <Link to="/admin" className="col-span-2">
+            <button className="c4-btn w-full" style={{ fontSize: '20px', background: 'var(--color-accent)', color: 'var(--color-panel)' }}>
+              admin
             </button>
           </Link>
         )}
       </div>
 
       {/* Mobile Navigation */}
-      <div className="md:hidden grid grid-cols-2 gap-4 p-4">
+      <div className="c4-scope md:hidden grid grid-cols-2 gap-2.5 p-4">
         <Link to="/volunteer">
-          <button className="bg-[#d1abc3] hover:bg-[#ffb3c1] p-4 text-white font-bold rounded-lg transition-colors w-full">
-            Volunteer
+          <button className="c4-btn w-full" style={{ fontSize: '20px', background: 'var(--color-chip-2)' }}>
+            volunteer
           </button>
         </Link>
         <Link to="/ourcats">
-          <button className="bg-[#cadaed] hover:bg-[#ffb3c1] p-4 text-white font-bold rounded-lg transition-colors w-full">
-            Our Cats
+          <button className="c4-btn w-full" style={{ fontSize: '20px', background: 'var(--color-chip-3)' }}>
+            our cats
           </button>
         </Link>
         <Link to="/map-page">
-          <button className="bg-[#ede0ca] hover:bg-[#ffb3c1] p-4 text-white font-bold rounded-lg transition-colors w-full">
-            Map
+          <button className="c4-btn w-full" style={{ fontSize: '20px', background: 'var(--color-chip-5)' }}>
+            map
           </button>
         </Link>
         <Link to="/you-page">
-          <button className="bg-[#d5caed] hover:bg-[#ffb3c1] p-4 text-white font-bold rounded-lg transition-colors w-full">
-            You
+          <button className="c4-btn w-full" style={{ fontSize: '20px', background: 'var(--color-chip-1)' }}>
+            you
           </button>
         </Link>
         {isAdmin ? (
           <>
             <Link to="/feeding-instructions">
-              <button className="bg-[#d4edca] hover:bg-[#ffb3c1] p-4 text-white font-bold rounded-lg transition-colors w-full">
+              <button className="c4-btn w-full" style={{ fontSize: '20px', background: 'var(--color-chip-4)' }}>
                 feeding instructions
               </button>
             </Link>
-            <Link to="/admin">
-              <button className="bg-[#b8a0d4] hover:bg-[#ffb3c1] p-4 text-white font-bold rounded-lg transition-colors w-full">
-                Admin
+            <Link to="/admin" className="col-span-2">
+              <button className="c4-btn w-full" style={{ fontSize: '20px', background: 'var(--color-accent)', color: 'var(--color-panel)' }}>
+                admin
               </button>
             </Link>
           </>
         ) : (
           <Link to="/feeding-instructions" className="col-span-2">
-            <button className="bg-[#d4edca] hover:bg-[#ffb3c1] p-4 text-white font-bold rounded-lg transition-colors w-full">
-              Feeding Instructions
+            <button className="c4-btn w-full" style={{ fontSize: '20px', background: 'var(--color-chip-4)' }}>
+              feeding instructions
             </button>
           </Link>
         )}
       </div>
 
-      <h1 className='greeting'>Your Profile</h1>
-
       {/* Main Content */}
-      <div style={{ padding: '0 16px' }} className="max-w-7xl mx-auto py-8">
+      <div className="c4-container">
         {/* Desktop Layout - 3 columns */}
-        <div className="hidden lg:grid lg:grid-cols-3 gap-8">
+        <div className="hidden gap-2.5 lg:grid lg:grid-cols-3">
           {/* Left Column - Activity Graph (spans 2 columns) */}
-          <div className="lg:col-span-2 space-y-8">
+          <div className="flex min-w-0 flex-col gap-2.5 lg:col-span-2">
             <VolunteerActivityGraph />
             <Leaderboard />
           </div>
 
           {/* Right Column - User Profile */}
-          <div className="lg:col-span-1 space-y-8">
+          <div className="flex min-w-0 flex-col gap-2.5 lg:col-span-1">
             <UserProfile />
             <UserHoursBadge />
           </div>
         </div>
 
         {/* Mobile/Tablet Layout - Stacked */}
-        <div className="lg:hidden space-y-6">
+        <div className="flex flex-col gap-2.5 lg:hidden">
           <UserProfile />
           <UserHoursBadge />
           <VolunteerActivityGraph />

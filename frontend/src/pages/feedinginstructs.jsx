@@ -1,152 +1,182 @@
 import NavBar from '../components/NavBar.jsx'
 import { Link } from 'react-router-dom';
+import { ScallopStrip } from '../components/Decor.jsx';
+import useIsAdmin from '../hooks/useIsAdmin.js';
 
 function FeedingInstructionsPage() {
+  const { isAdmin } = useIsAdmin();
+
   return (
-    <div className="min-h-screen">
+    <div className="c4-gingham c4-scope font-hand min-h-screen py-6 sm:py-8">
+      <header className="c4-container relative">
+        <div className="c4-panel rounded-[22px] px-6 py-6 text-center sm:px-7">
+          <h1 className="font-pix text-accent m-0 text-2xl leading-tight tracking-wide sm:text-4xl">
+            ♡ how to feed ♡
+          </h1>
+          <p className="text-ink mt-1 mb-0 text-base sm:text-lg">
+            everything you need for a feeding shift
+          </p>
+        </div>
+        <ScallopStrip />
+      </header>
+
       <NavBar startCollapsed={true} />
 
-      {/* Spacer div */}
-      <div className="h-3 sm:h-4 md:h-10 lg:h-14"></div>
-      
       {/* Desktop Navigation */}
-        <div className="hidden md:flex justify-center items-center gap-8 py-8 px-4">
+        <div className="c4-scope hidden md:flex justify-center items-center gap-3 py-6 px-4">
             <Link to="/volunteer">
-            <button className="text-2xl text-white font-bold bg-[#d1abc3] hover:bg-[#ffb3c1] px-6 py-3 rounded-lg transition-colors">
-                Volunteer
+            <button className="c4-btn w-full" style={{ fontSize: '20px', background: 'var(--color-chip-2)' }}>
+                volunteer
             </button>
             </Link>
             <Link to="/map-page">
-            <button className="text-2xl text-white font-bold bg-[#ede0ca] hover:bg-[#ffb3c1] px-6 py-3 rounded-lg transition-colors">
-                Map
+            <button className="c4-btn w-full" style={{ fontSize: '20px', background: 'var(--color-chip-5)' }}>
+                map
             </button>
             </Link>
             <Link to="/ourcats">
-            <button className="text-2xl text-white font-bold bg-[#cadaed] hover:bg-[#ffb3c1] px-6 py-3 rounded-lg transition-colors">
-                Our Cats
+            <button className="c4-btn w-full" style={{ fontSize: '20px', background: 'var(--color-chip-3)' }}>
+                our cats
             </button>
             </Link>
             <Link to="/feeding-instructions"> 
-            <button className="text-2xl text-white font-bold bg-[#d4edca] hover:bg-[#ffb3c1] px-6 py-3 rounded-lg transition-colors">
-                Feeding Instructions
+            <button className="c4-btn w-full" style={{ fontSize: '20px', background: 'var(--color-chip-4)' }}>
+                feeding instructions
             </button>
             </Link>
             <Link to="/you-page" className="col-span-2"> 
-            <button className="bg-[#d5caed] hover:bg-[#ffb3c1] p-4 text-white font-bold rounded-lg transition-colors w-full">
-                You
+            <button className="c4-btn w-full" style={{ fontSize: '20px', background: 'var(--color-chip-1)' }}>
+                you
             </button>
             </Link>
+            {isAdmin && (
+              <Link to="/admin" className="col-span-2">
+                <button className="c4-btn w-full" style={{ fontSize: '20px', background: 'var(--color-accent)', color: 'var(--color-panel)' }}>
+                  admin
+                </button>
+              </Link>
+            )}
         </div>
 
         {/* Mobile Navigation */}
-        <div className="md:hidden grid grid-cols-2 gap-4 p-4">
+        <div className="c4-scope md:hidden grid grid-cols-2 gap-2.5 p-4">
             <Link to="/volunteer">
-            <button className="bg-[#d1abc3] hover:bg-[#ffb3c1] p-4 text-white font-bold rounded-lg transition-colors w-full">
-                Volunteer
+            <button className="c4-btn w-full" style={{ fontSize: '20px', background: 'var(--color-chip-2)' }}>
+                volunteer
             </button>
             </Link>
             <Link to="/ourcats">
-            <button className="bg-[#cadaed] hover:bg-[#ffb3c1] p-4 text-white font-bold rounded-lg transition-colors w-full">
-                Our Cats
+            <button className="c4-btn w-full" style={{ fontSize: '20px', background: 'var(--color-chip-3)' }}>
+                our cats
             </button>
             </Link>
             <Link to="/map-page">
-            <button className="bg-[#ede0ca] hover:bg-[#ffb3c1] p-4 text-white font-bold rounded-lg transition-colors w-full">
-                Map
+            <button className="c4-btn w-full" style={{ fontSize: '20px', background: 'var(--color-chip-5)' }}>
+                map
             </button>
             </Link>
             <Link to="/you-page">
-            <button className="bg-[#d5caed] hover:bg-[#ffb3c1] p-4 text-white font-bold rounded-lg transition-colors w-full">
-                You
+            <button className="c4-btn w-full" style={{ fontSize: '20px', background: 'var(--color-chip-1)' }}>
+                you
             </button>
             </Link>
+            {isAdmin && (
+              <Link to="/admin" className="col-span-2">
+                <button className="c4-btn w-full" style={{ fontSize: '20px', background: 'var(--color-accent)', color: 'var(--color-panel)' }}>
+                  admin
+                </button>
+              </Link>
+            )}
             <Link to="/feeding-instructions" className="col-span-2">
-            <button className="bg-[#d4edca] hover:bg-[#ffb3c1] p-4 text-white font-bold rounded-lg transition-colors w-full">
-                Feeding Instructions
+            <button className="c4-btn w-full" style={{ fontSize: '20px', background: 'var(--color-chip-4)' }}>
+                feeding instructions
             </button>
             </Link>
         </div>
 
-        <h1 className='greeting'> How to Feed </h1>
-
-        <div className="max-w-6xl mx-auto py-8 pb-16 space-y-10" style={{ paddingLeft: '1.5rem', paddingRight: '1.5rem' }}>
+        <div className="c4-container">
         {/* Card 1 - Full Width */}
-        <div style={{ padding: '32px' }} className="bg-white rounded-xl shadow-lg text-center">
-        <h2 className="text-xl md:text-2xl font-semibold mb-4" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>Hi Campus Volunteer!</h2>
-        <div className="text-gray-700 leading-relaxed space-y-3" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>
-            <p>Thanks for your interest in volunteering to feed our campus cats!</p>
-            <p>
+        <div className="c4-panel mb-2.5 rounded-[18px] p-4 text-center sm:p-5">
+        <h2 className="font-pix text-accent m-0 mb-3 text-xl sm:text-2xl">★ hi campus volunteer!</h2>
+        <div className="text-ink space-y-2 leading-relaxed">
+            <p className="m-0">Thanks for your interest in volunteering to feed our campus cats!</p>
+            <p className="m-0">
             If you haven't completed your training orientation with an officer, please fill out{' '}
-            <a 
-                href="https://forms.gle/3TWKgvE5iEQVugFJA" 
-                target="_blank" 
+            <a
+                href="https://forms.gle/3TWKgvE5iEQVugFJA"
+                target="_blank"
                 rel="noopener noreferrer"
-                className="text-blue-600 hover:text-blue-800 underline font-semibold"
+                className="underline decoration-dotted underline-offset-2"
             >
-                this form
+                <span className="text-accent font-bold">this form</span>
             </a>
             , and an officer will reach out shortly.
             </p>
-            <p>If you have completed training, here are some quick reminders on how to feed!</p>
+            <p className="m-0">If you have completed training, here are some quick reminders on how to feed!</p>
         </div>
         </div>
 
         {/* 2x2 Grid for remaining cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div className="grid grid-cols-1 gap-2.5 md:grid-cols-2">
             {/* Card 2 */}
-            <div style={{ padding: '32px' }} className="bg-white rounded-xl shadow-lg text-center">
-            <h2 className="text-xl md:text-2xl font-semibold mb-6" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>Feeding Locations</h2>
-            <p className="text-gray-700 mb-6" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>We have 3 feeding locations!</p>
-            <ul className="list-none space-y-4 text-gray-700 mb-6" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>
-                <li>Equal Opportunity Building</li>
-                <li>Zone D Parking Lot</li>
-                <li>Law Center & Loft Area</li>
+            <div className="c4-panel rounded-[18px] p-4 text-center sm:p-5">
+            <h2 className="font-pix text-accent m-0 mb-3 text-xl sm:text-2xl">♡ feeding locations</h2>
+            <p className="text-ink m-0 mb-3">We have 3 feeding locations!</p>
+            <ul className="m-0 flex list-none flex-col gap-2 p-0">
+                {['Equal Opportunity Building', 'Zone D Parking Lot', 'Law Center & Loft Area'].map((loc, i) => (
+                  <li
+                    key={loc}
+                    className="border-line text-ink rounded-[12px] border-[1.5px] px-3 py-2"
+                    style={{ background: `var(--color-chip-${i + 2})` }}
+                  >
+                    {loc}
+                  </li>
+                ))}
             </ul>
-            <p className="mt-6" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>Feel free to pick just 1, or 2, or even all of them!</p>
-
+            <p className="text-ink/80 m-0 mt-3 text-sm">Feel free to pick just 1, or 2, or even all of them!</p>
             </div>
 
             {/* Card 3 */}
-            <div style={{ padding: '32px' }} className="bg-white rounded-xl shadow-lg text-center">
-            <h2 className="text-xl md:text-2xl font-semibold mb-4" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>How Much?</h2>
-            <div className="text-gray-700 space-y-4" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>
-                <div>
-                <h3 className="font-semibold text-lg mb-2">AM Shift</h3>
-                <ul className="list-none space-y-1">
+            <div className="c4-panel rounded-[18px] p-4 text-center sm:p-5">
+            <h2 className="font-pix text-accent m-0 mb-3 text-xl sm:text-2xl">♡ how much?</h2>
+            <div className="text-ink flex flex-col gap-2.5">
+                <div className="border-line rounded-[12px] border-[1.5px] p-3" style={{ background: 'var(--color-chip-2)' }}>
+                <h3 className="font-pix m-0 mb-1 text-lg">AM shift</h3>
+                <ul className="m-0 list-none p-0">
                     <li>One can of wet food</li>
                     <li>One scoop of dry food</li>
                 </ul>
                 </div>
-                <div>
-                <h3 className="font-semibold text-lg mb-2">PM Shift</h3>
-                <ul className="list-none space-y-1">
+                <div className="border-line rounded-[12px] border-[1.5px] p-3" style={{ background: 'var(--color-chip-3)' }}>
+                <h3 className="font-pix m-0 mb-1 text-lg">PM shift</h3>
+                <ul className="m-0 list-none p-0">
                     <li>One scoop of dry food</li>
                 </ul>
                 </div>
-                <p className="font-medium pt-2">Please change water for every shift & ensure bowls are clean!</p>
+                <p className="border-line bg-soft m-0 rounded-md border border-dashed p-2.5 text-sm">Please change water for every shift &amp; ensure bowls are clean!</p>
             </div>
             </div>
 
             {/* Card 4 */}
-            <div style={{ padding: '32px' }} className="bg-white rounded-xl shadow-lg text-center">
-            <h2 className="text-xl md:text-2xl font-semibold mb-4" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>Recommended Supplies</h2>
-            <ul className="list-none space-y-2 text-gray-700" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>
-                <li>- Ziploc/Plastic bag of dry food</li>
-                <li>- Wet food cans</li>
-                <li>- Water container</li>
-                <li>- Plastic bags for trash</li>
-                <li>- Disposable gloves/utensils/napkins (optional)</li>
+            <div className="c4-panel rounded-[18px] p-4 text-center sm:p-5">
+            <h2 className="font-pix text-accent m-0 mb-3 text-xl sm:text-2xl">♡ recommended supplies</h2>
+            <ul className="text-ink m-0 flex list-none flex-col gap-1.5 p-0">
+                <li>Ziploc/Plastic bag of dry food</li>
+                <li>Wet food cans</li>
+                <li>Water container</li>
+                <li>Plastic bags for trash</li>
+                <li>Disposable gloves/utensils/napkins (optional)</li>
             </ul>
-            <p className="text-gray-700 mt-4 font-medium" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>All found in our feeding lounge!</p>
+            <p className="border-line bg-soft text-ink m-0 mt-3 rounded-md border border-dashed p-2.5 text-sm">All found in our feeding lounge!</p>
             </div>
 
             {/* Card 5 */}
-            <div style={{ padding: '32px' }} className="bg-white rounded-xl shadow-lg text-center">
-            <h2 className="text-xl md:text-2xl font-semibold mb-4" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>Reminders</h2>
-            <ul className="list-none space-y-3 text-gray-700" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>
-                <li>- If you are the only person feeding a station that day, please provide an extra scoop of dry food.</li>
-                <li>- Please remember to sign up in our portal before feeding!</li>
-                <li>-Don't forget to send a pic of fed stations to our Discord Volunteering channel for proof of volunteering!</li>
+            <div className="c4-panel rounded-[18px] p-4 text-center sm:p-5">
+            <h2 className="font-pix text-accent m-0 mb-3 text-xl sm:text-2xl">♡ reminders</h2>
+            <ul className="text-ink m-0 flex list-none flex-col gap-2 p-0 text-left">
+                <li className="border-line bg-soft rounded-md border border-dashed p-2.5">If you are the only person feeding a station that day, please provide an extra scoop of dry food.</li>
+                <li className="border-line bg-soft rounded-md border border-dashed p-2.5">Please remember to sign up in our portal before feeding!</li>
+                <li className="border-line bg-soft rounded-md border border-dashed p-2.5">Don't forget to send a pic of fed stations to our Discord Volunteering channel for proof of volunteering!</li>
             </ul>
             </div>
         </div>

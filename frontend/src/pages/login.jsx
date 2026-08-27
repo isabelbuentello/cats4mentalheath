@@ -1,12 +1,37 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import NavBar from '../components/NavBar.jsx';
+import { ScallopStrip } from '../components/Decor.jsx';
 import { logOut, logIn, signUp } from '../firebase/auth.js';
 import { auth, db } from '../firebase/config.js';
 import { onAuthStateChanged, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import { doc, setDoc, getDoc } from 'firebase/firestore';
 
 const DEFAULT_AVATAR = "/assets/darkbrowncat.png";
+
+/* Shared page shell so the loading, signed-in, and form states all sit in the
+   same frame instead of jumping around between renders. */
+function LoginShell({ children }) {
+  return (
+    <div className="c4-gingham c4-scope font-hand relative min-h-screen py-6 sm:py-8">
+      <header className="c4-container relative">
+        <div className="c4-panel rounded-[22px] px-6 py-6 text-center sm:px-7">
+          <h1 className="font-pix text-accent m-0 text-2xl leading-tight tracking-wide sm:text-4xl">
+            ♡ member login ♡
+          </h1>
+          <p className="text-ink mt-1 mb-0 text-base sm:text-lg">
+            sign up or log in to access the c4mh portal
+          </p>
+        </div>
+        <ScallopStrip />
+      </header>
+
+      <NavBar />
+
+      <div className="c4-container">{children}</div>
+    </div>
+  );
+}
 
 function LoginPage() {
   const [user, setUser] = useState(null);
@@ -22,25 +47,36 @@ function LoginPage() {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       setUser(currentUser);
-  
+
       if (currentUser) {
         console.log('User signed in:', currentUser.email);
-        
+
         const userDocRef = doc(db, 'users', currentUser.uid);
         const userDoc = await getDoc(userDocRef);
-        
+
         if (userDoc.exists()) {
           console.log('✓ User document found in Firestore');
+
+          // Self-heal a drifted email. The users doc is keyed by uid, but the
+          // leaderboard and activity graph match feeding slots to volunteers by
+          // EMAIL — so if users.email ever diverges from the auth email (a typo
+          // when the doc was hand-created, an address change), that volunteer
+          // silently disappears from both. Auth is the source of truth.
+          const stored = userDoc.data().email;
+          if (currentUser.email && stored !== currentUser.email) {
+            console.warn(`Repairing users/${currentUser.uid}.email: "${stored}" → "${currentUser.email}"`);
+            await setDoc(userDocRef, { email: currentUser.email }, { merge: true });
+          }
         } else {
           console.warn('⚠ User document not found!');
         }
-        
+
         navigate('/volunteer');
       } else {
         setLoading(false);
       }
     });
-    
+
     return () => unsubscribe();
   }, [navigate]);
 
@@ -60,7 +96,7 @@ function LoginPage() {
 
     setAuthLoading(true);
 
-    const result = isSignUp 
+    const result = isSignUp
       ? await signUp(email, password)
       : await logIn(email, password);
 
@@ -77,10 +113,10 @@ function LoginPage() {
     try {
       const provider = new GoogleAuthProvider();
       const result = await signInWithPopup(auth, provider);
-      
+
       const userDocRef = doc(db, 'users', result.user.uid);
       const userDoc = await getDoc(userDocRef);
-      
+
       if (!userDoc.exists()) {
         await setDoc(userDocRef, {
           email: result.user.email,
@@ -110,175 +146,151 @@ function LoginPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen">
-        <NavBar />
-        <div className="h-14 sm:h-16 md:h-20 lg:h-28"></div>
-        <div className="flex flex-col items-center px-4 py-8">
-          <h1 className="text-white text-center text-3xl md:text-4xl lg:text-5xl">
-            Member Login
-          </h1>
-          <div className="mt-16">
-            <p className="text-white">Loading...</p>
-          </div>
-        </div>
-      </div>
+      <LoginShell>
+        <section className="c4-panel mx-auto max-w-md rounded-[18px] p-8 text-center">
+          <p className="font-pix text-accent m-0 text-xl">signing you in…</p>
+        </section>
+      </LoginShell>
+    );
+  }
+
+  if (user) {
+    return (
+      <LoginShell>
+        <section className="c4-panel mx-auto max-w-md rounded-[18px] p-6 text-center">
+          <p className="text-ink m-0 mb-4 text-lg">Welcome, {user.email}!</p>
+          <button onClick={handleLogout} className="c4-btn" style={{ background: 'var(--color-soft)' }}>
+            log out
+          </button>
+        </section>
+      </LoginShell>
     );
   }
 
   return (
-    <div className="min-h-screen"> 
-      <NavBar />
-
-      <div className="h-14 sm:h-16 md:h-20 lg:h-28"></div>
-      
-      <div className="flex flex-col items-center min-h-screen px-4 py-8 md:px-4 md:py-8">
-        <h1 className="text-white text-center text-3xl md:text-4xl lg:text-5xl">
-          Member Login
-        </h1>
-        
-        <p className="mt-10 mb-10 text-[#b28ab7] text-center w-full max-w-2xl">
-          sign up/log in to access our c4mh portal! <br />
-          in our portal, you can access our volunteer signup sheet, add to our cat album, and more!
+    <LoginShell>
+      <section className="c4-panel mx-auto max-w-md rounded-[18px] p-5 sm:p-6">
+        <p className="text-ink m-0 mb-5 text-center text-[15px] leading-relaxed">
+          In our portal you can access the volunteer signup sheet, add to our cat album, and more!
         </p>
-        
-        <div className="bg-[#9fc8a7] p-8 md:p-12 rounded-3xl w-full md:w-[70%] max-w-3xl mt-16 bg-white">
-          {user ? (
-            <div className="text-center">
-              <p className="text-white text-lg mb-4">Welcome, {user.email}!</p>
-              <button 
-                onClick={handleLogout}
-                className="bg-white hover:bg-gray-100 text-gray-800 font-semibold rounded-lg transition-colors"
-                style={{ padding: '12px 32px' }}
-              >
-                Log Out
-              </button>
-            </div>
-          ) : (
-            <div className="w-full max-w-md mx-auto">
-              <div className="bg-white rounded-lg" style={{ padding: '24px' }}>
-                
-                {/* Google Sign-In Button */}
-                <div style={{ paddingBottom: '24px', borderBottom: '1px solid #e5e7eb' }}>
-                  <button
-                    onClick={handleGoogleSignIn}
-                    disabled={authLoading}
-                    className="w-full flex items-center justify-center gap-3 bg-white border-2 border-gray-300 hover:bg-gray-50 text-gray-700 font-medium rounded shadow-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                    style={{ padding: '16px 24px', fontFamily: "'Instrument Sans', sans-serif" }}
-                  >
-                    <svg className="w-5 h-5" viewBox="0 0 24 24">
-                      <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-                      <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-                      <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
-                      <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
-                    </svg>
-                    <span>Sign in with Google</span>
-                  </button>
-                </div>
 
-                {/* Divider */}
-                <div className="relative" style={{ padding: '24px 0' }}>
-                  <div className="absolute inset-0 flex items-center">
-                    <div className="w-full border-t border-gray-300"></div>
-                  </div>
-                  <div className="relative flex justify-center">
-                    <span className="bg-white text-gray-500 text-sm" style={{ padding: '0 16px', fontFamily: "'Instrument Sans', sans-serif" }}>or</span>
-                  </div>
-                </div>
+        {/* Google Sign-In */}
+        <button
+          onClick={handleGoogleSignIn}
+          disabled={authLoading}
+          className="c4-btn flex w-full items-center justify-center gap-3"
+          style={{ background: 'var(--color-panel)' }}
+        >
+          <svg className="h-5 w-5" viewBox="0 0 24 24" aria-hidden="true">
+            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+            <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+            <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+            <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+          </svg>
+          <span>sign in with Google</span>
+        </button>
 
-                {/* Email/Password Form */}
-                <form onSubmit={handleEmailPasswordSubmit}>
-                  <div className="space-y-4" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>
-                    <div>
-                      <label className="block text-gray-700 text-sm font-medium mb-2">
-                        Email
-                      </label>
-                      <input
-                        type="email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        className="w-full border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        style={{ padding: '12px 16px' }}
-                        placeholder="name@example.com"
-                        disabled={authLoading}
-                        required
-                      />
-                    </div>
-                    
-                    <div>
-                      <label className="block text-gray-700 text-sm font-medium mb-2">
-                        Password
-                      </label>
-                      <input
-                        type="password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        className="w-full border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        style={{ padding: '12px 16px' }}
-                        placeholder="Choose a password"
-                        disabled={authLoading}
-                        minLength={6}
-                        required
-                      />
-                    </div>
-
-                    {isSignUp && (
-                      <div>
-                        <label className="block text-gray-700 text-sm font-medium mb-2">
-                          Confirm Password
-                        </label>
-                        <input
-                          type="password"
-                          value={confirmPassword}
-                          onChange={(e) => setConfirmPassword(e.target.value)}
-                          className="w-full border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                          style={{ padding: '12px 16px' }}
-                          placeholder="Confirm your password"
-                          disabled={authLoading}
-                          minLength={6}
-                          required
-                        />
-                      </div>
-                    )}
-
-                    {error && (
-                      <div className="bg-red-50 border border-red-200 text-red-700 rounded text-sm" style={{ padding: '12px 16px' }}>
-                        {error}
-                      </div>
-                    )}
-
-                    <button
-                      type="submit"
-                      disabled={authLoading}
-                      className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                      style={{ padding: '16px 24px', marginTop: '24px' }}
-                    >
-                      {authLoading ? 'Loading...' : (isSignUp ? 'Sign Up' : 'Sign In')}
-                    </button>
-                  </div>
-                </form>
-
-                {/* Toggle Sign Up/Sign In */}
-                <div className="text-center border-t border-gray-200" style={{ paddingTop: '16px', marginTop: '24px', fontFamily: "'Instrument Sans', sans-serif" }}>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setIsSignUp(!isSignUp);
-                      setError('');
-                      setConfirmPassword('');
-                    }}
-                    disabled={authLoading}
-                    className="text-blue-600 hover:text-blue-700 text-sm font-medium disabled:opacity-50"
-                    style={{ padding: '8px 0' }}
-                  >
-                    {isSignUp ? 'Already have an account? Sign in' : "Don't have an account? Sign up"}
-                  </button>
-                </div>
-              </div>
-            </div>
-          )}
+        {/* Divider */}
+        <div className="my-5 flex items-center gap-3">
+          <span className="border-line h-0 flex-1 border-t border-dashed" />
+          <span className="text-ink/60 text-sm">or</span>
+          <span className="border-line h-0 flex-1 border-t border-dashed" />
         </div>
-      </div>
-    </div>
+
+        {/* Email/Password */}
+        <form onSubmit={handleEmailPasswordSubmit}>
+          <div className="flex flex-col gap-3.5">
+            <div>
+              <label htmlFor="email" className="text-ink mb-1.5 block text-sm font-bold">
+                Email
+              </label>
+              <input
+                id="email"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="c4-input"
+                placeholder="name@example.com"
+                disabled={authLoading}
+                required
+              />
+            </div>
+
+            <div>
+              <label htmlFor="password" className="text-ink mb-1.5 block text-sm font-bold">
+                Password
+              </label>
+              <input
+                id="password"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="c4-input"
+                placeholder="at least 6 characters"
+                disabled={authLoading}
+                minLength={6}
+                required
+              />
+            </div>
+
+            {isSignUp && (
+              <div>
+                <label htmlFor="confirmPassword" className="text-ink mb-1.5 block text-sm font-bold">
+                  Confirm Password
+                </label>
+                <input
+                  id="confirmPassword"
+                  type="password"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  className="c4-input"
+                  placeholder="confirm your password"
+                  disabled={authLoading}
+                  minLength={6}
+                  required
+                />
+              </div>
+            )}
+
+            {error && (
+              <p
+                role="alert"
+                className="m-0 rounded-[10px] border p-3 text-sm"
+                style={{ borderColor: '#d99a9a', background: '#fbeeee', color: '#8f4b4b' }}
+              >
+                {error}
+              </p>
+            )}
+
+            <button
+              type="submit"
+              disabled={authLoading}
+              className="c4-btn mt-1 w-full"
+              style={{ background: 'var(--color-accent)', color: 'var(--color-panel)' }}
+            >
+              {authLoading ? 'loading…' : isSignUp ? 'sign up' : 'sign in'}
+            </button>
+          </div>
+        </form>
+
+        {/* Toggle Sign Up/Sign In */}
+        <div className="border-line mt-5 border-t border-dashed pt-4 text-center">
+          <button
+            type="button"
+            onClick={() => {
+              setIsSignUp(!isSignUp);
+              setError('');
+              setConfirmPassword('');
+            }}
+            disabled={authLoading}
+            className="text-accent text-sm underline decoration-dotted underline-offset-2 disabled:opacity-50"
+            style={{ padding: 0, border: 'none', background: 'none' }}
+          >
+            {isSignUp ? 'Already have an account? Sign in' : "Don't have an account? Sign up"}
+          </button>
+        </div>
+      </section>
+    </LoginShell>
   );
 }
 

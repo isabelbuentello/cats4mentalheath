@@ -112,7 +112,7 @@ function Calendar({ isAdmin = false }) {
     // Empty cells for days before month starts
     for (let i = 0; i < startingDayOfWeek; i++) {
       days.push(
-        <div key={`empty-${i}`} className="aspect-square p-1 sm:p-2"></div>
+        <div key={`empty-${i}`} className="min-h-[84px] sm:min-h-[104px]"></div>
       );
     }
 
@@ -128,23 +128,30 @@ function Calendar({ isAdmin = false }) {
         <div
           key={day}
           onClick={() => handleDayClick(day)}
-          className={`aspect-square p-1 sm:p-2 border-2 rounded-lg relative overflow-hidden
-            ${isAdmin ? 'cursor-pointer hover:bg-[#ffb3c1] hover:bg-opacity-30' : ''} 
-            ${dayEvents.length > 0 ? 'bg-[#cadaed] border-[#cadaed]' : isToday ? 'bg-[#d5caed] bg-opacity-40 border-[#d5caed]' : 'bg-white border-gray-200'}
-            transition-colors group`}
+          className={`group relative min-h-[84px] overflow-hidden rounded-[10px] border-[1.5px] p-1 transition-colors sm:min-h-[104px] sm:p-2
+            ${isAdmin ? 'cursor-pointer' : ''}`}
+          style={{
+            borderColor: 'var(--color-line)',
+            background:
+              dayEvents.length > 0
+                ? 'var(--color-chip-3)'
+                : isToday
+                  ? 'var(--color-chip-1)'
+                  : 'var(--color-panel)'
+          }}
         >
           {dayEvents.length > 0 ? (
             // Event display - takes up full box
-            <div className="h-full flex flex-col">
-              <div className="text-[10px] sm:text-xs font-bold text-gray-600 mb-1">
+            <div className="flex h-full flex-col">
+              <div className="text-ink/70 mb-1 text-[10px] font-bold sm:text-xs">
                 {day}
               </div>
-              <div className="flex-1 flex flex-col justify-center items-center text-center px-1">
-                <p className="text-xs sm:text-sm md:text-base font-bold text-gray-800 leading-tight">
+              <div className="flex flex-1 flex-col items-center justify-center px-1 text-center">
+                <p className="text-ink m-0 text-xs leading-tight font-bold sm:text-sm">
                   {dayEvents[0].title}
                 </p>
                 {dayEvents.length > 1 && (
-                  <p className="text-[10px] text-gray-600 mt-1">
+                  <p className="text-ink/70 m-0 mt-1 text-[10px]">
                     +{dayEvents.length - 1} more
                   </p>
                 )}
@@ -155,8 +162,15 @@ function Calendar({ isAdmin = false }) {
                     e.stopPropagation();
                     handleDeleteEvent(dayEvents[0].id);
                   }}
-                  className="absolute top-1 right-1 bg-red-400 text-white rounded-full w-5 h-5 
-                    text-xs leading-none opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"
+                  aria-label={`Delete event: ${dayEvents[0].title}`}
+                  className="absolute top-1 right-1 grid h-5 w-5 place-items-center text-xs leading-none opacity-0 transition-opacity group-hover:opacity-100"
+                  style={{
+                    padding: 0,
+                    borderRadius: 999,
+                    border: '1.5px solid var(--color-line)',
+                    background: '#e0908f',
+                    color: '#fff'
+                  }}
                 >
                   ×
                 </button>
@@ -164,7 +178,7 @@ function Calendar({ isAdmin = false }) {
             </div>
           ) : (
             // Empty day - just show number
-            <div className="text-xs sm:text-sm font-semibold text-gray-700">
+            <div className="text-ink/80 text-xs font-semibold sm:text-sm">
               {day}
             </div>
           )}
@@ -176,31 +190,25 @@ function Calendar({ isAdmin = false }) {
   };
 
   return (
-    <div style={{ padding: '16px' }} className="max-w-6xl mx-auto">
+    <div>
       {/* Calendar Header */}
-      <div className="bg-white rounded-xl shadow-lg p-4 sm:p-6 mb-6">
-        <div className="flex items-center justify-between mb-6">
-          <button
-            onClick={() => changeMonth(-1)}
-            className="bg-[#d1abc3] hover:bg-[#ffb3c1] text-white font-bold py-2 px-4 rounded-lg transition-colors"
-          >
+      <div className="c4-panel rounded-[18px] p-4 sm:p-5">
+        <div className="mb-4 flex items-center justify-between gap-3">
+          <button onClick={() => changeMonth(-1)} className="c4-btn" aria-label="Previous month">
             ←
           </button>
-          <h2 className="text-2xl sm:text-3xl font-bold text-gray-800">
+          <h2 className="font-pix text-accent m-0 text-xl tracking-wide sm:text-3xl">
             {monthNames[currentDate.getMonth()]} {currentDate.getFullYear()}
           </h2>
-          <button
-            onClick={() => changeMonth(1)}
-            className="bg-[#d1abc3] hover:bg-[#ffb3c1] text-white font-bold py-2 px-4 rounded-lg transition-colors"
-          >
+          <button onClick={() => changeMonth(1)} className="c4-btn" aria-label="Next month">
             →
           </button>
         </div>
 
         {/* Days of Week */}
-        <div className="grid grid-cols-7 gap-1 sm:gap-2 mb-2">
+        <div className="mb-2 grid grid-cols-7 gap-1 sm:gap-2">
           {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
-            <div key={day} className="text-center font-bold text-gray-600 text-xs sm:text-sm py-2">
+            <div key={day} className="text-ink/70 py-2 text-center text-xs font-bold sm:text-sm">
               {day}
             </div>
           ))}
@@ -214,34 +222,40 @@ function Calendar({ isAdmin = false }) {
 
       {/* Add Event Modal */}
       {showModal && isAdmin && (
-        <div className="fixed inset-0 bg-[#dfbfdf] bg-opacity-80 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-xl shadow-2xl p-6 max-w-md w-full">
-            <h3 className="text-2xl font-bold mb-4 text-gray-800">
-              Add Event - {monthNames[currentDate.getMonth()]} {selectedDay}
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4"
+          style={{ background: 'rgb(92 70 120 / 0.55)' }}
+        >
+          <div className="c4-panel font-hand w-full max-w-md rounded-[18px] p-5">
+            <h3 className="font-pix text-accent m-0 mb-3 text-xl">
+              ★ add event — {monthNames[currentDate.getMonth()]} {selectedDay}
             </h3>
             <input
               type="text"
               value={eventTitle}
               onChange={(e) => setEventTitle(e.target.value)}
               placeholder="event title"
-              className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg mb-4 focus:outline-none focus:border-[#d1abc3]"
+              className="text-ink mb-4 w-full rounded-[10px] border-[1.5px] px-4 py-3 focus:outline-none"
+              style={{ borderColor: 'var(--color-line)', background: 'var(--color-panel)' }}
               autoFocus
             />
             <div className="flex gap-3">
               <button
                 onClick={handleAddEvent}
-                className="flex-1 bg-[#d4edca] hover:bg-[#ffb3c1] text-white font-bold py-3 rounded-lg transition-colors"
+                className="c4-btn flex-1"
+                style={{ background: 'var(--color-chip-4)' }}
               >
-                Add Event
+                add event
               </button>
               <button
                 onClick={() => {
                   setShowModal(false);
                   setEventTitle('');
                 }}
-                className="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-700 font-bold py-3 rounded-lg transition-colors"
+                className="c4-btn flex-1"
+                style={{ background: 'var(--color-soft)' }}
               >
-                Cancel
+                cancel
               </button>
             </div>
           </div>

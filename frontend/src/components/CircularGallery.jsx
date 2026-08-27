@@ -1,5 +1,5 @@
 import { Camera, Mesh, Plane, Program, Renderer, Texture, Transform } from 'ogl';
-import { useEffect, useRef } from 'react';
+import { useEffect, useImperativeHandle, useRef } from 'react';
 import c1 from '../assets/c1.png'
 import c2 from '../assets/c2.png'
 import c3 from '../assets/c3.png'
@@ -284,12 +284,15 @@ class App {
       borderRadius = 0,
       font = 'bold 30px Figtree',
       scrollSpeed = 2,
-      scrollEase = 0.05
+      scrollEase = 0.05,
+      onChange
     } = {}
   ) {
     document.documentElement.classList.remove('no-js');
     this.container = container;
     this.scrollSpeed = scrollSpeed;
+    this.onChange = onChange;
+    this.lastReportedIndex = null;
     this.scroll = { ease: scrollEase, current: 0, target: 0, last: 0 };
     this.onCheckDebounce = debounce(this.onCheck, 200);
     this.createRenderer();
@@ -381,6 +384,50 @@ class App {
     const item = width * itemIndex;
     this.scroll.target = this.scroll.target < 0 ? -item : item;
   }
+
+  /* ---- programmatic navigation ----
+     Items are duplicated once for the infinite loop, so the number of real
+     slides is half the media count. `scroll.target` is unbounded — it keeps
+     counting up/down past the end — so positions are always resolved modulo
+     the real slide count. */
+  get itemWidth() {
+    return this.medias && this.medias[0] ? this.medias[0].width : 0;
+  }
+  get slideCount() {
+    return this.mediasImages ? this.mediasImages.length / 2 : 0;
+  }
+  next() {
+    if (!this.itemWidth) return;
+    this.scroll.target += this.itemWidth;
+  }
+  prev() {
+    if (!this.itemWidth) return;
+    this.scroll.target -= this.itemWidth;
+  }
+  goTo(index) {
+    const width = this.itemWidth;
+    const count = this.slideCount;
+    if (!width || !count) return;
+    // Travel the short way round rather than unwinding to an absolute offset.
+    const current = Math.round(this.scroll.target / width);
+    const currentSlide = ((current % count) + count) % count;
+    let delta = index - currentSlide;
+    if (delta > count / 2) delta -= count;
+    if (delta < -count / 2) delta += count;
+    this.scroll.target = (current + delta) * width;
+  }
+  reportIndex() {
+    if (!this.onChange) return;
+    const width = this.itemWidth;
+    const count = this.slideCount;
+    if (!width || !count) return;
+    const raw = Math.round(this.scroll.current / width);
+    const index = ((raw % count) + count) % count;
+    if (index !== this.lastReportedIndex) {
+      this.lastReportedIndex = index;
+      this.onChange(index, count);
+    }
+  }
   onResize() {
     this.screen = {
       width: this.container.clientWidth,
@@ -406,6 +453,7 @@ class App {
     }
     this.renderer.render({ scene: this.scene, camera: this.camera });
     this.scroll.last = this.scroll.current;
+    this.reportIndex();
     this.raf = window.requestAnimationFrame(this.update.bind(this));
   }
   addEventListeners() {
@@ -442,20 +490,54 @@ class App {
 }
 
 export default function CircularGallery({
+  ref,
   items,
   bend = 3,
   textColor = '#ffffff',
   borderRadius = 0.05,
   font = 'bold 30px Figtree',
   scrollSpeed = 2,
-  scrollEase = 0.05
+  scrollEase = 0.05,
+  onChange
 }) {
   const containerRef = useRef(null);
+  const appRef = useRef(null);
+
+  // Held in a ref so a caller passing an inline arrow function doesn't tear
+  // down and rebuild the WebGL context on every render.
+  const onChangeRef = useRef(onChange);
   useEffect(() => {
-    const app = new App(containerRef.current, { items, bend, textColor, borderRadius, font, scrollSpeed, scrollEase });
+    onChangeRef.current = onChange;
+  }, [onChange]);
+
+  // Reads appRef at call time, so the handle stays valid across rebuilds.
+  useImperativeHandle(
+    ref,
+    () => ({
+      next: () => appRef.current?.next(),
+      prev: () => appRef.current?.prev(),
+      goTo: index => appRef.current?.goTo(index)
+    }),
+    []
+  );
+
+  useEffect(() => {
+    const app = new App(containerRef.current, {
+      items,
+      bend,
+      textColor,
+      borderRadius,
+      font,
+      scrollSpeed,
+      scrollEase,
+      onChange: (index, count) => onChangeRef.current?.(index, count)
+    });
+    appRef.current = app;
     return () => {
+      appRef.current = null;
       app.destroy();
     };
   }, [items, bend, textColor, borderRadius, font, scrollSpeed, scrollEase]);
+
   return <div className="circular-gallery" ref={containerRef} />;
 }

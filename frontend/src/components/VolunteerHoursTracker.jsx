@@ -1,6 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { collectionGroup, getDocs, doc, updateDoc, getDoc , onSnapshot} from 'firebase/firestore';
 import { db, auth } from '../firebase/config.js';
+import {
+  getShiftState,
+  isApprovable,
+  compareShifts,
+  SHIFT_STATE_LABEL,
+  SHIFT_STATE_STYLE
+} from '../utils/shiftApproval.js';
 
 import darkBrownCat from '../assets/darkbrowncat.png';
 import blackCat from '../assets/blackcat.png';
@@ -20,6 +27,14 @@ function VolunteerHoursTracker() {
   const [isAdmin, setIsAdmin] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
   const [viewMode, setViewMode] = useState('users');
+  const [search, setSearch] = useState('');
+  // Re-render each minute so shifts flip from "upcoming" to "awaiting approval"
+  // the moment their window opens (6am for AM, noon for PM) without a reload.
+  const [now, setNow] = useState(() => new Date());
+  useEffect(() => {
+    const t = setInterval(() => setNow(new Date()), 60000);
+    return () => clearInterval(t);
+  }, []);
   const currentUser = auth.currentUser;
 
 
@@ -92,6 +107,8 @@ function VolunteerHoursTracker() {
               totalShifts: 0,
               verifiedShifts: 0,
               pendingShifts: 0,
+              awaitingShifts: 0,
+              upcomingShifts: 0,
               noShowShifts: 0,
               verifiedHours: 0,
               totalPossibleHours: 0
@@ -107,6 +124,13 @@ function VolunteerHoursTracker() {
             userShiftsMap[shift.userEmail].verifiedHours += shift.hours || 0;
           } else if (shift.status === 'pending') {
             userShiftsMap[shift.userEmail].pendingShifts++;
+            // Split pending into actionable vs not-yet-happened, so the admin
+            // list can surface only what's actually approvable.
+            if (isApprovable(shiftData)) {
+              userShiftsMap[shift.userEmail].awaitingShifts++;
+            } else {
+              userShiftsMap[shift.userEmail].upcomingShifts++;
+            }
           } else if (shift.status === 'no-show') {
             userShiftsMap[shift.userEmail].noShowShifts++;
           }
@@ -114,9 +138,12 @@ function VolunteerHoursTracker() {
 
         const usersList = Object.values(userShiftsMap);
         usersList.forEach(user => {
-          user.shifts.sort((a, b) => b.date - a.date);
+          user.shifts.sort((a, b) => compareShifts(a, b));
         });
-        usersList.sort((a, b) => b.totalShifts - a.totalShifts);
+        // Volunteers with shifts waiting on you float to the top.
+        usersList.sort(
+          (a, b) => b.awaitingShifts - a.awaitingShifts || b.totalShifts - a.totalShifts
+        );
 
         setUsers(usersList);
         setLoading(false);
@@ -147,6 +174,18 @@ function VolunteerHoursTracker() {
       }
     }
   }, [users]);
+
+  const query = search.trim().toLowerCase();
+  const filteredUsers = query
+    ? users.filter(
+        (u) =>
+          (u.name || '').toLowerCase().includes(query) ||
+          (u.email || '').toLowerCase().includes(query)
+      )
+    : users;
+
+  // How many shifts across everyone are actually waiting on an admin right now.
+  const totalAwaiting = users.reduce((n, u) => n + u.awaitingShifts, 0);
 
   const handleVerify = async (shift, newStatus) => {
   if (!isAdmin) return;
@@ -230,11 +269,11 @@ function VolunteerHoursTracker() {
   };
 
   if (loading) {
-    return <div className="bg-white rounded-xl shadow-lg p-6">Loading...</div>;
+    return <div className="c4-panel font-hand rounded-[18px] p-4">Loading...</div>;
   }
 
   if (!currentUser || !isAdmin) {
-    return <div className="bg-white rounded-xl shadow-lg p-6">Admin access required.</div>;
+    return <div className="c4-panel font-hand rounded-[18px] p-4">Admin access required.</div>;
   }
 
   const totalStats = {
@@ -246,20 +285,22 @@ function VolunteerHoursTracker() {
   };
 
   return (
-    <div style={{ padding: '32px', fontFamily: "'Instrument Sans', sans-serif" }} className="bg-white rounded-xl shadow-lg">
+    <div className="c4-panel font-hand rounded-[18px] p-4 sm:p-5">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4 md:mb-6">
-        <h2 className="text-xl md:text-2xl lg:text-3xl font-bold">Volunteer Hours Management</h2>
+        <h2 className="font-pix text-accent m-0 text-xl sm:text-2xl">Volunteer Hours Management</h2>
         <div className="flex gap-2 flex-wrap">
           <button
             onClick={exportToCSV}
-            className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-3 md:px-4 rounded-lg transition-colors text-xs md:text-sm flex-1 sm:flex-none"
+            className="c4-btn flex-1 text-sm sm:flex-none"
+            style={{ background: 'var(--color-chip-4)' }}
           >
             Export Summary
           </button>
           <button
             onClick={exportDetailedCSV}
-            className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-3 md:px-4 rounded-lg transition-colors text-xs md:text-sm flex-1 sm:flex-none"
+            className="c4-btn flex-1 text-sm sm:flex-none"
+            style={{ background: 'var(--color-chip-3)' }}
           >
             Export Details
           </button>
@@ -268,38 +309,70 @@ function VolunteerHoursTracker() {
 
       {/* Overall Stats */}
       <div style={{ marginLeft: '16px', marginRight: '16px' }} className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2 md:gap-3 mb-4 md:mb-6">
-        <div style={{ padding: '16px' }} className="bg-purple-100 rounded-lg text-center">
-          <p className="text-xl md:text-2xl font-bold text-purple-700">{totalStats.totalVolunteers}</p>
-          <p className="text-xs text-purple-700">Volunteers</p>
+        <div className="border-line rounded-[12px] border-[1.5px] p-3 text-center" style={{ background: 'var(--color-chip-1)' }}>
+          <p className="text-xl md:text-2xl font-bold text-accent">{totalStats.totalVolunteers}</p>
+          <p className="text-xs text-accent">Volunteers</p>
         </div>
-        <div style={{ padding: '16px' }} className="bg-blue-100 rounded-lg text-center">
-          <p className="text-xl md:text-2xl font-bold text-blue-700">{totalStats.totalShifts}</p>
-          <p className="text-xs text-blue-700">Total Shifts</p>
+        <div className="border-line rounded-[12px] border-[1.5px] p-3 text-center" style={{ background: 'var(--color-chip-3)' }}>
+          <p className="text-xl md:text-2xl font-bold text-ink">{totalStats.totalShifts}</p>
+          <p className="text-xs text-ink">Total Shifts</p>
         </div>
-        <div style={{ padding: '16px' }} className="bg-yellow-100 rounded-lg text-center">
-          <p className="text-xl md:text-2xl font-bold text-yellow-700">{totalStats.totalPending}</p>
-          <p className="text-xs text-yellow-700">Pending</p>
+        <div className="border-line rounded-[12px] border-[1.5px] p-3 text-center" style={{ background: 'var(--color-chip-5)' }}>
+          <p className="text-xl md:text-2xl font-bold text-ink">{totalStats.totalPending}</p>
+          <p className="text-xs text-ink">Pending</p>
         </div>
-        <div style={{ padding: '16px' }} className="bg-green-100 rounded-lg text-center">
-          <p className="text-xl md:text-2xl font-bold text-green-700">{totalStats.totalVerified}</p>
-          <p className="text-xs text-green-700">Verified</p>
+        <div className="border-line rounded-[12px] border-[1.5px] p-3 text-center" style={{ background: 'var(--color-chip-4)' }}>
+          <p className="text-xl md:text-2xl font-bold text-ink">{totalStats.totalVerified}</p>
+          <p className="text-xs text-ink">Verified</p>
         </div>
-        <div style={{ padding: '16px' }} className="bg-pink-100 rounded-lg text-center col-span-2 md:col-span-1">
-          <p className="text-xl md:text-2xl font-bold text-pink-700">{totalStats.totalHours.toFixed(1)}</p>
-          <p className="text-xs text-pink-700">Total Hours</p>
+        <div className="border-line rounded-[12px] border-[1.5px] p-3 text-center col-span-2 md:col-span-1" style={{ background: 'var(--color-chip-2)' }}>
+          <p className="text-xl md:text-2xl font-bold text-ink">{totalStats.totalHours.toFixed(1)}</p>
+          <p className="text-xs text-ink">Total Hours</p>
         </div>
       </div>
 
       {/* Volunteers List */}
       {!selectedUser ? (
         <div style={{ marginLeft: '16px', marginRight: '16px' }}>
-          <h3 className="text-lg md:text-xl font-bold mb-3 md:mb-4">Volunteers</h3>
+          <h3 className="font-pix text-accent m-0 mb-3 text-lg">Volunteers</h3>
+
+          <div
+            className="border-line mb-3 rounded-[12px] border-[1.5px] p-3 text-center"
+            style={{ background: totalAwaiting > 0 ? 'var(--color-chip-5)' : 'var(--color-soft)' }}
+          >
+            <p className="text-ink m-0 text-sm">
+              {totalAwaiting > 0
+                ? `${totalAwaiting} shift${totalAwaiting === 1 ? '' : 's'} awaiting your approval`
+                : 'Nothing awaiting approval right now ♡'}
+            </p>
+          </div>
+
+          <label htmlFor="volunteer-search" className="sr-only">Search volunteers</label>
+          <input
+            id="volunteer-search"
+            type="search"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="search volunteers by name or email…"
+            className="c4-input mb-3"
+          />
+
+          {filteredUsers.length === 0 && (
+            <p className="text-ink/70 m-0 mb-3 italic">
+              {search ? `No volunteers matching "${search}"` : 'No volunteers yet'}
+            </p>
+          )}
+
           <div className="space-y-2 md:space-y-3 max-h-96 overflow-y-auto">
-            {users.map(user => (
+            {filteredUsers.map(user => (
               <div
                 key={user.email}
-                style={{ padding: '20px' }}
-                className="border-2 border-gray-200 rounded-lg hover:border-purple-400 transition-colors cursor-pointer"
+                className="border-2 rounded-lg hover:border-accent transition-colors cursor-pointer"
+                style={{
+                  padding: '20px',
+                  borderColor: user.awaitingShifts > 0 ? 'var(--color-accent)' : 'var(--color-line)',
+                  background: user.awaitingShifts > 0 ? 'var(--color-chip-5)' : 'var(--color-panel)'
+                }}
                 onClick={() => setSelectedUser(user)}
               >
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
@@ -308,27 +381,36 @@ function VolunteerHoursTracker() {
                    <img 
                     src={getCatImageFromPath(user.photoURL)}
                     alt={user.name}
-                    className="w-10 h-10 md:w-12 md:h-12 rounded-full object-contain bg-gray-100 border-2 border-gray-300 flex-shrink-0"
+                    className="w-10 h-10 md:w-12 md:h-12 rounded-full object-contain bg-soft border-2 border-line flex-shrink-0"
                     />
                     <div className="min-w-0 flex-1">
                       <p className="font-bold text-sm md:text-base lg:text-lg truncate">{user.name}</p>
-                      <p className="text-xs md:text-sm text-gray-600 truncate">{user.email}</p>
+                      <p className="text-xs md:text-sm text-ink/70 truncate">{user.email}</p>
                     </div>
                   </div>
 
                   {/* Right: Stats */}
                   <div className="flex gap-4 md:gap-6 justify-around sm:justify-end">
                     <div className="text-center">
-                      <p className="text-lg md:text-xl lg:text-2xl font-bold text-purple-600">{user.verifiedHours.toFixed(1)}</p>
-                      <p className="text-xs text-gray-600">Hours</p>
+                      <p className="text-lg md:text-xl lg:text-2xl font-bold text-accent">{user.verifiedHours.toFixed(1)}</p>
+                      <p className="text-xs text-ink/70">Hours</p>
                     </div>
                     <div className="text-center">
                       <p className="text-lg md:text-xl lg:text-2xl font-bold text-blue-600">{user.totalShifts}</p>
-                      <p className="text-xs text-gray-600">Shifts</p>
+                      <p className="text-xs text-ink/70">Shifts</p>
                     </div>
                     <div className="text-center">
-                      <p className="text-lg md:text-xl lg:text-2xl font-bold text-yellow-600">{user.pendingShifts}</p>
-                      <p className="text-xs text-gray-600">Pending</p>
+                      <p
+                        className="text-lg md:text-xl lg:text-2xl font-bold"
+                        style={{ color: user.awaitingShifts > 0 ? 'var(--color-accent)' : 'var(--color-ink)' }}
+                      >
+                        {user.awaitingShifts}
+                      </p>
+                      <p className="text-xs text-ink/70">To approve</p>
+                    </div>
+                    <div className="text-center">
+                      <p className="text-lg md:text-xl lg:text-2xl font-bold text-ink/50">{user.upcomingShifts}</p>
+                      <p className="text-xs text-ink/70">Upcoming</p>
                     </div>
                   </div>
                 </div>
@@ -342,7 +424,7 @@ function VolunteerHoursTracker() {
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4 md:mb-6">
             <button
               onClick={() => setSelectedUser(null)}
-              className="text-purple-600 hover:text-purple-700 font-bold text-sm md:text-base"
+              className="text-accent hover:text-accent font-bold text-sm md:text-base"
             >
               ← Back to All Volunteers
             </button>
@@ -350,28 +432,28 @@ function VolunteerHoursTracker() {
               <img 
                 src={getCatImageFromPath(selectedUser.photoURL)}
                 alt={selectedUser.name}
-                className="w-10 h-10 md:w-12 md:h-12 rounded-full object-contain bg-gray-100 border-2 border-purple-300"
+                className="w-10 h-10 md:w-12 md:h-12 rounded-full object-contain bg-soft border-2 border-line"
               />
               <div className="min-w-0">
                 <p className="font-bold text-base md:text-lg lg:text-xl truncate">{selectedUser.name}</p>
-                <p className="text-xs md:text-sm text-gray-600 truncate">{selectedUser.email}</p>
+                <p className="text-xs md:text-sm text-ink/70 truncate">{selectedUser.email}</p>
               </div>
             </div>
           </div>
 
           {/* User Stats */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-3 mb-4 md:mb-6">
-            <div style={{ padding: '16px' }} className="bg-purple-100 rounded-lg text-center">
-              <p className="text-xl md:text-2xl lg:text-3xl font-bold text-purple-700">{selectedUser.verifiedHours.toFixed(1)}</p>
-              <p className="text-xs text-purple-700">Verified Hours</p>
+            <div className="border-line rounded-[12px] border-[1.5px] p-3 text-center" style={{ background: 'var(--color-chip-1)' }}>
+              <p className="text-xl md:text-2xl lg:text-3xl font-bold text-accent">{selectedUser.verifiedHours.toFixed(1)}</p>
+              <p className="text-xs text-accent">Verified Hours</p>
             </div>
-            <div style={{ padding: '16px' }} className="bg-green-100 rounded-lg text-center">
-              <p className="text-xl md:text-2xl lg:text-3xl font-bold text-green-700">{selectedUser.verifiedShifts}</p>
-              <p className="text-xs text-green-700">Completed</p>
+            <div className="border-line rounded-[12px] border-[1.5px] p-3 text-center" style={{ background: 'var(--color-chip-4)' }}>
+              <p className="text-xl md:text-2xl lg:text-3xl font-bold text-ink">{selectedUser.verifiedShifts}</p>
+              <p className="text-xs text-ink">Completed</p>
             </div>
-            <div style={{ padding: '16px' }} className="bg-yellow-100 rounded-lg text-center">
-              <p className="text-xl md:text-2xl lg:text-3xl font-bold text-yellow-700">{selectedUser.pendingShifts}</p>
-              <p className="text-xs text-yellow-700">Pending</p>
+            <div className="border-line rounded-[12px] border-[1.5px] p-3 text-center" style={{ background: 'var(--color-chip-5)' }}>
+              <p className="text-xl md:text-2xl lg:text-3xl font-bold text-ink">{selectedUser.pendingShifts}</p>
+              <p className="text-xs text-ink">Pending</p>
             </div>
             <div style={{ padding: '16px' }} className="bg-red-100 rounded-lg text-center">
               <p className="text-xl md:text-2xl lg:text-3xl font-bold text-red-700">{selectedUser.noShowShifts}</p>
@@ -382,7 +464,7 @@ function VolunteerHoursTracker() {
           {/* User Shifts Table */}
           <div className="overflow-x-auto max-h-96 overflow-y-auto border rounded-lg">
             <table className="w-full min-w-[500px]">
-              <thead className="bg-gray-100 sticky top-0">
+              <thead className="bg-soft sticky top-0">
                 <tr>
                   <th className="p-2 md:p-3 text-left text-xs md:text-sm">Date</th>
                   <th className="p-2 md:p-3 text-left text-xs md:text-sm">Time</th>
@@ -392,18 +474,24 @@ function VolunteerHoursTracker() {
                 </tr>
               </thead>
               <tbody>
-                {selectedUser.shifts.map(shift => (
-                  <tr key={shift.id} className="border-b hover:bg-gray-50">
+                {selectedUser.shifts.map(shift => {
+                  const state = getShiftState(shift, now);
+                  const canApprove = state === 'awaiting';
+                  return (
+                  <tr
+                    key={shift.id}
+                    className="border-b hover:bg-soft"
+                    style={state === 'upcoming' ? { opacity: 0.6 } : undefined}
+                  >
                     <td className="p-2 md:p-3 text-xs md:text-sm">{shift.date.toLocaleDateString()}</td>
                     <td className="p-2 md:p-3 text-xs md:text-sm">{shift.timeLabel}</td>
                     <td className="p-2 md:p-3 text-xs md:text-sm">{shift.hours}h</td>
                     <td className="p-2 md:p-3">
-                      <span className={`px-2 py-1 rounded text-xs font-bold ${
-                        shift.status === 'verified' ? 'bg-green-100 text-green-700' :
-                        shift.status === 'no-show' ? 'bg-red-100 text-red-700' :
-                        'bg-yellow-100 text-yellow-700'
-                      }`}>
-                        {shift.status.toUpperCase()}
+                      <span
+                        className="inline-block rounded border px-2 py-1 text-xs font-bold whitespace-nowrap"
+                        style={SHIFT_STATE_STYLE[state]}
+                      >
+                        {SHIFT_STATE_LABEL[state]}
                       </span>
                     </td>
                     <td className="p-2 md:p-3">
@@ -411,15 +499,17 @@ function VolunteerHoursTracker() {
                         <div className="flex gap-1">
                           <button
                             onClick={() => handleVerify(shift, 'verified')}
-                            className="bg-green-500 hover:bg-green-600 text-white px-2 md:px-3 py-1 rounded text-xs md:text-sm transition-colors"
-                            title="Mark as completed"
+                            disabled={!canApprove}
+                            className="bg-green-500 hover:bg-green-600 text-white px-2 md:px-3 py-1 rounded text-xs md:text-sm transition-colors disabled:cursor-not-allowed disabled:opacity-40"
+                            title={canApprove ? 'Mark as completed' : "Can't approve yet — this shift hasn't happened"}
                           >
                             ✓
                           </button>
                           <button
                             onClick={() => handleVerify(shift, 'no-show')}
-                            className="bg-red-500 hover:bg-red-600 text-white px-2 md:px-3 py-1 rounded text-xs md:text-sm transition-colors"
-                            title="Mark as no-show"
+                            disabled={!canApprove}
+                            className="bg-red-500 hover:bg-red-600 text-white px-2 md:px-3 py-1 rounded text-xs md:text-sm transition-colors disabled:cursor-not-allowed disabled:opacity-40"
+                            title={canApprove ? 'Mark as no-show' : "Can't approve yet — this shift hasn't happened"}
                           >
                             ✗
                           </button>
@@ -427,7 +517,7 @@ function VolunteerHoursTracker() {
                       ) : (
                         <button
                           onClick={() => handleVerify(shift, 'pending')}
-                          className="bg-gray-400 hover:bg-gray-500 text-white px-2 md:px-3 py-1 rounded text-xs md:text-sm transition-colors"
+                          className="bg-gray-400 hover:bg-soft0 text-white px-2 md:px-3 py-1 rounded text-xs md:text-sm transition-colors"
                           title="Reset to pending"
                         >
                           ↺
@@ -435,7 +525,8 @@ function VolunteerHoursTracker() {
                       )}
                     </td>
                   </tr>
-                ))}
+                  );
+                })}
               </tbody>
             </table>
           </div>

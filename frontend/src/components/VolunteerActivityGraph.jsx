@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { collectionGroup, getDocs, onSnapshot, collection } from 'firebase/firestore';
 import { db, auth } from '../firebase/config.js';
 
+const normEmail = (e) => (e || '').trim().toLowerCase();
+
 function VolunteerActivityGraph() {
   const [activityData, setActivityData] = useState({});
   const [loading, setLoading] = useState(true);
@@ -86,7 +88,11 @@ function VolunteerActivityGraph() {
     const unsubscribe = onSnapshot(daysQuery, async (snapshot) => {
       // Get valid user emails from the users collection
       const usersSnapshot = await getDocs(collection(db, 'users'));
-      const validEmails = new Set(usersSnapshot.docs.map(doc => doc.data().email));
+      // Normalised — see Leaderboard: an email mismatch between the users doc
+      // and the slot would otherwise erase this user's whole activity graph.
+      const validEmails = new Set(
+        usersSnapshot.docs.map(doc => normEmail(doc.data().email)).filter(Boolean)
+      );
 
       const activity = {};
       let total = 0;
@@ -103,9 +109,9 @@ function VolunteerActivityGraph() {
           // IMPORTANT CHECKS:
           // 1. When a slot is cancelled, its email becomes null.
           // 2. Only count slots from users that still exist in the users collection
-          if (slot && slot.email && validEmails.has(slot.email)) {
+          if (slot && slot.email && validEmails.has(normEmail(slot.email))) {
             // Count for current user
-            if (slot.email === currentUser.email) {
+            if (normEmail(slot.email) === normEmail(currentUser.email)) {
               dayCount++;
               total++;
             }
@@ -252,8 +258,8 @@ function VolunteerActivityGraph() {
     } else if (userRank === 2) {
       message = `You are the #2 most active feeder! Keep up the great work!`;
       emoji = '🥈';
-      bgColor = 'bg-gray-50';
-      textColor = 'text-gray-700';
+      bgColor = 'bg-soft';
+      textColor = 'text-ink';
     } else if (userRank === 3) {
       message = `You are the #3 most active feeder! Amazing job!`;
       emoji = '🥉';
@@ -262,8 +268,8 @@ function VolunteerActivityGraph() {
     } else if (userRank <= 5) {
       message = `You're #${userRank} out of ${totalUsers} volunteers! You're in the top 5!`;
       emoji = '⭐';
-      bgColor = 'bg-purple-50';
-      textColor = 'text-purple-700';
+      bgColor = 'bg-soft';
+      textColor = 'text-accent';
     } else if (userRank <= 10) {
       message = `You're #${userRank} out of ${totalUsers} volunteers! You're in the top 10!`;
       emoji = '🌟';
@@ -288,42 +294,42 @@ function VolunteerActivityGraph() {
 
   if (loading || !currentSemester) {
     return (
-      <div className="bg-white rounded-xl shadow-lg p-6">
-        <p className="text-gray-600">Loading activity...</p>
+      <div className="c4-panel font-hand rounded-[18px] p-4">
+        <p className="text-ink/70">Loading activity...</p>
       </div>
     );
   }
 
   if (!auth.currentUser) {
     return (
-      <div className="bg-white rounded-xl shadow-lg p-6">
-        <p className="text-gray-600">Please sign in to view your activity</p>
+      <div className="c4-panel font-hand rounded-[18px] p-4">
+        <p className="text-ink/70">Please sign in to view your activity</p>
       </div>
     );
   }
 
   return (
-    <div className="bg-white rounded-xl shadow-lg p-6" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>
+    <div className="c4-panel font-hand rounded-[18px] p-4">
       {/* Semester Navigation */}
       <div className="flex items-center justify-between mb-6">
         <button
           onClick={goToPreviousSemester}
           disabled={currentIndex === 0}
-          className="px-4 py-2 bg-gray-200 hover:bg-gray-300 disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed rounded-lg font-bold transition-colors"
+          className="px-4 py-2 bg-soft hover:bg-soft disabled:bg-soft disabled:text-ink/50 disabled:cursor-not-allowed rounded-lg font-bold transition-colors"
         >
           ← Previous
         </button>
         
         <div className="text-center">
-          <h2 className="text-2xl font-bold">
+          <h2 className="font-pix text-accent m-0 text-xl sm:text-2xl">
             {currentSemesterObj?.name}
           </h2>
-          <p className="text-sm text-gray-600 mt-1">
+          <p className="text-sm text-ink/70 mt-1">
             {semesterFeedings} feeding{semesterFeedings !== 1 ? 's' : ''} this semester
           </p>
           <button
             onClick={goToCurrentSemester}
-            className="mt-2 text-sm text-purple-600 hover:text-purple-700 underline"
+            className="mt-2 text-sm text-accent hover:text-accent underline"
           >
             Jump to Current Semester
           </button>
@@ -332,7 +338,7 @@ function VolunteerActivityGraph() {
         <button
           onClick={goToNextSemester}
           disabled={currentIndex === semesters.length - 1}
-          className="px-4 py-2 bg-gray-200 hover:bg-gray-300 disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed rounded-lg font-bold transition-colors"
+          className="px-4 py-2 bg-soft hover:bg-soft disabled:bg-soft disabled:text-ink/50 disabled:cursor-not-allowed rounded-lg font-bold transition-colors"
         >
           Next →
         </button>
@@ -350,7 +356,7 @@ function VolunteerActivityGraph() {
                 
                 return (
                   <div key={weekIndex} className="flex-shrink-0" style={{ width: '18px', marginRight: '4px' }}>
-                    <span className="text-xs text-gray-600">{monthLabel}</span>
+                    <span className="text-xs text-ink/70">{monthLabel}</span>
                   </div>
                 );
               })}
@@ -359,7 +365,7 @@ function VolunteerActivityGraph() {
             {/* Activity grid */}
             <div className="flex">
               {/* Day labels */}
-              <div className="flex flex-col justify-around mr-3 text-xs text-gray-600">
+              <div className="flex flex-col justify-around mr-3 text-xs text-ink/70">
                 <span>Mon</span>
                 <span>Wed</span>
                 <span>Fri</span>
@@ -389,7 +395,8 @@ function VolunteerActivityGraph() {
                         >
                           {/* Tooltip on hover */}
                           {day.isInSemester && (
-                            <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-gray-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 pointer-events-none whitespace-nowrap z-10">
+                            <div className="pointer-events-none absolute bottom-full left-1/2 z-10 mb-2 -translate-x-1/2 transform rounded px-2 py-1 text-xs whitespace-nowrap text-white opacity-0 group-hover:opacity-100"
+                            style={{ background: 'var(--color-ink)' }}>
                               {day.count} on {day.date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                             </div>
                           )}
@@ -402,7 +409,7 @@ function VolunteerActivityGraph() {
             </div>
 
             {/* Legend */}
-            <div className="flex items-center justify-center gap-2 mt-6 text-xs text-gray-600">
+            <div className="flex items-center justify-center gap-2 mt-6 text-xs text-ink/70">
               <span>Less</span>
               <div style={{ width: '18px', height: '18px', backgroundColor: '#e0e0e0', borderRadius: '3px' }}></div>
               <div style={{ width: '18px', height: '18px', backgroundColor: '#e6c3de', borderRadius: '3px' }}></div>
@@ -417,8 +424,8 @@ function VolunteerActivityGraph() {
 
       {/* Total feedings stat */}
       <div className="mt-6 pt-6 border-t border-gray-200 text-center">
-        <p className="text-sm text-gray-600">
-          Total all-time feedings: <span className="font-bold text-gray-800">{totalFeedings}</span>
+        <p className="text-sm text-ink/70">
+          Total all-time feedings: <span className="font-bold text-ink">{totalFeedings}</span>
         </p>
       </div>
     </div>

@@ -1,86 +1,107 @@
-import React from 'react';
 import NavBar from '../components/NavBar.jsx';
 import { Link } from 'react-router-dom';
 import WeeklyCalendar from '../components/WeeklyCalendar.jsx';
 import ApprovalGate from '../components/ApprovalGate.jsx';
+import { ScallopStrip } from '../components/Decor.jsx';
+import useIsAdmin from '../hooks/useIsAdmin.js';
 
 function VolunteerPage() {
+  const { isAdmin } = useIsAdmin();
+
   return (
-    <div className="min-h-screen">
+    <div className="c4-gingham c4-scope font-hand min-h-screen py-6 sm:py-8">
+      <header className="c4-container relative">
+        <div className="c4-panel rounded-[22px] px-6 py-6 text-center sm:px-7">
+          <h1 className="font-pix text-accent m-0 text-2xl leading-tight tracking-wide sm:text-4xl">
+            ♡ volunteer portal ♡
+          </h1>
+          <p className="text-ink mt-1 mb-0 text-base sm:text-lg">
+            claim a feeding shift and log your hours
+          </p>
+        </div>
+        <ScallopStrip />
+      </header>
+
       <NavBar startCollapsed={true} />
 
-      {/* Spacer div */}
-      <div className="h-3 sm:h-4 md:h-10 lg:h-14"></div>
-      
       {/* Desktop Navigation */}
-        <div className="hidden md:flex justify-center items-center gap-8 py-8 px-4">
-            <Link to="/volunteer">
-            <button className="text-2xl text-white font-bold bg-[#d1abc3] hover:bg-[#ffb3c1] px-6 py-3 rounded-lg transition-colors">
-                Volunteer
+      <div className="c4-container hidden md:flex justify-center items-center gap-3 py-4">
+        <Link to="/volunteer" className="flex-1">
+          <button className="c4-btn w-full" style={{ fontSize: '20px', background: 'var(--color-chip-2)' }}>
+            volunteer
+          </button>
+        </Link>
+        <Link to="/map-page" className="flex-1">
+          <button className="c4-btn w-full" style={{ fontSize: '20px', background: 'var(--color-chip-5)' }}>
+            map
+          </button>
+        </Link>
+        <Link to="/ourcats" className="flex-1">
+          <button className="c4-btn w-full" style={{ fontSize: '20px', background: 'var(--color-chip-3)' }}>
+            our cats
+          </button>
+        </Link>
+        <Link to="/feeding-instructions" className="flex-1">
+          <button className="c4-btn w-full" style={{ fontSize: '20px', background: 'var(--color-chip-4)' }}>
+            feeding instructions
+          </button>
+        </Link>
+        <Link to="/you-page" className="flex-1">
+          <button className="c4-btn w-full" style={{ fontSize: '20px', background: 'var(--color-chip-1)' }}>
+            you
+          </button>
+        </Link>
+        {isAdmin && (
+          <Link to="/admin" className="col-span-2">
+            <button className="c4-btn w-full" style={{ fontSize: '20px', background: 'var(--color-accent)', color: 'var(--color-panel)' }}>
+              admin
             </button>
-            </Link>
-            <Link to="/map-page">
-            <button className="text-2xl text-white font-bold bg-[#ede0ca] hover:bg-[#ffb3c1] px-6 py-3 rounded-lg transition-colors">
-                Map
-            </button>
-            </Link>
-            <Link to="/ourcats">
-            <button className="text-2xl text-white font-bold bg-[#cadaed] hover:bg-[#ffb3c1] px-6 py-3 rounded-lg transition-colors">
-                Our Cats
-            </button>
-            </Link>
-            <Link to="/feeding-instructions"> 
-            <button className="text-2xl text-white font-bold bg-[#d4edca] hover:bg-[#ffb3c1] px-6 py-3 rounded-lg transition-colors">
-                Feeding Instructions
-            </button>
-            </Link>
-            <Link to="/you-page" className="col-span-2"> 
-            <button className="bg-[#d5caed] hover:bg-[#ffb3c1] p-4 text-white font-bold rounded-lg transition-colors w-full">
-                You
-            </button>
-            </Link>
-        </div>
+          </Link>
+        )}
+      </div>
 
-        {/* Mobile Navigation */}
-        <div className="md:hidden grid grid-cols-2 gap-4 p-4">
-            <Link to="/volunteer">
-            <button className="bg-[#d1abc3] hover:bg-[#ffb3c1] p-4 text-white font-bold rounded-lg transition-colors w-full">
-                Volunteer
+      {/* Mobile Navigation */}
+      <div className="c4-container md:hidden grid grid-cols-2 gap-2.5 py-4">
+        <Link to="/volunteer">
+          <button className="c4-btn w-full" style={{ fontSize: '20px', background: 'var(--color-chip-2)' }}>
+            volunteer
+          </button>
+        </Link>
+        <Link to="/ourcats">
+          <button className="c4-btn w-full" style={{ fontSize: '20px', background: 'var(--color-chip-3)' }}>
+            our cats
+          </button>
+        </Link>
+        <Link to="/map-page">
+          <button className="c4-btn w-full" style={{ fontSize: '20px', background: 'var(--color-chip-5)' }}>
+            map
+          </button>
+        </Link>
+        <Link to="/you-page">
+          <button className="c4-btn w-full" style={{ fontSize: '20px', background: 'var(--color-chip-1)' }}>
+            you
+          </button>
+        </Link>
+        {isAdmin && (
+          <Link to="/admin" className="col-span-2">
+            <button className="c4-btn w-full" style={{ fontSize: '20px', background: 'var(--color-accent)', color: 'var(--color-panel)' }}>
+              admin
             </button>
-            </Link>
-            <Link to="/ourcats">
-            <button className="bg-[#cadaed] hover:bg-[#ffb3c1] p-4 text-white font-bold rounded-lg transition-colors w-full">
-                Our Cats
-            </button>
-            </Link>
-            <Link to="/map-page">
-            <button className="bg-[#ede0ca] hover:bg-[#ffb3c1] p-4 text-white font-bold rounded-lg transition-colors w-full">
-                Map
-            </button>
-            </Link>
-            <Link to="/you-page">
-            <button className="bg-[#d5caed] hover:bg-[#ffb3c1] p-4 text-white font-bold rounded-lg transition-colors w-full">
-                You
-            </button>
-            </Link>
-            <Link to="/feeding-instructions" className="col-span-2">
-            <button className="bg-[#d4edca] hover:bg-[#ffb3c1] p-4 text-white font-bold rounded-lg transition-colors w-full">
-                Feeding Instructions
-            </button>
-            </Link>
-        </div>
-
-
-      {/* Spacer div */}
-      <div className="h-3 sm:h-4 md:h-10 lg:h-14"></div>
+          </Link>
+        )}
+        <Link to="/feeding-instructions" className="col-span-2">
+          <button className="c4-btn w-full" style={{ fontSize: '20px', background: 'var(--color-chip-4)' }}>
+            feeding instructions
+          </button>
+        </Link>
+      </div>
 
       {/* Calendar wrapped with approval check */}
-      <ApprovalGate requireApproval={true}>
-        <WeeklyCalendar />
-      </ApprovalGate>
-
-      {/* Spacer div */}
-      <div className="h-3 sm:h-4 md:h-10 lg:h-14"></div>
+      <div className="c4-container">
+        <ApprovalGate requireApproval={true}>
+          <WeeklyCalendar />
+        </ApprovalGate>
+      </div>
     </div>
   );
 }

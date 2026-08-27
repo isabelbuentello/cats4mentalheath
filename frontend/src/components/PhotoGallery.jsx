@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { getFirestore, collection, query, orderBy, onSnapshot, deleteDoc, doc } from 'firebase/firestore';
 import { getStorage, ref, deleteObject } from 'firebase/storage';
 import { getAuth } from 'firebase/auth';
@@ -83,42 +83,45 @@ function PhotoGallery({ catId, catName }) {
 
   if (loading) {
     return (
-      <div className="text-center py-12">
-        <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-purple-200 border-t-purple-500"></div>
-        <p className="text-gray-600 mt-4 font-medium">Loading photos...</p>
+      <div className="c4-panel rounded-[18px] py-10 text-center">
+        <div className="border-soft border-t-accent inline-block h-12 w-12 animate-spin rounded-full border-4"></div>
+        <p className="font-pix text-accent mt-3 mb-0 text-lg">loading photos…</p>
       </div>
     );
   }
 
   if (photos.length === 0) {
     return (
-      <div className="text-center py-12 bg-gradient-to-br from-purple-50 to-pink-50 rounded-2xl border-2 border-dashed border-purple-200">
-        <svg className="mx-auto w-20 h-20 text-purple-300 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <div className="bg-soft border-line rounded-[18px] border-2 border-dashed py-10 text-center">
+        <svg className="text-line mx-auto mb-3 h-20 w-20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
         </svg>
-        <p className="text-gray-700 text-lg font-bold mb-2">No photos yet!</p>
-        <p className="text-gray-600">Be the first to share a photo of {catName} 📸</p>
+        <p className="font-pix text-accent m-0 mb-1 text-lg">no photos yet!</p>
+        <p className="text-ink m-0">Be the first to share a photo of {catName} 📸</p>
       </div>
     );
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h3 className="text-2xl sm:text-3xl font-bold text-white">
-          {catName}'s Photo Album
+    <div className="c4-panel font-hand rounded-[18px] p-4">
+      <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+        <h3 className="font-pix text-accent m-0 text-xl sm:text-2xl">
+          {catName}'s photo album
         </h3>
-        <div style={{ padding: '12px 24px' }} className="bg-purple-100 text-white font-bold rounded-full text-sm sm:text-base">
+        <div
+          className="border-line text-ink rounded-full border-[1.5px] px-4 py-1.5 text-sm font-bold"
+          style={{ background: 'var(--color-chip-1)' }}
+        >
           {photos.length} {photos.length === 1 ? 'photo' : 'photos'}
         </div>
       </div>
 
       {/* Photo Grid - Responsive masonry-style layout */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
+      <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3 lg:grid-cols-4">
         {photos.map((photo) => (
           <div
             key={photo.id}
-            className="relative group cursor-pointer rounded-xl overflow-hidden shadow-md hover:shadow-2xl transition-all duration-300 bg-white"
+            className="group border-line bg-panel relative cursor-pointer overflow-hidden rounded-[12px] border-[1.5px] transition-transform duration-300 hover:-translate-y-0.5"
             onClick={() => setSelectedPhoto(photo)}
           >
             <div className="aspect-square overflow-hidden">
@@ -142,9 +145,9 @@ function PhotoGallery({ catId, catName }) {
             </div>
             
             {/* View icon on hover */}
-            <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-              <div className="bg-white/90 backdrop-blur-sm rounded-full p-2 shadow-lg">
-                <svg className="w-5 h-5 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <div className="absolute top-2 right-2 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+              <div className="bg-panel border-line rounded-full border p-2">
+                <svg className="text-accent h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7" />
                 </svg>
               </div>
@@ -156,33 +159,31 @@ function PhotoGallery({ catId, catName }) {
       {/* Modal for full-size photo - True Polaroid Style */}
       {selectedPhoto && (
         <div
-          className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 animate-fadeIn"
-          style={{ padding: 0, margin: 0 }}
+          className="c4-scope animate-fadeIn fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm"
+          style={{ background: 'rgb(60 44 82 / 0.6)' }}
           onClick={() => setSelectedPhoto(null)}
         >
-          <div className="relative w-full max-w-2xl mx-4">
+          <div className="relative mx-4 w-full max-w-2xl">
             {/* Close button - Top Right */}
             <button
               onClick={() => setSelectedPhoto(null)}
-              className="absolute -top-4 -right-4 z-20 text-white hover:text-gray-300 bg-black/50 hover:bg-black/70 rounded-full p-3 transition-all backdrop-blur-sm"
+              className="bg-panel border-line text-accent absolute -top-4 -right-4 z-20 rounded-full border-[1.5px] p-3"
+              style={{ padding: '10px' }}
               aria-label="Close"
             >
-              <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
               </svg>
             </button>
 
             {/* Polaroid card */}
             <div
-              className="bg-white shadow-2xl animate-slideUp relative"
-              style={{ 
-                fontFamily: "'Instrument Sans', sans-serif",
-                padding: '24px 24px 48px 24px'
-              }}
+              className="c4-panel font-hand animate-slideUp relative rounded-[18px]"
+              style={{ padding: '20px 20px 32px 20px' }}
               onClick={(e) => e.stopPropagation()}
             >
               {/* Image container with delete button */}
-              <div className="bg-gray-50 mb-6 relative">
+              <div className="bg-soft border-line relative mb-4 rounded-[12px] border overflow-hidden">
                 <img
                   src={selectedPhoto.imageUrl}
                   alt={selectedPhoto.caption || `Photo of ${catName}`}
@@ -194,7 +195,8 @@ function PhotoGallery({ catId, catName }) {
                   <button
                     onClick={() => handleDelete(selectedPhoto)}
                     disabled={deleting}
-                    className="absolute bottom-3 right-3 bg-red-500 hover:bg-red-600 disabled:bg-red-300 text-white rounded-full p-3 shadow-lg hover:shadow-xl transition-all disabled:cursor-not-allowed"
+                    className="absolute right-3 bottom-3 rounded-full text-white transition-transform hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-60"
+                    style={{ padding: '10px', border: '1.5px solid var(--color-line)', background: '#d97b7b' }}
                     title="Delete photo"
                   >
                     {deleting ? (
@@ -209,18 +211,18 @@ function PhotoGallery({ catId, catName }) {
               </div>
 
               {/* Polaroid-style caption area at bottom */}
-              <div className="text-center space-y-3">
+              <div className="space-y-2 text-center">
                 {/* Caption */}
                 {selectedPhoto.caption && (
-                  <h3 className="text-xl sm:text-2xl font-bold text-gray-800">
+                  <h3 className="text-ink m-0 text-xl font-bold sm:text-2xl">
                     {selectedPhoto.caption}
                   </h3>
                 )}
-                
+
                 {/* User and date info */}
-                <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4 text-sm text-gray-600">
+                <div className="text-ink/70 flex flex-col items-center justify-center gap-2 text-sm sm:flex-row sm:gap-4">
                   <div className="flex items-center gap-2">
-                    <svg className="w-4 h-4 text-purple-500" fill="currentColor" viewBox="0 0 20 20">
+                    <svg className="text-accent h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
                       <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
                     </svg>
                     <span className="font-medium">

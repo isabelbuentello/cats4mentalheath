@@ -1,85 +1,107 @@
 import NavBar from '../components/NavBar.jsx'
+import { ScallopStrip, Heart } from '../components/Decor.jsx'
 import amazon from '../assets/amazon.png'
 import cashapp from '../assets/cashapp.png'
 import venmo from '../assets/venmo.png'
 import catpic from '../assets/donatecat.png'
 
+const WAYS_TO_GIVE = [
+  {
+    name: 'Amazon Wishlist',
+    detail: 'food, litter & supplies',
+    href: 'https://www.amazon.com/hz/wishlist/ls/2I61EMFF773H8?ref_=wl_share',
+    logo: amazon,
+    chip: 'var(--color-chip-5)',
+  },
+  {
+    name: 'Venmo',
+    detail: '@cats4mentalhealth',
+    href: 'https://venmo.com/u/cats4mentalhealth',
+    logo: venmo,
+    chip: 'var(--color-chip-3)',
+  },
+  {
+    name: 'CashApp',
+    detail: '$uhc4mh',
+    href: 'https://cash.app/$uhc4mh',
+    logo: cashapp,
+    chip: 'var(--color-chip-4)',
+  },
+]
 
 function DonatePage() {
   return (
-    <div className="min-h-screen">
+    <div className="c4-gingham c4-scope font-hand relative min-h-screen py-6 sm:py-8">
+      {/* ── scalloped header bar ───────────────────────────── */}
+      <header className="c4-container relative">
+        <div className="c4-panel rounded-[22px] px-6 py-6 text-center sm:px-7">
+          <h1 className="font-pix text-accent m-0 text-2xl leading-tight tracking-wide sm:text-4xl">
+            ♡ support our cats ♡
+          </h1>
+          <p className="text-ink mt-1 mb-0 text-base sm:text-lg">
+            every little bit goes straight to the cats
+          </p>
+        </div>
+        <ScallopStrip />
+      </header>
+
       <NavBar />
 
-      {/* Spacer div */}
-      <div className="h-14 sm:h-16 md:h-20 lg:h-28"></div>
+      <div className="c4-container">
+        <div className="grid grid-cols-1 gap-3.5 lg:grid-cols-2">
+          {/* ── ways to give ─────────────────────────────────── */}
+          <section className="c4-panel min-w-0 rounded-[18px] p-4 lg:self-start">
+            <h2 className="font-pix text-accent m-0 text-xl">★ ways to give</h2>
 
-      <div className="flex flex-col items-center px-4 py-8 sm:py-12">
-        <h1 className="text-white text-center text-4xl sm:text-5xl md:text-6xl mb-8 sm:mb-12">
-          Support Our Cats
-        </h1>
-        
-        {/* Two-column layout on desktop, single column on mobile */}
-        <div className="max-w-6xl w-full flex flex-col lg:flex-row gap-8 lg:gap-12 items-center">
-          
-          {/* Left column - Text and buttons */}
-          <div className="w-full lg:w-1/2 rounded-3xl p-6 sm:p-8 lg:p-12">
-            <h2 className="text-white text-center text-lg sm:text-xl lg:text-left mb-8">
-              Your donations help us feed and care for the stray cats on our campus. 
-              Every contribution makes a difference! 
-            </h2>
-            
-            {/* Container for all 3 buttons - stacked vertically on all screens */}
-            <div className="flex flex-col justify-center items-center gap-4">
-              
-              <a 
-                href="https://www.amazon.com/hz/wishlist/ls/2I61EMFF773H8?ref_=wl_share"
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="inline-flex items-center justify-center hover:bg-gray-100 py-3 px-6 rounded-2xl transition-all w-48"
-              >
-                <img 
-                  src={amazon} 
-                  alt="Amazon Wishlist" 
-                  className="w-full h-auto"
-                />
-              </a>
+            <p className="text-ink mt-2.5 mb-0 text-[15px] leading-relaxed">
+              Your donations help us feed and care for the stray cats on our campus. Every
+              contribution makes a difference — food, supplies, and vet care all come straight out of
+              what you give. ♡
+            </p>
 
-              <a 
-                href="https://venmo.com/u/cats4mentalhealth"
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="inline-flex items-center justify-center hover:bg-gray-100 py-3 px-6 rounded-2xl transition-all w-48"
-              >
-                <img 
-                  src={venmo} 
-                  alt="Venmo" 
-                  className="w-full h-auto"
-                />
-              </a>
+            <ul className="m-0 mt-4 flex list-none flex-col gap-2.5 p-0">
+              {WAYS_TO_GIVE.map((way) => (
+                <li key={way.name}>
+                  <a
+                    href={way.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="border-line flex items-center gap-3 rounded-[14px] border-[1.5px] p-2.5 no-underline transition-transform hover:-translate-y-0.5"
+                    style={{ background: way.chip }}
+                  >
+                    <span className="bg-panel border-line grid h-14 w-24 shrink-0 place-items-center rounded-[10px] border p-2">
+                      <img
+                        src={way.logo}
+                        alt=""
+                        className="max-h-9 max-w-full object-contain"
+                      />
+                    </span>
+                    <span className="min-w-0">
+                      <span className="font-pix text-ink block text-base">{way.name}</span>
+                      <span className="text-ink/70 block text-sm break-words">{way.detail}</span>
+                    </span>
+                  </a>
+                </li>
+              ))}
+            </ul>
 
-              <a 
-                href="https://cash.app/$uhc4mh"
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="inline-flex items-center justify-center hover:bg-gray-100 py-3 px-6 rounded-2xl transition-all w-48"
-              >
-                <img 
-                  src={cashapp} 
-                  alt="CashApp" 
-                  className="w-full h-auto"
-                />
-              </a>
-            </div>
-          </div>
+            <p className="text-ink/70 m-0 mt-3.5 flex items-center justify-center gap-1.5 text-sm">
+              <Heart s={12} /> thank you from all of us at cats4mh <Heart s={12} />
+            </p>
+          </section>
 
-          {/* Right column - Cat image */}
-          <div className="w-64 sm:w-72 lg:w-1/2 flex items-center justify-center lg:justify-end">
-            <img 
-              src={catpic} 
-              alt="Donate cat" 
-              className="w-full max-w-md h-auto rounded-3xl shadow-lg object-cover"
+          {/* ── photo ────────────────────────────────────────── */}
+          <section className="c4-panel min-w-0 rounded-[18px] p-4 lg:self-start">
+            <img
+              src={catpic}
+              alt="One of the campus cats your donations help feed"
+              className="border-line max-h-[520px] w-full rounded-[12px] border-[1.5px] object-cover"
             />
-          </div>
+            <p className="border-line bg-soft text-ink mt-3 rounded-md border border-dashed p-2.5 text-center text-sm">
+              Cats for Mental Health is a registered student organization at UH, and the home of
+              Lear's Legacy Cat Rescue. ♡
+            </p>
+          </section>
         </div>
       </div>
     </div>

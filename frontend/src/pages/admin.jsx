@@ -1,131 +1,135 @@
 import NavBar from '../components/NavBar.jsx';
 import { Link } from 'react-router-dom';
-import { useState, useEffect } from 'react';
-import { doc, getDoc } from 'firebase/firestore';
-import { db, auth } from '../firebase/config.js';
 import AdminPanel from '../components/AdminPanel.jsx';
 import VolunteerHoursTracker from '../components/VolunteerHoursTracker.jsx';
+import { ScallopStrip } from '../components/Decor.jsx';
+import useIsAdmin from '../hooks/useIsAdmin.js';
+
+/* Shared shell so the loading, denied, and dashboard states share one frame. */
+function AdminShell({ children }) {
+  return (
+    <div className="c4-gingham c4-scope font-hand min-h-screen py-6 sm:py-8">
+      <header className="c4-container relative">
+        <div className="c4-panel rounded-[22px] px-6 py-6 text-center sm:px-7">
+          <h1 className="font-pix text-accent m-0 text-2xl leading-tight tracking-wide sm:text-4xl">
+            ♡ admin dashboard ♡
+          </h1>
+          <p className="text-ink mt-1 mb-0 text-base sm:text-lg">
+            approvals, volunteers, and logged hours
+          </p>
+        </div>
+        <ScallopStrip />
+      </header>
+
+      <NavBar startCollapsed={true} />
+
+      {children}
+    </div>
+  );
+}
 
 function AdminPage() {
-  const [isAdmin, setIsAdmin] = useState(false);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const checkAdmin = async () => {
-      if (auth.currentUser) {
-        const userDoc = await getDoc(doc(db, 'users', auth.currentUser.uid));
-        if (userDoc.exists()) {
-          setIsAdmin(userDoc.data().isAdmin || false);
-        }
-      }
-      setLoading(false);
-    };
-    checkAdmin();
-  }, []);
+  const { isAdmin, loading } = useIsAdmin();
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <p className="text-2xl text-white font-bold">Loading...</p>
-      </div>
+      <AdminShell>
+        <div className="c4-container">
+          <section className="c4-panel rounded-[18px] p-8 text-center">
+            <p className="font-pix text-accent m-0 text-xl">checking access…</p>
+          </section>
+        </div>
+      </AdminShell>
     );
   }
 
-  if (!auth.currentUser || !isAdmin) {
+  if (!isAdmin) {
     return (
-      <div className="min-h-screen">
-        <NavBar startCollapsed={true} />
-        <div className="flex items-center justify-center min-h-[60vh]">
-          <div className="bg-white rounded-xl shadow-lg p-8 max-w-md text-center">
-            <div className="text-6xl mb-4">🔒</div>
-            <h2 className="text-3xl font-bold mb-4">Admin Access Required</h2>
-            <p className="text-gray-700 mb-6">
+      <AdminShell>
+        <div className="c4-container">
+          <section className="c4-panel mx-auto max-w-md rounded-[18px] p-6 text-center">
+            <div className="mb-3 text-5xl">🔒</div>
+            <h2 className="font-pix text-accent m-0 mb-2 text-xl sm:text-2xl">admin access required</h2>
+            <p className="text-ink mb-4">
               This page is only accessible to administrators.
             </p>
             <Link to="/you-page">
-              <button className="bg-purple-500 hover:bg-purple-600 text-white font-bold py-3 px-6 rounded-lg transition-colors">
-                Back to Profile
+              <button className="c4-btn" style={{ background: 'var(--color-chip-1)' }}>
+                back to profile
               </button>
             </Link>
-          </div>
+          </section>
         </div>
-      </div>
+      </AdminShell>
     );
   }
 
   return (
-    <div className="min-h-screen">
-      <NavBar startCollapsed={true} />
-
-      {/* Spacer div */}
-      <div className="h-3 sm:h-4 md:h-10 lg:h-14"></div>
-      
+    <AdminShell>
       {/* Desktop Navigation */}
-      <div className="hidden md:flex justify-center items-center gap-8 py-8 px-4">
+      <div className="c4-scope hidden md:flex justify-center items-center gap-3 py-6 px-4">
             <Link to="/volunteer">
-            <button className="text-2xl text-white font-bold bg-[#d1abc3] hover:bg-[#ffb3c1] px-6 py-3 rounded-lg transition-colors">
-                Volunteer
+            <button className="c4-btn w-full" style={{ fontSize: '20px', background: 'var(--color-chip-2)' }}>
+                volunteer
             </button>
             </Link>
             <Link to="/map-page">
-            <button className="text-2xl text-white font-bold bg-[#ede0ca] hover:bg-[#ffb3c1] px-6 py-3 rounded-lg transition-colors">
-                Map
+            <button className="c4-btn w-full" style={{ fontSize: '20px', background: 'var(--color-chip-5)' }}>
+                map
             </button>
             </Link>
             <Link to="/ourcats">
-            <button className="text-2xl text-white font-bold bg-[#cadaed] hover:bg-[#ffb3c1] px-6 py-3 rounded-lg transition-colors">
-                Our Cats
+            <button className="c4-btn w-full" style={{ fontSize: '20px', background: 'var(--color-chip-3)' }}>
+                our cats
             </button>
             </Link>
             <Link to="/feeding-instructions"> 
-            <button className="text-2xl text-white font-bold bg-[#d4edca] hover:bg-[#ffb3c1] px-6 py-3 rounded-lg transition-colors">
-                Feeding Instructions
+            <button className="c4-btn w-full" style={{ fontSize: '20px', background: 'var(--color-chip-4)' }}>
+                feeding instructions
             </button>
             </Link>
             <Link to="/you-page" className="col-span-2"> 
-            <button className="bg-[#d5caed] hover:bg-[#ffb3c1] p-4 text-white font-bold rounded-lg transition-colors w-full">
-                You
+            <button className="c4-btn w-full" style={{ fontSize: '20px', background: 'var(--color-chip-1)' }}>
+                you
             </button>
             </Link>
         </div>
 
         {/* Mobile Navigation */}
-        <div className="md:hidden grid grid-cols-2 gap-4 p-4">
+        <div className="c4-scope md:hidden grid grid-cols-2 gap-2.5 p-4">
             <Link to="/volunteer">
-            <button className="bg-[#d1abc3] hover:bg-[#ffb3c1] p-4 text-white font-bold rounded-lg transition-colors w-full">
-                Volunteer
+            <button className="c4-btn w-full" style={{ fontSize: '20px', background: 'var(--color-chip-2)' }}>
+                volunteer
             </button>
             </Link>
             <Link to="/ourcats">
-            <button className="bg-[#cadaed] hover:bg-[#ffb3c1] p-4 text-white font-bold rounded-lg transition-colors w-full">
-                Our Cats
+            <button className="c4-btn w-full" style={{ fontSize: '20px', background: 'var(--color-chip-3)' }}>
+                our cats
             </button>
             </Link>
             <Link to="/map-page">
-            <button className="bg-[#ede0ca] hover:bg-[#ffb3c1] p-4 text-white font-bold rounded-lg transition-colors w-full">
-                Map
+            <button className="c4-btn w-full" style={{ fontSize: '20px', background: 'var(--color-chip-5)' }}>
+                map
             </button>
             </Link>
             <Link to="/you-page">
-            <button className="bg-[#d5caed] hover:bg-[#ffb3c1] p-4 text-white font-bold rounded-lg transition-colors w-full">
-                You
+            <button className="c4-btn w-full" style={{ fontSize: '20px', background: 'var(--color-chip-1)' }}>
+                you
             </button>
             </Link>
             <Link to="/feeding-instructions" className="col-span-2">
-            <button className="bg-[#d4edca] hover:bg-[#ffb3c1] p-4 text-white font-bold rounded-lg transition-colors w-full">
-                Feeding Instructions
+            <button className="c4-btn w-full" style={{ fontSize: '20px', background: 'var(--color-chip-4)' }}>
+                feeding instructions
             </button>
             </Link>
         </div>
 
-      <h1 className='greeting'>Admin Dashboard</h1>
-
       {/* Main Content */}
-      <div style={{ padding: '0 16px' }} className="max-w-7xl mx-auto py-8 space-y-8">
+      <div className="c4-container flex flex-col gap-2.5">
         <AdminPanel />
         <VolunteerHoursTracker />
       </div>
-    </div>
+    </AdminShell>
   );
 }
 

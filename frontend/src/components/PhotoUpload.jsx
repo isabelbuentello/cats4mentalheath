@@ -134,19 +134,19 @@ function PhotoUpload({ catId, catName, onUploadComplete }) {
   };
 
   return (
-    <div className="bg-white rounded-2xl shadow-lg p-4 sm:p-6 lg:p-8 border-2 border-purple-100" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>
-      <h3 className="text-xl sm:text-2xl font-bold mb-6 text-gray-800">
-        Add Photo to {catName}'s Album
+    <div className="c4-panel font-hand rounded-[18px] p-4 sm:p-5">
+      <h3 className="font-pix text-accent m-0 mb-4 text-xl sm:text-2xl">
+        add photo to {catName}'s album
       </h3>
 
       {/* File input */}
       <div className="mb-6">
         <label 
           htmlFor="photo-upload" 
-          className={`block w-full p-6 sm:p-8 border-2 border-dashed rounded-2xl text-center cursor-pointer transition-all ${
+          className={`block w-full cursor-pointer rounded-[14px] border-2 border-dashed p-5 text-center transition-all sm:p-6 ${
             preview 
-              ? 'border-purple-400 bg-purple-50' 
-              : 'border-gray-300 hover:border-purple-400 hover:bg-purple-50'
+              ? 'border-accent bg-soft'
+              : 'border-line hover:border-accent hover:bg-soft'
           }`}
         >
           {preview ? (
@@ -156,20 +156,20 @@ function PhotoUpload({ catId, catName, onUploadComplete }) {
                 alt="Preview" 
                 className="max-h-64 sm:max-h-80 mx-auto rounded-xl shadow-lg object-contain" 
               />
-              <div className="flex flex-col sm:flex-row items-center justify-center gap-2 text-sm text-purple-600 font-medium">
+              <div className="text-accent flex flex-col items-center justify-center gap-2 text-sm font-medium sm:flex-row">
                 <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                 </svg>
-                <span>Click to change photo</span>
+                <span>click to change photo</span>
               </div>
             </div>
           ) : (
             <div className="py-6 sm:py-8">
-              <svg className="mx-auto h-16 w-16 text-purple-300 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg className="text-line mx-auto mb-3 h-16 w-16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
               </svg>
-              <p className="text-gray-700 mb-2 font-bold text-base sm:text-lg">Click to select a photo</p>
-              <p className="text-sm text-gray-500">JPG, PNG, or GIF • Max 5MB</p>
+              <p className="font-pix text-accent m-0 mb-1 text-lg">click to select a photo</p>
+              <p className="text-ink/70 m-0 text-sm">JPG, PNG, or GIF • Max 5MB</p>
             </div>
           )}
         </label>
@@ -186,24 +186,24 @@ function PhotoUpload({ catId, catName, onUploadComplete }) {
       {/* Caption input */}
       {selectedFile && (
         <div className="mb-6">
-          <label className="block text-sm sm:text-base font-bold text-gray-700 mb-3">
+          <label className="text-ink mb-2 block text-sm font-bold sm:text-base">
             Caption (optional)
           </label>
           <textarea
             value={caption}
             onChange={(e) => setCaption(e.target.value)}
             placeholder="Tell us about this photo of your favorite cat..."
-            className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-400 focus:border-purple-400 transition-all text-sm sm:text-base resize-none"
+            className="c4-input resize-none"
             disabled={uploading}
             maxLength={200}
             rows={3}
           />
           <div className="flex justify-between items-center mt-2">
-            <p className="text-xs sm:text-sm text-gray-500">
+            <p className="text-ink/60 m-0 text-xs sm:text-sm">
               {caption.length}/200 characters
             </p>
             {caption.length > 150 && (
-              <p className="text-xs text-orange-500 font-medium">
+              <p className="text-accent m-0 text-xs font-medium">
                 {200 - caption.length} left
               </p>
             )}
@@ -215,13 +215,13 @@ function PhotoUpload({ catId, catName, onUploadComplete }) {
       {uploading && (
         <div className="mb-6">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-sm font-medium text-gray-700">Uploading...</span>
-            <span className="text-sm font-bold text-purple-600">{uploadProgress}%</span>
+            <span className="text-ink text-sm font-medium">uploading…</span>
+            <span className="text-accent text-sm font-bold">{uploadProgress}%</span>
           </div>
-          <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
-            <div 
-              className="bg-gradient-to-r from-purple-500 to-pink-500 h-3 rounded-full transition-all duration-300 ease-out"
-              style={{ width: `${uploadProgress}%` }}
+          <div className="bg-soft border-line h-3 w-full overflow-hidden rounded-full border">
+            <div
+              className="h-3 rounded-full transition-all duration-300 ease-out"
+              style={{ width: `${uploadProgress}%`, background: 'var(--color-accent)' }}
             ></div>
           </div>
         </div>
@@ -229,7 +229,7 @@ function PhotoUpload({ catId, catName, onUploadComplete }) {
 
       {/* Error message */}
       {error && (
-        <div className="mb-6 p-4 bg-red-50 border-2 border-red-200 text-red-700 rounded-xl flex items-start gap-3">
+        <div role="alert" className="mb-4 flex items-start gap-3 rounded-[12px] border-2 p-3" style={{ borderColor: '#d99a9a', background: '#fbeeee', color: '#8f4b4b' }}>
           <svg className="w-5 h-5 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
             <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
           </svg>
@@ -243,19 +243,20 @@ function PhotoUpload({ catId, catName, onUploadComplete }) {
           <button
             onClick={handleUpload}
             disabled={uploading}
-            className="flex-1 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 disabled:from-gray-300 disabled:to-gray-400 text-white font-bold py-3 sm:py-4 rounded-xl transition-all shadow-lg hover:shadow-xl disabled:cursor-not-allowed disabled:shadow-none flex items-center justify-center gap-2"
+            className="c4-btn flex flex-1 items-center justify-center gap-2"
+            style={{ background: 'var(--color-accent)', color: 'var(--color-panel)' }}
           >
             {uploading ? (
               <>
                 <div className="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent"></div>
-                Uploading...
+                uploading…
               </>
             ) : (
               <>
                 <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
                 </svg>
-                Upload Photo
+                upload photo
               </>
             )}
           </button>
