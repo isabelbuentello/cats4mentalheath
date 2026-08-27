@@ -4,6 +4,7 @@ import { db, auth } from '../firebase/config.js';
 import NavBar from '../components/NavBar.jsx';
 import Calendar from '../components/Calendar.jsx';
 import { ScallopStrip } from '../components/Decor.jsx';
+import CrestLink from '../components/CrestLink.jsx';
 
 function EventsPage() {
   const [isAdmin, setIsAdmin] = useState(false);
@@ -26,13 +27,19 @@ function EventsPage() {
     <div className="c4-gingham c4-scope font-hand relative min-h-screen py-6 sm:py-8">
       {/* ── scalloped header bar ───────────────────────────── */}
       <header className="c4-container relative">
-        <div className="c4-panel rounded-[22px] px-6 py-6 text-center sm:px-7">
-          <h1 className="font-pix text-accent m-0 text-2xl leading-tight tracking-wide sm:text-4xl">
-            ♡ upcoming events ♡
-          </h1>
-          <p className="text-ink mt-1 mb-0 text-base sm:text-lg">
-            on campus, off campus, and everywhere in between
-          </p>
+        <div className="c4-panel rounded-[22px] px-4 py-5 text-center sm:px-6">
+          <div className="flex items-center justify-between gap-3 sm:gap-5">
+            <CrestLink />
+            <div className="min-w-0 flex-1 text-center">
+            <h1 className="font-pix text-accent m-0 text-2xl leading-tight tracking-wide sm:text-4xl">
+              ♡ upcoming events ♡
+            </h1>
+            <p className="text-ink mt-1 mb-0 text-base sm:text-lg">
+              on campus, off campus, and everywhere in between
+            </p>
+            </div>
+            <CrestLink decorative />
+          </div>
         </div>
         <ScallopStrip />
       </header>

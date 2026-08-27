@@ -9,6 +9,7 @@ import rashmika from '../assets/rashmika.png'
 import laura from '../assets/laura.png'
 import ornella from '../assets/ornella.png'
 import lear from '../assets/lear.png'
+import CrestLink from '../components/CrestLink.jsx';
 
 const CHIPS = [
   'var(--color-chip-1)',
@@ -53,17 +54,23 @@ function Home() {
     <div className="c4-gingham c4-scope font-hand relative min-h-screen py-6 sm:py-8">
       {/* ── scalloped header bar ───────────────────────────── */}
       <header className="c4-container relative">
-          <div className="c4-panel relative rounded-[22px] px-6 py-6 text-center sm:px-7">
-            <div className="absolute -top-3.5 left-1/2 -translate-x-1/2">
-              <Bow s={44} />
+          <div className="c4-panel relative rounded-[22px] px-4 py-5 text-center sm:px-6">
+            <div className="flex items-center justify-between gap-3 sm:gap-5">
+              <CrestLink />
+              <div className="min-w-0 flex-1 text-center">
+              <div className="absolute -top-3.5 left-1/2 -translate-x-1/2">
+                <Bow s={44} />
+              </div>
+              <h1 className="font-pix text-accent m-0 text-2xl leading-tight tracking-wide sm:text-4xl">
+                ♡ cats for mental health ♡
+              </h1>
+              <p className="text-ink mt-1 mb-0 text-base sm:text-lg">
+                we help stray cats at UH!{' '}
+                <span className="text-accent">ദ്ദി ˉ͈̀꒳ˉ͈́ )✧</span>
+              </p>
+              </div>
+              <CrestLink decorative />
             </div>
-            <h1 className="font-pix text-accent m-0 text-2xl leading-tight tracking-wide sm:text-4xl">
-              ♡ cats for mental health ♡
-            </h1>
-            <p className="text-ink mt-1 mb-0 text-base sm:text-lg">
-              we help stray cats at UH!{' '}
-              <span className="text-accent">ദ്ദി ˉ͈̀꒳ˉ͈́ )✧</span>
-            </p>
           </div>
         <ScallopStrip />
       </header>
