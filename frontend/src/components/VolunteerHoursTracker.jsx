@@ -3,6 +3,7 @@ import { collectionGroup, getDocs, doc, updateDoc, getDoc , onSnapshot} from 'fi
 import { db, auth } from '../firebase/config.js';
 import {
   getShiftState,
+  isPMShift,
   isApprovable,
   compareShifts,
   SHIFT_STATE_LABEL,
@@ -461,8 +462,79 @@ function VolunteerHoursTracker() {
             </div>
           </div>
 
-          {/* User Shifts Table */}
-          <div className="overflow-x-auto max-h-96 overflow-y-auto border rounded-lg">
+          {/* User Shifts — stacked cards on mobile.
+              The table below needs min-w-[500px] for its five columns, which on a
+              phone pushes Status and Actions off-screen behind a horizontal
+              scroll. Approving a shift shouldn't require scrolling sideways, so
+              small screens get one card per shift instead. */}
+          <div className="max-h-96 space-y-2.5 overflow-y-auto md:hidden">
+            {selectedUser.shifts.map(shift => {
+              const state = getShiftState(shift, now);
+              const canApprove = state === 'awaiting';
+              return (
+                <div
+                  key={shift.id}
+                  className="border-line rounded-[12px] border-[1.5px] p-3"
+                  style={{
+                    background: 'var(--color-panel)',
+                    opacity: state === 'upcoming' ? 0.6 : 1
+                  }}
+                >
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="min-w-0">
+                      <p className="text-ink m-0 font-bold">{shift.date.toLocaleDateString()}</p>
+                      <p className="text-ink/70 m-0 text-sm">
+                        {shift.timeLabel} · {shift.hours}h
+                      </p>
+                    </div>
+                    <span
+                      className="inline-block shrink-0 rounded border px-2 py-1 text-xs font-bold whitespace-nowrap"
+                      style={SHIFT_STATE_STYLE[state]}
+                    >
+                      {SHIFT_STATE_LABEL[state]}
+                    </span>
+                  </div>
+
+                  <div className="mt-2.5 flex gap-2">
+                    {shift.status === 'pending' ? (
+                      <>
+                        <button
+                          onClick={() => handleVerify(shift, 'verified')}
+                          disabled={!canApprove}
+                          className="flex-1 rounded-lg bg-green-500 py-2 text-sm text-white transition-colors hover:bg-green-600 disabled:cursor-not-allowed disabled:opacity-40"
+                        >
+                          ✓ approve
+                        </button>
+                        <button
+                          onClick={() => handleVerify(shift, 'no-show')}
+                          disabled={!canApprove}
+                          className="flex-1 rounded-lg bg-red-500 py-2 text-sm text-white transition-colors hover:bg-red-600 disabled:cursor-not-allowed disabled:opacity-40"
+                        >
+                          ✗ no-show
+                        </button>
+                      </>
+                    ) : (
+                      <button
+                        onClick={() => handleVerify(shift, 'pending')}
+                        className="border-line bg-soft text-ink flex-1 rounded-lg border py-2 text-sm"
+                      >
+                        ↺ reset to pending
+                      </button>
+                    )}
+                  </div>
+
+                  {!canApprove && shift.status === 'pending' && (
+                    <p className="text-ink/60 m-0 mt-1.5 text-center text-xs">
+                      unlocks {isPMShift(shift) ? 'at noon' : 'at 6am'} on the shift day
+                    </p>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+
+          {/* User Shifts Table — md and up */}
+          <div className="hidden overflow-x-auto max-h-96 overflow-y-auto border rounded-lg md:block">
             <table className="w-full min-w-[500px]">
               <thead className="bg-soft sticky top-0">
                 <tr>
