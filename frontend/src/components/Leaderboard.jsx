@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { collectionGroup, getDocs, collection } from 'firebase/firestore';
 import { db, auth } from '../firebase/config.js';
+import { getSemester, getYear, isDayInRange } from '../utils/semester.js';
 import darkBrownCat from '../assets/darkbrowncat.png';
 import blackCat from '../assets/blackcat.png';
 import calicoCat from '../assets/calicocat.png';
@@ -13,10 +14,39 @@ import whiteCat from '../assets/whitecat.png';
 
 const normEmail = (e) => (e || '').trim().toLowerCase();
 
+/** Toggle options, with the footer stat labels each one implies. */
+const VIEWS = [
+  {
+    id: 'semester',
+    label: 'This Semester',
+    volunteers: 'Volunteers This Semester',
+    feedings: 'Feedings This Semester'
+  },
+  {
+    id: 'year',
+    label: 'This Year',
+    volunteers: 'Volunteers This Year',
+    feedings: 'Feedings This Year'
+  },
+  { id: 'all', label: 'All Time', volunteers: 'Total Volunteers', feedings: 'Total Feedings' }
+];
+
 function Leaderboard() {
-  const [leaderboardData, setLeaderboardData] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [currentUserRank, setCurrentUserRank] = useState(null);
+  // 'semester' = the term we're in, 'year' = this calendar year, 'all' = ever.
+  const [view, setView] = useState('semester');
+  // Raw day docs are kept in state so switching views re-counts locally
+  // instead of re-reading the whole collection group from Firestore.
+  const [days, setDays] = useState([]);
+  const [validEmails, setValidEmails] = useState(() => new Set());
+
+  // Recomputed only if the component outlives a term boundary — cheap, and it
+  // keeps the label honest if the page is left open across Dec 31.
+  const semester = useMemo(() => getSemester(), []);
+  const year = useMemo(() => getYear(), []);
+
+  // The date window each view counts over. `all` has no window.
+  const range = view === 'semester' ? semester : view === 'year' ? year : null;
 
   // Helper to convert stored path to actual image
   const getCatImageFromPath = (photoURL) => {
@@ -62,59 +92,26 @@ function Leaderboard() {
       }
 
       try {
-        const userFeedings = {};
-
-        // Get all days from all weeks
+        // Get all days from all weeks. The doc id is the `YYYY-MM-DD` day id,
+        // which is what the semester filter keys off.
         const daysQuery = collectionGroup(db, 'days');
         const daysSnapshot = await getDocs(daysQuery);
 
-        daysSnapshot.forEach((dayDoc) => {
-          const dayData = dayDoc.data();
-          const slots = dayData.slots || {};
-
-          // Count feedings for each user
-          Object.values(slots).forEach(slot => {
-            if (slot && slot.email) {
-              if (!userFeedings[slot.email]) {
-                userFeedings[slot.email] = {
-                  email: slot.email,
-                  name: slot.volunteer || slot.email.split('@')[0],
-                  photoURL: slot.photoURL || "/assets/darkbrowncat.png",
-                  count: 0
-                };
-              }
-              userFeedings[slot.email].count++;
-            }
-          });
-        });
+        const dayRows = daysSnapshot.docs.map((dayDoc) => ({
+          dayId: dayDoc.id,
+          slots: dayDoc.data().slots || {}
+        }));
 
         // Get all valid users from the users collection
         const usersSnapshot = await getDocs(collection(db, 'users'));
         // Normalised so a case/whitespace difference between the users doc and
         // the slot can't silently drop a volunteer from the board.
-        const validEmails = new Set(
+        const emails = new Set(
           usersSnapshot.docs.map(doc => normEmail(doc.data().email)).filter(Boolean)
         );
 
-        // Filter to only include users that still exist in the users collection
-        const leaderboardArray = Object.values(userFeedings)
-          .filter(user => validEmails.has(normEmail(user.email)))
-          .sort((a, b) => b.count - a.count)
-          .map((user, index) => ({
-            ...user,
-            rank: index + 1
-          }));
-
-        // Find current user's rank
-        const currentUserData = leaderboardArray.find(
-          user => user.email === currentUser.email
-        );
-        
-        if (currentUserData) {
-          setCurrentUserRank(currentUserData.rank);
-        }
-
-        setLeaderboardData(leaderboardArray);
+        setDays(dayRows);
+        setValidEmails(emails);
         setLoading(false);
       } catch (error) {
         console.error('Error fetching leaderboard:', error);
@@ -124,6 +121,46 @@ function Leaderboard() {
 
     fetchLeaderboard();
   }, []);
+
+  // Counting lives here rather than in the fetch so flipping between
+  // semester and all-time is instant and costs no extra reads.
+  const leaderboardData = useMemo(() => {
+    const userFeedings = {};
+
+    days.forEach(({ dayId, slots }) => {
+      if (range && !isDayInRange(dayId, range)) return;
+
+      Object.values(slots).forEach(slot => {
+        if (slot && slot.email) {
+          if (!userFeedings[slot.email]) {
+            userFeedings[slot.email] = {
+              email: slot.email,
+              name: slot.volunteer || slot.email.split('@')[0],
+              photoURL: slot.photoURL || "/assets/darkbrowncat.png",
+              count: 0
+            };
+          }
+          userFeedings[slot.email].count++;
+        }
+      });
+    });
+
+    // Filter to only include users that still exist in the users collection
+    return Object.values(userFeedings)
+      .filter(user => validEmails.has(normEmail(user.email)))
+      .sort((a, b) => b.count - a.count)
+      .map((user, index) => ({
+        ...user,
+        rank: index + 1
+      }));
+  }, [days, validEmails, range]);
+
+  // Derived rather than stored, so it tracks the active view.
+  const currentUserRank = useMemo(() => {
+    const me = normEmail(auth.currentUser?.email);
+    if (!me) return null;
+    return leaderboardData.find(u => normEmail(u.email) === me)?.rank ?? null;
+  }, [leaderboardData]);
 
   const getMedalEmoji = (rank) => {
     if (rank === 1) return '🥇';
@@ -198,14 +235,8 @@ function Leaderboard() {
     );
   }
 
-  if (leaderboardData.length === 0) {
-    return (
-      <div className="c4-panel font-hand rounded-[18px] p-4">
-        <h2 className="font-pix text-accent m-0 mb-3 text-center text-xl sm:text-2xl">♡ leaderboard</h2>
-        <p className="text-ink/70 text-center">No feeding data yet. Be the first to sign up!</p>
-      </div>
-    );
-  }
+  const isEmpty = leaderboardData.length === 0;
+  const activeView = VIEWS.find((v) => v.id === view) || VIEWS[0];
 
   return (
     <div className="c4-panel font-hand rounded-[18px] p-4 sm:p-5">
@@ -220,10 +251,34 @@ function Leaderboard() {
       )}
 
       <h2 className="font-pix text-accent m-0 mb-2 text-center text-xl sm:text-2xl">♡ volunteer leaderboard</h2>
-      <p className="text-sm text-ink/70 mb-6 text-center">
-        Top feeders of all time 
+      <p className="text-sm text-ink/70 mb-3 text-center">
+        {range ? `Top feeders — ${range.label}` : 'Top feeders of all time'}
       </p>
 
+      {/* Semester / year / all-time toggle.
+          The selected option is a soft white pill on a tinted track rather than
+          a solid block — it reads as "lifted" instead of stamped on, and keeps
+          the label at full ink contrast on white. */}
+      <div className="c4-seg-track mx-auto mb-5">
+        {VIEWS.map((opt) => (
+          <button
+            key={opt.id}
+            onClick={() => setView(opt.id)}
+            aria-pressed={view === opt.id}
+            className="c4-seg"
+          >
+            {opt.label}
+          </button>
+        ))}
+      </div>
+
+      {isEmpty && (
+        <p className="text-ink/70 py-4 text-center">
+          {range
+            ? `No feedings logged yet for ${range.label}.`
+            : 'No feeding data yet. Be the first to sign up!'}
+        </p>
+      )}
 
       {/* Leaderboard List */}
       <div className="space-y-2 max-h-96 overflow-y-auto">
@@ -286,23 +341,25 @@ function Leaderboard() {
         })}
       </div>
 
-      {/* Total Stats */}
-      <div className="mt-6 pt-4 border-t border-gray-200">
-        <div className="grid grid-cols-2 gap-4 text-center">
-          <div>
-            <p className="text-2xl font-bold text-accent">
-              {leaderboardData.length}
-            </p>
-            <p className="text-sm text-ink/70">Total Volunteers</p>
-          </div>
-          <div>
-            <p className="text-2xl font-bold text-accent">
-              {leaderboardData.reduce((sum, user) => sum + user.count, 0)}
-            </p>
-            <p className="text-sm text-ink/70">Total Feedings</p>
+      {/* Total Stats — scoped to whichever view is active */}
+      {!isEmpty && (
+        <div className="mt-6 pt-4 border-t border-gray-200">
+          <div className="grid grid-cols-2 gap-4 text-center">
+            <div>
+              <p className="text-2xl font-bold text-accent">
+                {leaderboardData.length}
+              </p>
+              <p className="text-sm text-ink/70">{activeView.volunteers}</p>
+            </div>
+            <div>
+              <p className="text-2xl font-bold text-accent">
+                {leaderboardData.reduce((sum, user) => sum + user.count, 0)}
+              </p>
+              <p className="text-sm text-ink/70">{activeView.feedings}</p>
+            </div>
           </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }

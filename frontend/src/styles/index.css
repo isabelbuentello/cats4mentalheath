@@ -142,6 +142,45 @@ body {
   color: var(--color-panel);
 }
 
+/* Segmented control — the leaderboard's semester / year / all-time switch.
+   A class for the same reason as `.c4-btn` and `.c4-dot`: the global `button`
+   rules below are unlayered, so `rounded-*`, `px-*` and `text-*` utilities
+   never reach a <button> and the pill renders square and oversized.
+   The selected option is a lifted white pill rather than a solid fill, which
+   keeps its label at full ink contrast on white. */
+.c4-seg-track {
+  display: flex;
+  gap: 4px;
+  width: fit-content;
+  max-width: 100%;
+  padding: 4px;
+  border: 1.5px solid var(--color-line);
+  border-radius: 999px;
+  background: var(--color-soft);
+}
+.c4-seg {
+  padding: 6px 13px;
+  border: none;
+  border-radius: 999px;
+  background: transparent;
+  color: color-mix(in srgb, var(--color-ink) 60%, transparent);
+  font-family: var(--font-hand);
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.2;
+  white-space: nowrap;
+  transition: background 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
+}
+.c4-seg:hover {
+  border-color: transparent;
+  color: var(--color-ink);
+}
+.c4-seg[aria-pressed='true'] {
+  background: var(--color-panel);
+  color: var(--color-ink);
+  box-shadow: 0 1px 4px rgb(92 70 120 / 0.2);
+}
+
 /* Shared page width. Every band of a restyled page (header bar, nav row,
    content) uses this so they share exact left/right edges — don't hand-roll
    `max-w-* mx-auto px-*` per band, they drift apart.
