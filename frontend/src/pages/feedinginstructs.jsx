@@ -128,9 +128,9 @@ function FeedingInstructionsPage() {
             {/* Card 2 */}
             <div className="c4-panel rounded-[18px] p-4 text-center sm:p-5">
             <h2 className="font-pix text-accent m-0 mb-3 text-xl sm:text-2xl">♡ feeding locations</h2>
-            <p className="text-ink m-0 mb-3">We have 3 feeding locations!</p>
+            <p className="text-ink m-0 mb-3">We have 4 feeding locations!</p>
             <ul className="m-0 flex list-none flex-col gap-2 p-0">
-                {['Equal Opportunity Building', 'Zone D Parking Lot', 'Law Center & Loft Area'].map((loc, i) => (
+                {['Equal Opportunity Building', 'Zone D Parking Lot', 'Law Center & Loft Area', 'The Quad'].map((loc, i) => (
                   <li
                     key={loc}
                     className="border-line text-ink rounded-[12px] border-[1.5px] px-3 py-2"

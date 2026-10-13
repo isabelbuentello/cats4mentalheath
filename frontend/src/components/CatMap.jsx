@@ -35,6 +35,12 @@ function CatMapWithMarkers() {
       name: 'Moody Towers',
       position: { lat: 29.7175235, lng: -95.3423427 },
       cats: ['Natasha']
+    },
+    {
+      id: 6,
+      name: 'The Quad',
+      position: { lat: 29.71787, lng: -95.34527 },
+      cats: []
     }
   ];
 
@@ -111,7 +117,9 @@ function CatMapWithMarkers() {
           <div style="font-family: 'Patrick Hand', 'Comic Sans MS', cursive; padding: 10px; min-width: 200px; color: #5c4678;">
             <h3 style="margin: 0 0 10px 0; font-family: 'Pixelify Sans', monospace; font-size: 16px; color: #9b7bc4;">${location.name}</h3>
             <p style="margin: 5px 0; font-size: 14px; opacity: 0.7;">Cats here:</p>
-            <p style="margin: 5px 0; font-weight: 600;">${location.cats.join(', ')}</p>
+            <p style="margin: 5px 0; font-weight: 600;">${
+              location.cats.length ? location.cats.join(', ') : 'none logged yet'
+            }</p>
             <div style="margin-top: 10px; display: flex; gap: 8px;">
               <a href="http://maps.apple.com/?q=${location.position.lat},${location.position.lng}"
                  target="_blank"
@@ -172,7 +180,9 @@ function CatMapWithMarkers() {
 
             <div className="mb-3">
               <p className="text-ink/70 m-0 mb-0.5 text-sm">Cats here:</p>
-              <p className="text-ink m-0 font-semibold">{location.cats.join(', ')}</p>
+              <p className="text-ink m-0 font-semibold">
+                {location.cats.length ? location.cats.join(', ') : 'none logged yet'}
+              </p>
             </div>
 
             <div className="flex flex-wrap justify-center gap-2">

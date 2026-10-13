@@ -44,6 +44,8 @@ function WeeklyCalendar() {
     },
     { id: "am_zone_d", time: "AM Zone D", location: "Zone D Lot", isPM: false },
     { id: "pm_zone_d", time: "PM Zone D", location: "Zone D Lot", isPM: true },
+    { id: "am_quad", time: "AM Quad", location: "The Quad", isPM: false },
+    { id: "pm_quad", time: "PM Quad", location: "The Quad", isPM: true },
   ];
 
   // Get week start (Sunday)
