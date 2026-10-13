@@ -27,6 +27,12 @@ function WeeklyCalendar() {
   const activeTransactionsRef = useRef(new Set());
   const [activeTransactions, setActiveTransactions] = useState(new Set());
 
+  // Same normalisation the leaderboard and activity graph use, so a case or
+  // whitespace difference between the slot and the signed-in account can't
+  // stop your own shift from being highlighted.
+  const normEmail = (e) => (e || '').trim().toLowerCase();
+  const myEmail = normEmail(auth.currentUser?.email);
+
   const FEEDING_ZONES = [
     { id: "am_law", time: "AM Law", location: "Law Buildings", isPM: false },
     { id: "pm_law", time: "PM Law", location: "Law Buildings", isPM: true },
@@ -264,6 +270,8 @@ const getWeekStart = (date) => {
       // before that fix it still holds the signup default. This is also what
       // the leaderboard reads, so the two views agree.
       photoURL: slotData?.photoURL || currentProfile?.photoURL || null,
+      // Drives the "this one's yours" highlight in FeedingSlot.
+      isMine: !!email && !!myEmail && normEmail(email) === myEmail,
     };
   });
 };

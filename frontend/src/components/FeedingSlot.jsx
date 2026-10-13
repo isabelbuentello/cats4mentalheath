@@ -43,18 +43,28 @@ function FeedingSlot({ slot, onClick, isAvailable }) {
     return darkBrownCat;
   };
   
+  // Your own shifts stay at full opacity and get an accent ring — taken slots
+  // are dimmed to recede, which is exactly wrong for the ones you're on the
+  // hook for. Opacity and border weight carry the signal alongside the colour,
+  // so it doesn't rest on colour perception alone.
+  const isMine = Boolean(slot.isMine);
+
   return (
     <div
       onClick={onClick}
-      className="font-hand cursor-pointer rounded-[10px] border-[1.5px] p-2 text-center transition-transform hover:-translate-y-0.5"
+      className="font-hand cursor-pointer rounded-[10px] p-2 text-center transition-transform hover:-translate-y-0.5"
       style={{
-        borderColor: 'var(--color-line)',
-        opacity: isAvailable ? 1 : 0.65,
-        background: !isAvailable
-          ? 'var(--color-soft)'
-          : slot.isPM
-            ? 'var(--color-chip-3)' // PM slots - pastel blue
-            : 'var(--color-chip-2)' // AM slots - pastel pink
+        borderWidth: isMine ? '2.5px' : '1.5px',
+        borderStyle: 'solid',
+        borderColor: isMine ? 'var(--color-accent)' : 'var(--color-line)',
+        opacity: isMine || isAvailable ? 1 : 0.65,
+        background: isMine
+          ? 'var(--color-chip-1)'
+          : !isAvailable
+            ? 'var(--color-soft)'
+            : slot.isPM
+              ? 'var(--color-chip-3)' // PM slots - pastel blue
+              : 'var(--color-chip-2)' // AM slots - pastel pink
       }}
     >
       <p className="text-ink m-0 text-sm font-bold">{slot.time}</p>
@@ -64,10 +74,17 @@ function FeedingSlot({ slot, onClick, isAvailable }) {
           <img
             src={getCatImageFromPath(slot.photoURL)}
             alt={slot.volunteer}
-            className="bg-panel h-6 w-6 shrink-0 rounded-full object-cover"
+            className="h-6 w-6 shrink-0 rounded-full object-cover"
+            style={{
+              background: 'var(--color-panel)',
+              boxShadow: isMine ? '0 0 0 1.5px var(--color-accent)' : 'none'
+            }}
           />
-          {/* Display Name */}
-          <span className="text-ink min-w-0 truncate text-xs font-semibold">{slot.volunteer}</span>
+          {/* Display Name — stays ink even when highlighted: accent on the
+              chip-1 background is only 2.2:1, well under WCAG AA for 12px. */}
+          <span className="text-ink min-w-0 truncate text-xs font-semibold">
+            {slot.volunteer}
+          </span>
         </div>
       )}
     </div>
