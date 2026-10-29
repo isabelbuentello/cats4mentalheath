@@ -4,7 +4,6 @@ import CircularGallery from '../components/CircularGallery.jsx'
 import { Bow, ScallopStrip } from '../components/Decor.jsx'
 import isabel from '../assets/isabel.png'
 import emilie from '../assets/emilie.png'
-import eve from '../assets/eve.png'
 import rashmika from '../assets/rashmika.png'
 import laura from '../assets/laura.png'
 import ornella from '../assets/ornella.png'
@@ -20,7 +19,6 @@ const CHIPS = [
 ]
 
 const OFFICERS = [
-  { name: 'Evelyn T', role: 'President', img: eve, quote: "I'm from Singapore and I have the same birthday as BTS Jungkook! ദ്ദി/ᐠ - ˕ -マ" },
   { name: 'Emilie Z', role: 'Vice President', img: emilie, quote: 'If you give me a sticky note and 6 to 7 minutes, I can fold an origami dragon.' },
   { name: 'Ornella G', role: 'Treasurer', img: ornella, quote: 'I love animal crossing, but not more than cats! :)' },
   { name: 'Rashmika K', role: 'Event Coordinator', img: rashmika, quote: 'I rescued three cats with two other officers :3' },
@@ -81,7 +79,7 @@ function Home() {
         {/* ── hero: gallery + story ──────────────────────────── */}
         {/* 60/40 carousel-to-story, held exactly at every width from lg up (fr
             units split the space after the gap). Stacks below lg — the same
-            breakpoint where the officers grid drops off 6-across, so the two
+            breakpoint where the officers row drops to 3-across, so the two
             sections always reflow together. */}
         <div className="grid grid-cols-1 gap-3.5 lg:grid-cols-[60fr_40fr]">
           {/* min-w-0: the carousel canvas has an intrinsic width, which would
@@ -173,11 +171,16 @@ function Home() {
             <span className="text-ink/70 text-sm">(all volunteers, all cat people)</span>
           </div>
 
-          <ul className="m-0 grid list-none grid-cols-2 gap-2.5 p-0 sm:grid-cols-3 lg:grid-cols-6">
+          {/* Centered flex-wrap rather than a fixed grid: the roster changes size,
+              and a grid with a column count the roster doesn't divide into leaves
+              a dead cell at the end of the last row. Widths are explicit so cards
+              stay equal (no flex-grow stretching the orphans) — each is
+              `100%/n - gap·(n-1)/n` for the n-across tier, with gap = 0.625rem. */}
+          <ul className="m-0 flex list-none flex-wrap justify-center gap-2.5 p-0">
             {OFFICERS.map((p, i) => (
               <li
                 key={p.name}
-                className="border-line rounded-[14px] border-[1.5px] p-2.5 text-center"
+                className="border-line w-[calc(50%-0.3125rem)] rounded-[14px] border-[1.5px] p-2.5 text-center sm:w-[calc(33.3333%-0.4167rem)] lg:w-[calc(20%-0.5rem)]"
                 style={{ background: CHIPS[i % CHIPS.length] }}
               >
                 <img
